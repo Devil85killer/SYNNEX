@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="college_app">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>college_app</title>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBirVFruH43mFBaYzz7KPWD04JRhBG6B0",
+    authDomain: "synnex-17430.firebaseapp.com",
+    projectId: "synnex-17430",
+    storageBucket: "synnex-17430.firebasestorage.app",
+    messagingSenderId: "837907556855",
+    appId: "1:837907556855:web:b9dff56479cc589c3366f2",
+    measurementId: "G-E4020WS9MH"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  async function initFCM() {
+    try {
+      // 1. Permission maango
+      const permission = await Notification.requestPermission();
+      
+      if (permission === 'granted') {
+        console.log('🔔 Notification permission granted.');
+
+        // 2. Token generate karo (Aapki VAPID Key use ki hai)
+        const token = await getToken(messaging, {
+          vapidKey: "BO7k7SfDVXPv4KjKgsO_ShKHN2CuaRZpCnAg5Tk4zBSVbnRzY21wVLHAp1sAeFshMAfE2pniSYDPtY73vmyL6_E"
+        });
+
+        if (token) {
+          console.log("🔥 TOKEN MIL GAYA:");
+          console.log(token); // <--- Isko copy karke MongoDB mein daalna hai
+          // alert("Token Generated! Check Console.");
+        } else {
+          console.log("❌ No registration token available.");
+        }
+      } else {
+        console.log('❌ Notification permission denied.');
+      }
+    } catch (error) {
+      console.error("❌ FCM Error:", error);
+    }
+  }
+
+  // Service Worker register hone ke baad token maango
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      .then((registration) => {
+        console.log('✅ Service Worker Registered');
+        initFCM();
+      });
+  }
+</script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

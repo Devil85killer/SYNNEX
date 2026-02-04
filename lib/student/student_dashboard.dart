@@ -1,0 +1,222 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ Firestore zaroori hai reconnect ke liye
+import '../../services/socket_service.dart'; 
+import '../../main.dart'; // ✅ Global socket aur connectSocket ke liye
+
+// STUDENT PAGES
+import 'student_routine.dart';
+import 'student_profile_view.dart';
+import 'student_attendance.dart';
+import 'student_fees.dart';
+import 'student_books.dart';
+import 'student_exam_reports.dart';
+import 'student_complaints.dart';
+import 'student_chat_list.dart';
+
+// ✅ COMMON JOB FEED
+import '../screens/jobs/common_job_feed_page.dart';
+
+class StudentDashboard extends StatefulWidget {
+  const StudentDashboard({super.key});
+
+  @override
+  State<StudentDashboard> createState() => _StudentDashboardState();
+}
+
+class _StudentDashboardState extends State<StudentDashboard> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = const [
+    StudentHomePage(),
+    StudentProfileViewPage(),
+    StudentAttendancePage(),
+    StudentFeesPage(),
+    StudentBooksPage(),
+    StudentExamReportsPage(),
+    StudentComplaintsPage(),
+    CommonJobFeedPage(),
+    StudentChatListPage(),
+  ];
+
+  final List<String> _titles = [
+    "Dashboard",
+    "Profile",
+    "Attendance",
+    "Fees",
+    "Books",
+    "Exam Reports",
+    "Complaints",
+    "Jobs",
+    "Chats",
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    // 🔥 SMART CHECK: Refresh ke baad socket null toh nahi?
+    _checkSocket();
+  }
+
+  /// 🔌 SMART RECONNECT FOR STUDENT
+  Future<void> _checkSocket() async {
+    // 1. Agar socket pehle se connected hai toh kuch mat karo
+    if (socket != null && socket!.connected) {
+      print("✅ Student Dashboard: Socket already active");
+      return;
+    }
+
+    print("🔄 Student Dashboard: Refresh detected. Reconnecting Socket...");
+    
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return;
+
+      // 2. Student ka JWT Firestore se nikalo
+      final userDoc = await FirebaseFirestore.instance
+          .collection('students')
+          .doc(uid)
+          .get();
+
+      if (userDoc.exists) {
+        final jwt = userDoc.data()?['chatifyJwt'];
+        if (jwt != null) {
+          // 3. Dubara connect karo main.dart ke zariye
+          connectSocket(jwt);
+          print("🚀 Student Dashboard: Reconnection initiated");
+        }
+      }
+    } catch (e) {
+      print("❌ Student Dashboard Reconnect Error: $e");
+    }
+  }
+
+  /// 🚪 LOGOUT
+  Future<void> _logout() async {
+    // Socket listeners clean karo
+    SocketService().disconnect(); 
+    
+    await FirebaseAuth.instance.signOut();
+
+    if (mounted) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/student_login',
+        (_) => false,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_titles[_selectedIndex]),
+        backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
+      ),
+      body: Row(
+        children: [
+          /// LEFT MENU
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (i) {
+              setState(() => _selectedIndex = i);
+            },
+            labelType: NavigationRailLabelType.all,
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.dashboard),
+                label: Text("Dashboard"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.person),
+                label: Text("Profile"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.calendar_today),
+                label: Text("Attendance"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.payment),
+                label: Text("Fees"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.book),
+                label: Text("Books"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.assessment),
+                label: Text("Exams"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.report),
+                label: Text("Complaints"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.work),
+                label: Text("Jobs"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.chat),
+                label: Text("Chats"),
+              ),
+            ],
+          ),
+
+          Expanded(
+            child: Container(
+              color: Colors.grey.shade100,
+              child: _pages[_selectedIndex],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+////////////////////////////////////////////////////////////
+/// HOME PAGE
+////////////////////////////////////////////////////////////
+
+class StudentHomePage extends StatelessWidget {
+  const StudentHomePage({super.key});
+
+  String greet() {
+    final h = DateTime.now().hour;
+    if (h < 12) return "Good Morning";
+    if (h < 17) return "Good Afternoon";
+    return "Good Evening";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "${greet()}, Student 👋",
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.blueAccent,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            "Explore jobs, chat with alumni & stay updated.",
+            style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+}

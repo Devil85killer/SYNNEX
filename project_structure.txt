@@ -1,0 +1,2555 @@
+Folder PATH listing for volume Acer
+Volume serial number is A26F-174D
+C:.
+¦   .flutter-plugins-dependencies
+¦   .gitignore
+¦   .metadata
+¦   analysis_options.yaml
+¦   college_app.iml
+¦   firebase.json
+¦   project_structure.txt
+¦   pubspec.lock
+¦   pubspec.yaml
+¦   README.md
+¦   
++---.dart_tool
+¦   ¦   package_config.json
+¦   ¦   package_graph.json
+¦   ¦   version
+¦   ¦   
+¦   +---dartpad
+¦           web_plugin_registrant.dart
+¦           
++---.idea
+¦   ¦   .gitignore
+¦   ¦   deviceManager.xml
+¦   ¦   markdown.xml
+¦   ¦   modules.xml
+¦   ¦   workspace.xml
+¦   ¦   
+¦   +---caches
+¦   ¦       deviceStreaming.xml
+¦   ¦       
+¦   +---libraries
+¦   ¦       Dart_Packages.xml
+¦   ¦       Dart_SDK.xml
+¦   ¦       Flutter_Plugins.xml
+¦   ¦       KotlinJavaRuntime.xml
+¦   ¦       
+¦   +---runConfigurations
+¦           main_dart.xml
+¦           
++---android
+¦   ¦   .gitignore
+¦   ¦   build.gradle.kts
+¦   ¦   college_app_android.iml
+¦   ¦   gradle.properties
+¦   ¦   gradlew
+¦   ¦   gradlew.bat
+¦   ¦   local.properties
+¦   ¦   settings.gradle.kts
+¦   ¦   
+¦   +---.gradle
+¦   ¦   ¦   config.properties
+¦   ¦   ¦   file-system.probe
+¦   ¦   ¦   
+¦   ¦   +---8.12
+¦   ¦   ¦   ¦   gc.properties
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---checksums
+¦   ¦   ¦   ¦       checksums.lock
+¦   ¦   ¦   ¦       md5-checksums.bin
+¦   ¦   ¦   ¦       sha1-checksums.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---executionHistory
+¦   ¦   ¦   ¦       executionHistory.bin
+¦   ¦   ¦   ¦       executionHistory.lock
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---expanded
+¦   ¦   ¦   +---fileChanges
+¦   ¦   ¦   ¦       last-build.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---fileHashes
+¦   ¦   ¦   ¦       fileHashes.bin
+¦   ¦   ¦   ¦       fileHashes.lock
+¦   ¦   ¦   ¦       resourceHashesCache.bin
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---vcsMetadata
+¦   ¦   +---buildOutputCleanup
+¦   ¦   ¦       buildOutputCleanup.lock
+¦   ¦   ¦       cache.properties
+¦   ¦   ¦       outputFiles.bin
+¦   ¦   ¦       
+¦   ¦   +---noVersion
+¦   ¦   ¦       buildLogic.lock
+¦   ¦   ¦       
+¦   ¦   +---vcs-1
+¦   ¦           gc.properties
+¦   ¦           
+¦   +---.idea
+¦   ¦   ¦   .gitignore
+¦   ¦   ¦   AndroidProjectSystem.xml
+¦   ¦   ¦   compiler.xml
+¦   ¦   ¦   deploymentTargetSelector.xml
+¦   ¦   ¦   gradle.xml
+¦   ¦   ¦   kotlinc.xml
+¦   ¦   ¦   migrations.xml
+¦   ¦   ¦   misc.xml
+¦   ¦   ¦   runConfigurations.xml
+¦   ¦   ¦   workspace.xml
+¦   ¦   ¦   
+¦   ¦   +---caches
+¦   ¦           deviceStreaming.xml
+¦   ¦           
+¦   +---.kotlin
+¦   ¦   +---sessions
+¦   +---app
+¦   ¦   ¦   build.gradle.kts
+¦   ¦   ¦   google-services.json
+¦   ¦   ¦   
+¦   ¦   +---src
+¦   ¦       +---debug
+¦   ¦       ¦       AndroidManifest.xml
+¦   ¦       ¦       
+¦   ¦       +---main
+¦   ¦       ¦   ¦   AndroidManifest.xml
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---java
+¦   ¦       ¦   ¦   +---io
+¦   ¦       ¦   ¦       +---flutter
+¦   ¦       ¦   ¦           +---plugins
+¦   ¦       ¦   ¦                   GeneratedPluginRegistrant.java
+¦   ¦       ¦   ¦                   
+¦   ¦       ¦   +---kotlin
+¦   ¦       ¦   ¦   +---com
+¦   ¦       ¦   ¦       +---example
+¦   ¦       ¦   ¦           +---college_app
+¦   ¦       ¦   ¦               ¦   college_app.iml
+¦   ¦       ¦   ¦               ¦   MainActivity.kt
+¦   ¦       ¦   ¦               ¦   
+¦   ¦       ¦   ¦               +---.idea
+¦   ¦       ¦   ¦                   ¦   .gitignore
+¦   ¦       ¦   ¦                   ¦   misc.xml
+¦   ¦       ¦   ¦                   ¦   modules.xml
+¦   ¦       ¦   ¦                   ¦   workspace.xml
+¦   ¦       ¦   ¦                   ¦   
+¦   ¦       ¦   ¦                   +---caches
+¦   ¦       ¦   ¦                           deviceStreaming.xml
+¦   ¦       ¦   ¦                           
+¦   ¦       ¦   +---res
+¦   ¦       ¦       +---drawable
+¦   ¦       ¦       ¦       launch_background.xml
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---drawable-v21
+¦   ¦       ¦       ¦       launch_background.xml
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-hdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-mdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-xhdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-xxhdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---mipmap-xxxhdpi
+¦   ¦       ¦       ¦       ic_launcher.png
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---values
+¦   ¦       ¦       ¦       styles.xml
+¦   ¦       ¦       ¦       
+¦   ¦       ¦       +---values-night
+¦   ¦       ¦               styles.xml
+¦   ¦       ¦               
+¦   ¦       +---profile
+¦   ¦               AndroidManifest.xml
+¦   ¦               
+¦   +---build
+¦   ¦   +---reports
+¦   ¦       +---problems
+¦   ¦               problems-report.html
+¦   ¦               
+¦   +---gradle
+¦       +---wrapper
+¦               gradle-wrapper.jar
+¦               gradle-wrapper.properties
+¦               
++---assets
+¦   +---icons
+¦   +---images
+¦           alumni_default.png
+¦           
++---build
+¦   +---d743e8ada5a945392f43c073c985425a
+¦   ¦       gen_dart_plugin_registrant.stamp
+¦   ¦       gen_localizations.stamp
+¦   ¦       _composite.stamp
+¦   ¦       
+¦   +---flutter_assets
+¦       ¦   AssetManifest.bin
+¦       ¦   AssetManifest.bin.json
+¦       ¦   AssetManifest.json
+¦       ¦   FontManifest.json
+¦       ¦   NOTICES
+¦       ¦   
+¦       +---fonts
+¦       ¦       MaterialIcons-Regular.otf
+¦       ¦       
+¦       +---packages
+¦       ¦   +---cupertino_icons
+¦       ¦       +---assets
+¦       ¦               CupertinoIcons.ttf
+¦       ¦               
+¦       +---shaders
+¦               ink_sparkle.frag
+¦               
++---ios
+¦   ¦   .gitignore
+¦   ¦   
+¦   +---Flutter
+¦   ¦   ¦   AppFrameworkInfo.plist
+¦   ¦   ¦   Debug.xcconfig
+¦   ¦   ¦   flutter_export_environment.sh
+¦   ¦   ¦   Generated.xcconfig
+¦   ¦   ¦   Release.xcconfig
+¦   ¦   ¦   
+¦   ¦   +---ephemeral
+¦   ¦           flutter_lldbinit
+¦   ¦           flutter_lldb_helper.py
+¦   ¦           
+¦   +---Runner
+¦   ¦   ¦   AppDelegate.swift
+¦   ¦   ¦   GeneratedPluginRegistrant.h
+¦   ¦   ¦   GeneratedPluginRegistrant.m
+¦   ¦   ¦   Info.plist
+¦   ¦   ¦   Runner-Bridging-Header.h
+¦   ¦   ¦   
+¦   ¦   +---Assets.xcassets
+¦   ¦   ¦   +---AppIcon.appiconset
+¦   ¦   ¦   ¦       Contents.json
+¦   ¦   ¦   ¦       Icon-App-1024x1024@1x.png
+¦   ¦   ¦   ¦       Icon-App-20x20@1x.png
+¦   ¦   ¦   ¦       Icon-App-20x20@2x.png
+¦   ¦   ¦   ¦       Icon-App-20x20@3x.png
+¦   ¦   ¦   ¦       Icon-App-29x29@1x.png
+¦   ¦   ¦   ¦       Icon-App-29x29@2x.png
+¦   ¦   ¦   ¦       Icon-App-29x29@3x.png
+¦   ¦   ¦   ¦       Icon-App-40x40@1x.png
+¦   ¦   ¦   ¦       Icon-App-40x40@2x.png
+¦   ¦   ¦   ¦       Icon-App-40x40@3x.png
+¦   ¦   ¦   ¦       Icon-App-60x60@2x.png
+¦   ¦   ¦   ¦       Icon-App-60x60@3x.png
+¦   ¦   ¦   ¦       Icon-App-76x76@1x.png
+¦   ¦   ¦   ¦       Icon-App-76x76@2x.png
+¦   ¦   ¦   ¦       Icon-App-83.5x83.5@2x.png
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---LaunchImage.imageset
+¦   ¦   ¦           Contents.json
+¦   ¦   ¦           LaunchImage.png
+¦   ¦   ¦           LaunchImage@2x.png
+¦   ¦   ¦           LaunchImage@3x.png
+¦   ¦   ¦           README.md
+¦   ¦   ¦           
+¦   ¦   +---Base.lproj
+¦   ¦           LaunchScreen.storyboard
+¦   ¦           Main.storyboard
+¦   ¦           
+¦   +---Runner.xcodeproj
+¦   ¦   ¦   project.pbxproj
+¦   ¦   ¦   
+¦   ¦   +---project.xcworkspace
+¦   ¦   ¦   ¦   contents.xcworkspacedata
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---xcshareddata
+¦   ¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦   ¦           WorkspaceSettings.xcsettings
+¦   ¦   ¦           
+¦   ¦   +---xcshareddata
+¦   ¦       +---xcschemes
+¦   ¦               Runner.xcscheme
+¦   ¦               
+¦   +---Runner.xcworkspace
+¦   ¦   ¦   contents.xcworkspacedata
+¦   ¦   ¦   
+¦   ¦   +---xcshareddata
+¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦           WorkspaceSettings.xcsettings
+¦   ¦           
+¦   +---RunnerTests
+¦           RunnerTests.swift
+¦           
++---lib
+¦   ¦   firebase_options.dart
+¦   ¦   main.dart
+¦   ¦   role_selection.dart
+¦   ¦   welcome_screen.dart
+¦   ¦   
+¦   +---assets
+¦   ¦   +---icons
+¦   ¦   +---images
+¦   +---constants
+¦   ¦       colors.dart
+¦   ¦       icons.dart
+¦   ¦       strings.dart
+¦   ¦       styles.dart
+¦   ¦       
+¦   +---providers
+¦   ¦       alumni_provider.dart
+¦   ¦       
+¦   +---screens
+¦   ¦   +---accounts_department
+¦   ¦   ¦       accounts_update_profile.dart
+¦   ¦   ¦       account_complaints.dart
+¦   ¦   ¦       account_dashboard.dart
+¦   ¦   ¦       account_fee.dart
+¦   ¦   ¦       account_login.dart
+¦   ¦   ¦       account_register.dart
+¦   ¦   ¦       account_staff.dart
+¦   ¦   ¦       account_transaction.dart
+¦   ¦   ¦       
+¦   ¦   +---admin
+¦   ¦   ¦   ¦   admin_all_alumni.dart
+¦   ¦   ¦   ¦   admin_all_jobs.dart
+¦   ¦   ¦   ¦   admin_call_logs.dart
+¦   ¦   ¦   ¦   admin_chat_list.dart
+¦   ¦   ¦   ¦   admin_chat_room.dart
+¦   ¦   ¦   ¦   admin_dashboard.dart
+¦   ¦   ¦   ¦   admin_login.dart
+¦   ¦   ¦   ¦   attendance_management.dart
+¦   ¦   ¦   ¦   complaints.dart
+¦   ¦   ¦   ¦   logout_page.dart
+¦   ¦   ¦   ¦   routine_management.dart
+¦   ¦   ¦   ¦   student_approval.dart
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---manage_courses
+¦   ¦   ¦   ¦   ¦   manage_courses.dart
+¦   ¦   ¦   ¦   ¦   
+¦   ¦   ¦   ¦   +---branches
+¦   ¦   ¦   ¦           branch_list.dart
+¦   ¦   ¦   ¦           section_list.dart
+¦   ¦   ¦   ¦           student_year_list.dart
+¦   ¦   ¦   ¦           teacher_list.dart
+¦   ¦   ¦   ¦           year_students.dart
+¦   ¦   ¦   ¦           
+¦   ¦   ¦   +---manage_departments
+¦   ¦   ¦           accounts_department.dart
+¦   ¦   ¦           department_staff.dart
+¦   ¦   ¦           exam_department.dart
+¦   ¦   ¦           hod_list.dart
+¦   ¦   ¦           library_department.dart
+¦   ¦   ¦           manage_departments.dart
+¦   ¦   ¦           
+¦   ¦   +---alumni
+¦   ¦   ¦       alumni_call_page.dart
+¦   ¦   ¦       alumni_chat_list.dart
+¦   ¦   ¦       alumni_chat_room.dart
+¦   ¦   ¦       alumni_dashboard.dart
+¦   ¦   ¦       alumni_job_applicants.dart
+¦   ¦   ¦       alumni_login.dart
+¦   ¦   ¦       alumni_my_jobs.dart
+¦   ¦   ¦       alumni_post_job.dart
+¦   ¦   ¦       alumni_profile.dart
+¦   ¦   ¦       alumni_register.dart
+¦   ¦   ¦       alumni_update_profile.dart
+¦   ¦   ¦       
+¦   ¦   +---common
+¦   ¦   ¦       custom_button.dart
+¦   ¦   ¦       custom_input.dart
+¦   ¦   ¦       side_menu.dart
+¦   ¦   ¦       topbar.dart
+¦   ¦   ¦       
+¦   ¦   +---department
+¦   ¦   ¦       department_login.dart
+¦   ¦   ¦       
+¦   ¦   +---exam_department
+¦   ¦   ¦       exam_dashboard.dart
+¦   ¦   ¦       exam_login.dart
+¦   ¦   ¦       exam_notices.dart
+¦   ¦   ¦       exam_register.dart
+¦   ¦   ¦       exam_reports.dart
+¦   ¦   ¦       exam_results.dart
+¦   ¦   ¦       exam_schedule.dart
+¦   ¦   ¦       exam_update_profile.dart
+¦   ¦   ¦       
+¦   ¦   +---hod
+¦   ¦   ¦   ¦   hod_login.dart
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---accounts_hod
+¦   ¦   ¦   ¦       accounts_hod_dashboard.dart
+¦   ¦   ¦   ¦       add_fine.dart
+¦   ¦   ¦   ¦       fee_structure.dart
+¦   ¦   ¦   ¦       student_fee_status.dart
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---exam_hod
+¦   ¦   ¦   ¦       add_marks.dart
+¦   ¦   ¦   ¦       exam_hod_dashboard.dart
+¦   ¦   ¦   ¦       exam_schedule.dart
+¦   ¦   ¦   ¦       report_generation.dart
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---library_hod
+¦   ¦   ¦           add_book.dart
+¦   ¦   ¦           issue_books.dart
+¦   ¦   ¦           library_hod_dashboard.dart
+¦   ¦   ¦           return_books.dart
+¦   ¦   ¦           view_issued_books.dart
+¦   ¦   ¦           
+¦   ¦   +---library_department
+¦   ¦   ¦       library_addbook.dart
+¦   ¦   ¦       library_books.dart
+¦   ¦   ¦       library_dashboard.dart
+¦   ¦   ¦       library_issued.dart
+¦   ¦   ¦       library_login.dart
+¦   ¦   ¦       library_register.dart
+¦   ¦   ¦       library_students.dart
+¦   ¦   ¦       library_update_profile.dart
+¦   ¦   ¦       
+¦   ¦   +---teacher
+¦   ¦   ¦       teacher_all_jobs.dart
+¦   ¦   ¦       teacher_applied_students.dart
+¦   ¦   ¦       teacher_attendance.dart
+¦   ¦   ¦       teacher_books.dart
+¦   ¦   ¦       teacher_chat_list.dart
+¦   ¦   ¦       teacher_chat_room.dart
+¦   ¦   ¦       teacher_dashboard.dart
+¦   ¦   ¦       teacher_job_detail.dart
+¦   ¦   ¦       teacher_login.dart
+¦   ¦   ¦       teacher_profile.dart
+¦   ¦   ¦       teacher_register.dart
+¦   ¦   ¦       teacher_routine.dart
+¦   ¦   ¦       teacher_update_profile.dart
+¦   ¦   ¦       
+¦   ¦   +---teacher_hod
+¦   ¦           hod_attendance_page.dart
+¦   ¦           hod_dashboard.dart
+¦   ¦           hod_notice_page.dart
+¦   ¦           hod_routine_manager.dart
+¦   ¦           hod_students_page.dart
+¦   ¦           hod_view_students.dart
+¦   ¦           
+¦   +---services
+¦   ¦   ¦   admin_service.dart
+¦   ¦   ¦   auth_service.dart
+¦   ¦   ¦   firebase_service.dart
+¦   ¦   ¦   firestore_service.dart
+¦   ¦   ¦   
+¦   ¦   +---alumni
+¦   ¦           alumni_service.dart
+¦   ¦           call_service.dart
+¦   ¦           chat_service.dart
+¦   ¦           job_service.dart
+¦   ¦           
+¦   +---student
+¦   ¦       student_attendance.dart
+¦   ¦       student_books.dart
+¦   ¦       student_chat_list.dart
+¦   ¦       student_chat_room.dart
+¦   ¦       student_complaints.dart
+¦   ¦       student_dashboard.dart
+¦   ¦       student_exam_reports.dart
+¦   ¦       student_fees.dart
+¦   ¦       student_forgot_password.dart
+¦   ¦       student_job_detail.dart
+¦   ¦       student_job_feed.dart
+¦   ¦       student_login.dart
+¦   ¦       student_profile_view.dart
+¦   ¦       student_redirect_handler.dart
+¦   ¦       student_register.dart
+¦   ¦       student_routine.dart
+¦   ¦       student_side_menu.dart
+¦   ¦       student_update_profile.dart
+¦   ¦       
+¦   +---widgets
+¦       ¦   common_textfield.dart
+¦       ¦   
+¦       +---alumni
+¦               alumni_card.dart
+¦               call_button.dart
+¦               job_card.dart
+¦               message_bubble.dart
+¦               
++---linux
+¦   ¦   .gitignore
+¦   ¦   CMakeLists.txt
+¦   ¦   
+¦   +---flutter
+¦   ¦   ¦   CMakeLists.txt
+¦   ¦   ¦   generated_plugins.cmake
+¦   ¦   ¦   generated_plugin_registrant.cc
+¦   ¦   ¦   generated_plugin_registrant.h
+¦   ¦   ¦   
+¦   ¦   +---ephemeral
+¦   ¦       +---.plugin_symlinks
+¦   ¦           +---file_selector_linux
+¦   ¦           ¦   ¦   AUTHORS
+¦   ¦           ¦   ¦   CHANGELOG.md
+¦   ¦           ¦   ¦   LICENSE
+¦   ¦           ¦   ¦   pubspec.yaml
+¦   ¦           ¦   ¦   README.md
+¦   ¦           ¦   ¦   
+¦   ¦           ¦   +---example
+¦   ¦           ¦   ¦   ¦   pubspec.yaml
+¦   ¦           ¦   ¦   ¦   README.md
+¦   ¦           ¦   ¦   ¦   
+¦   ¦           ¦   ¦   +---lib
+¦   ¦           ¦   ¦   ¦       get_directory_page.dart
+¦   ¦           ¦   ¦   ¦       get_multiple_directories_page.dart
+¦   ¦           ¦   ¦   ¦       home_page.dart
+¦   ¦           ¦   ¦   ¦       main.dart
+¦   ¦           ¦   ¦   ¦       open_image_page.dart
+¦   ¦           ¦   ¦   ¦       open_multiple_images_page.dart
+¦   ¦           ¦   ¦   ¦       open_text_page.dart
+¦   ¦           ¦   ¦   ¦       save_text_page.dart
+¦   ¦           ¦   ¦   ¦       
+¦   ¦           ¦   ¦   +---linux
+¦   ¦           ¦   ¦       ¦   CMakeLists.txt
+¦   ¦           ¦   ¦       ¦   main.cc
+¦   ¦           ¦   ¦       ¦   my_application.cc
+¦   ¦           ¦   ¦       ¦   my_application.h
+¦   ¦           ¦   ¦       ¦   
+¦   ¦           ¦   ¦       +---flutter
+¦   ¦           ¦   ¦               CMakeLists.txt
+¦   ¦           ¦   ¦               generated_plugins.cmake
+¦   ¦           ¦   ¦               
+¦   ¦           ¦   +---lib
+¦   ¦           ¦   ¦   ¦   file_selector_linux.dart
+¦   ¦           ¦   ¦   ¦   
+¦   ¦           ¦   ¦   +---src
+¦   ¦           ¦   ¦           messages.g.dart
+¦   ¦           ¦   ¦           
+¦   ¦           ¦   +---linux
+¦   ¦           ¦   ¦   ¦   CMakeLists.txt
+¦   ¦           ¦   ¦   ¦   file_selector_plugin.cc
+¦   ¦           ¦   ¦   ¦   file_selector_plugin_private.h
+¦   ¦           ¦   ¦   ¦   messages.g.cc
+¦   ¦           ¦   ¦   ¦   messages.g.h
+¦   ¦           ¦   ¦   ¦   
+¦   ¦           ¦   ¦   +---include
+¦   ¦           ¦   ¦   ¦   +---file_selector_linux
+¦   ¦           ¦   ¦   ¦           file_selector_plugin.h
+¦   ¦           ¦   ¦   ¦           
+¦   ¦           ¦   ¦   +---test
+¦   ¦           ¦   ¦           file_selector_plugin_test.cc
+¦   ¦           ¦   ¦           test_main.cc
+¦   ¦           ¦   ¦           
+¦   ¦           ¦   +---pigeons
+¦   ¦           ¦   ¦       copyright.txt
+¦   ¦           ¦   ¦       messages.dart
+¦   ¦           ¦   ¦       
+¦   ¦           ¦   +---test
+¦   ¦           ¦           file_selector_linux_test.dart
+¦   ¦           ¦           
+¦   ¦           +---image_picker_linux
+¦   ¦           ¦   ¦   AUTHORS
+¦   ¦           ¦   ¦   CHANGELOG.md
+¦   ¦           ¦   ¦   LICENSE
+¦   ¦           ¦   ¦   pubspec.yaml
+¦   ¦           ¦   ¦   README.md
+¦   ¦           ¦   ¦   
+¦   ¦           ¦   +---example
+¦   ¦           ¦   ¦   ¦   pubspec.yaml
+¦   ¦           ¦   ¦   ¦   README.md
+¦   ¦           ¦   ¦   ¦   
+¦   ¦           ¦   ¦   +---lib
+¦   ¦           ¦   ¦   ¦       main.dart
+¦   ¦           ¦   ¦   ¦       
+¦   ¦           ¦   ¦   +---linux
+¦   ¦           ¦   ¦       ¦   CMakeLists.txt
+¦   ¦           ¦   ¦       ¦   main.cc
+¦   ¦           ¦   ¦       ¦   my_application.cc
+¦   ¦           ¦   ¦       ¦   my_application.h
+¦   ¦           ¦   ¦       ¦   
+¦   ¦           ¦   ¦       +---flutter
+¦   ¦           ¦   ¦               CMakeLists.txt
+¦   ¦           ¦   ¦               generated_plugins.cmake
+¦   ¦           ¦   ¦               
+¦   ¦           ¦   +---lib
+¦   ¦           ¦   ¦       image_picker_linux.dart
+¦   ¦           ¦   ¦       
+¦   ¦           ¦   +---test
+¦   ¦           ¦           image_picker_linux_test.dart
+¦   ¦           ¦           image_picker_linux_test.mocks.dart
+¦   ¦           ¦           
+¦   ¦           +---path_provider_linux
+¦   ¦           ¦   ¦   AUTHORS
+¦   ¦           ¦   ¦   CHANGELOG.md
+¦   ¦           ¦   ¦   LICENSE
+¦   ¦           ¦   ¦   pubspec.yaml
+¦   ¦           ¦   ¦   README.md
+¦   ¦           ¦   ¦   
+¦   ¦           ¦   +---example
+¦   ¦           ¦   ¦   ¦   pubspec.yaml
+¦   ¦           ¦   ¦   ¦   README.md
+¦   ¦           ¦   ¦   ¦   
+¦   ¦           ¦   ¦   +---integration_test
+¦   ¦           ¦   ¦   ¦       path_provider_test.dart
+¦   ¦           ¦   ¦   ¦       
+¦   ¦           ¦   ¦   +---lib
+¦   ¦           ¦   ¦   ¦       main.dart
+¦   ¦           ¦   ¦   ¦       
+¦   ¦           ¦   ¦   +---linux
+¦   ¦           ¦   ¦   ¦   ¦   CMakeLists.txt
+¦   ¦           ¦   ¦   ¦   ¦   main.cc
+¦   ¦           ¦   ¦   ¦   ¦   my_application.cc
+¦   ¦           ¦   ¦   ¦   ¦   my_application.h
+¦   ¦           ¦   ¦   ¦   ¦   
+¦   ¦           ¦   ¦   ¦   +---flutter
+¦   ¦           ¦   ¦   ¦           CMakeLists.txt
+¦   ¦           ¦   ¦   ¦           generated_plugins.cmake
+¦   ¦           ¦   ¦   ¦           
+¦   ¦           ¦   ¦   +---test_driver
+¦   ¦           ¦   ¦           integration_test.dart
+¦   ¦           ¦   ¦           
+¦   ¦           ¦   +---lib
+¦   ¦           ¦   ¦   ¦   path_provider_linux.dart
+¦   ¦           ¦   ¦   ¦   
+¦   ¦           ¦   ¦   +---src
+¦   ¦           ¦   ¦           get_application_id.dart
+¦   ¦           ¦   ¦           get_application_id_real.dart
+¦   ¦           ¦   ¦           get_application_id_stub.dart
+¦   ¦           ¦   ¦           path_provider_linux.dart
+¦   ¦           ¦   ¦           
+¦   ¦           ¦   +---test
+¦   ¦           ¦           get_application_id_test.dart
+¦   ¦           ¦           path_provider_linux_test.dart
+¦   ¦           ¦           
+¦   ¦           +---url_launcher_linux
+¦   ¦               ¦   AUTHORS
+¦   ¦               ¦   CHANGELOG.md
+¦   ¦               ¦   LICENSE
+¦   ¦               ¦   pubspec.yaml
+¦   ¦               ¦   README.md
+¦   ¦               ¦   
+¦   ¦               +---example
+¦   ¦               ¦   ¦   pubspec.yaml
+¦   ¦               ¦   ¦   README.md
+¦   ¦               ¦   ¦   
+¦   ¦               ¦   +---integration_test
+¦   ¦               ¦   ¦       url_launcher_test.dart
+¦   ¦               ¦   ¦       
+¦   ¦               ¦   +---lib
+¦   ¦               ¦   ¦       main.dart
+¦   ¦               ¦   ¦       
+¦   ¦               ¦   +---linux
+¦   ¦               ¦   ¦   ¦   CMakeLists.txt
+¦   ¦               ¦   ¦   ¦   main.cc
+¦   ¦               ¦   ¦   ¦   my_application.cc
+¦   ¦               ¦   ¦   ¦   my_application.h
+¦   ¦               ¦   ¦   ¦   
+¦   ¦               ¦   ¦   +---flutter
+¦   ¦               ¦   ¦           CMakeLists.txt
+¦   ¦               ¦   ¦           generated_plugins.cmake
+¦   ¦               ¦   ¦           
+¦   ¦               ¦   +---test_driver
+¦   ¦               ¦           integration_test.dart
+¦   ¦               ¦           
+¦   ¦               +---lib
+¦   ¦               ¦   ¦   url_launcher_linux.dart
+¦   ¦               ¦   ¦   
+¦   ¦               ¦   +---src
+¦   ¦               ¦           messages.g.dart
+¦   ¦               ¦           
+¦   ¦               +---linux
+¦   ¦               ¦   ¦   CMakeLists.txt
+¦   ¦               ¦   ¦   messages.g.cc
+¦   ¦               ¦   ¦   messages.g.h
+¦   ¦               ¦   ¦   url_launcher_plugin.cc
+¦   ¦               ¦   ¦   url_launcher_plugin_private.h
+¦   ¦               ¦   ¦   
+¦   ¦               ¦   +---include
+¦   ¦               ¦   ¦   +---url_launcher_linux
+¦   ¦               ¦   ¦           url_launcher_plugin.h
+¦   ¦               ¦   ¦           
+¦   ¦               ¦   +---test
+¦   ¦               ¦           url_launcher_linux_test.cc
+¦   ¦               ¦           
+¦   ¦               +---pigeons
+¦   ¦               ¦       copyright.txt
+¦   ¦               ¦       messages.dart
+¦   ¦               ¦       
+¦   ¦               +---test
+¦   ¦                       url_launcher_linux_test.dart
+¦   ¦                       
+¦   +---runner
+¦           CMakeLists.txt
+¦           main.cc
+¦           my_application.cc
+¦           my_application.h
+¦           
++---macos
+¦   ¦   .gitignore
+¦   ¦   
+¦   +---Flutter
+¦   ¦   ¦   Flutter-Debug.xcconfig
+¦   ¦   ¦   Flutter-Release.xcconfig
+¦   ¦   ¦   GeneratedPluginRegistrant.swift
+¦   ¦   ¦   
+¦   ¦   +---ephemeral
+¦   ¦           Flutter-Generated.xcconfig
+¦   ¦           flutter_export_environment.sh
+¦   ¦           
+¦   +---Runner
+¦   ¦   ¦   AppDelegate.swift
+¦   ¦   ¦   DebugProfile.entitlements
+¦   ¦   ¦   Info.plist
+¦   ¦   ¦   MainFlutterWindow.swift
+¦   ¦   ¦   Release.entitlements
+¦   ¦   ¦   
+¦   ¦   +---Assets.xcassets
+¦   ¦   ¦   +---AppIcon.appiconset
+¦   ¦   ¦           app_icon_1024.png
+¦   ¦   ¦           app_icon_128.png
+¦   ¦   ¦           app_icon_16.png
+¦   ¦   ¦           app_icon_256.png
+¦   ¦   ¦           app_icon_32.png
+¦   ¦   ¦           app_icon_512.png
+¦   ¦   ¦           app_icon_64.png
+¦   ¦   ¦           Contents.json
+¦   ¦   ¦           
+¦   ¦   +---Base.lproj
+¦   ¦   ¦       MainMenu.xib
+¦   ¦   ¦       
+¦   ¦   +---Configs
+¦   ¦           AppInfo.xcconfig
+¦   ¦           Debug.xcconfig
+¦   ¦           Release.xcconfig
+¦   ¦           Warnings.xcconfig
+¦   ¦           
+¦   +---Runner.xcodeproj
+¦   ¦   ¦   project.pbxproj
+¦   ¦   ¦   
+¦   ¦   +---project.xcworkspace
+¦   ¦   ¦   +---xcshareddata
+¦   ¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦   ¦           
+¦   ¦   +---xcshareddata
+¦   ¦       +---xcschemes
+¦   ¦               Runner.xcscheme
+¦   ¦               
+¦   +---Runner.xcworkspace
+¦   ¦   ¦   contents.xcworkspacedata
+¦   ¦   ¦   
+¦   ¦   +---xcshareddata
+¦   ¦           IDEWorkspaceChecks.plist
+¦   ¦           
+¦   +---RunnerTests
+¦           RunnerTests.swift
+¦           
++---test
+¦       widget_test.dart
+¦       
++---web
+¦   ¦   favicon.png
+¦   ¦   index.html
+¦   ¦   manifest.json
+¦   ¦   
+¦   +---icons
+¦           Icon-192.png
+¦           Icon-512.png
+¦           Icon-maskable-192.png
+¦           Icon-maskable-512.png
+¦           
++---windows
+    ¦   .gitignore
+    ¦   CMakeLists.txt
+    ¦   
+    +---flutter
+    ¦   ¦   CMakeLists.txt
+    ¦   ¦   generated_plugins.cmake
+    ¦   ¦   generated_plugin_registrant.cc
+    ¦   ¦   generated_plugin_registrant.h
+    ¦   ¦   
+    ¦   +---ephemeral
+    ¦       +---.plugin_symlinks
+    ¦           +---cloud_firestore
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---android
+    ¦           ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   local-config.gradle
+    ¦           ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   user-agent.gradle
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦       +---main
+    ¦           ¦   ¦           ¦   AndroidManifest.xml
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---java
+    ¦           ¦   ¦               +---io
+    ¦           ¦   ¦                   +---flutter
+    ¦           ¦   ¦                       +---plugins
+    ¦           ¦   ¦                           +---firebase
+    ¦           ¦   ¦                               +---firestore
+    ¦           ¦   ¦                                   ¦   FlutterFirebaseFirestoreException.java
+    ¦           ¦   ¦                                   ¦   FlutterFirebaseFirestoreExtension.java
+    ¦           ¦   ¦                                   ¦   FlutterFirebaseFirestoreMessageCodec.java
+    ¦           ¦   ¦                                   ¦   FlutterFirebaseFirestorePlugin.java
+    ¦           ¦   ¦                                   ¦   FlutterFirebaseFirestoreRegistrar.java
+    ¦           ¦   ¦                                   ¦   FlutterFirebaseFirestoreTransactionResult.java
+    ¦           ¦   ¦                                   ¦   GeneratedAndroidFirebaseFirestore.java
+    ¦           ¦   ¦                                   ¦   
+    ¦           ¦   ¦                                   +---streamhandler
+    ¦           ¦   ¦                                   ¦       DocumentSnapshotsStreamHandler.java
+    ¦           ¦   ¦                                   ¦       LoadBundleStreamHandler.java
+    ¦           ¦   ¦                                   ¦       OnTransactionResultListener.java
+    ¦           ¦   ¦                                   ¦       QuerySnapshotsStreamHandler.java
+    ¦           ¦   ¦                                   ¦       SnapshotsInSyncStreamHandler.java
+    ¦           ¦   ¦                                   ¦       TransactionStreamHandler.java
+    ¦           ¦   ¦                                   ¦       
+    ¦           ¦   ¦                                   +---utils
+    ¦           ¦   ¦                                           ExceptionConverter.java
+    ¦           ¦   ¦                                           PigeonParser.java
+    ¦           ¦   ¦                                           ServerTimestampBehaviorConverter.java
+    ¦           ¦   ¦                                           
+    ¦           ¦   +---dartpad
+    ¦           ¦   ¦   ¦   dartpad_metadata.yaml
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦           main.dart
+    ¦           ¦   ¦           
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   analysis_options.yaml
+    ¦           ¦   ¦   ¦   firebase.json
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---android
+    ¦           ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---app
+    ¦           ¦   ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   ¦   google-services.json
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---src
+    ¦           ¦   ¦   ¦   ¦       +---debug
+    ¦           ¦   ¦   ¦   ¦       ¦       AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       +---main
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦       ¦   +---java
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   +---kotlin
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦               +---firebase
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                   +---firestore
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                       +---example
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                               MainActivity.kt
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                               
+    ¦           ¦   ¦   ¦   ¦       ¦   +---res
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable-v21
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-hdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-mdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values-night
+    ¦           ¦   ¦   ¦   ¦       ¦               styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦               
+    ¦           ¦   ¦   ¦   ¦       +---profile
+    ¦           ¦   ¦   ¦   ¦               AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---gradle
+    ¦           ¦   ¦   ¦       +---wrapper
+    ¦           ¦   ¦   ¦               gradle-wrapper.properties
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---integration_test
+    ¦           ¦   ¦   ¦       collection_reference_e2e.dart
+    ¦           ¦   ¦   ¦       document_change_e2e.dart
+    ¦           ¦   ¦   ¦       document_reference_e2e.dart
+    ¦           ¦   ¦   ¦       e2e_test.dart
+    ¦           ¦   ¦   ¦       field_value_e2e.dart
+    ¦           ¦   ¦   ¦       firebase_options.dart
+    ¦           ¦   ¦   ¦       firebase_options_secondary.dart
+    ¦           ¦   ¦   ¦       geo_point_e2e.dart
+    ¦           ¦   ¦   ¦       instance_e2e.dart
+    ¦           ¦   ¦   ¦       load_bundle_e2e.dart
+    ¦           ¦   ¦   ¦       query_e2e.dart
+    ¦           ¦   ¦   ¦       second_database.dart
+    ¦           ¦   ¦   ¦       settings_e2e.dart
+    ¦           ¦   ¦   ¦       snapshot_metadata_e2e.dart
+    ¦           ¦   ¦   ¦       timestamp_e2e.dart
+    ¦           ¦   ¦   ¦       transaction_e2e.dart
+    ¦           ¦   ¦   ¦       vector_value_e2e.dart
+    ¦           ¦   ¦   ¦       web_snapshot_listeners.dart
+    ¦           ¦   ¦   ¦       write_batch_e2e.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---ios
+    ¦           ¦   ¦   ¦   ¦   firebase_app_id_file.json
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       AppFrameworkInfo.plist
+    ¦           ¦   ¦   ¦   ¦       Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   GoogleService-Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Runner-Bridging-Header.h
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-1024x1024@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-60x60@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-60x60@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-76x76@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-76x76@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-83.5x83.5@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   ¦   +---LaunchImage.imageset
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage.png
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           README.md
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦           LaunchScreen.storyboard
+    ¦           ¦   ¦   ¦   ¦           Main.storyboard
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦       ¦   IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦       ¦   WorkspaceSettings.xcsettings
+    ¦           ¦   ¦   ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦       +---swiftpm
+    ¦           ¦   ¦   ¦   ¦   ¦           +---configuration
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦           ¦   IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦           ¦   WorkspaceSettings.xcsettings
+    ¦           ¦   ¦   ¦           ¦   
+    ¦           ¦   ¦   ¦           +---swiftpm
+    ¦           ¦   ¦   ¦               +---configuration
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       firebase_options.dart
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---macos
+    ¦           ¦   ¦   ¦   ¦   firebase_app_id_file.json
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       Flutter-Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Flutter-Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   DebugProfile.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   GoogleService-Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   MainFlutterWindow.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   Release.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_1024.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_128.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_16.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_256.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_32.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_512.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_64.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦   ¦       MainMenu.xib
+    ¦           ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   +---Configs
+    ¦           ¦   ¦   ¦   ¦           AppInfo.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Warnings.xcconfig
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦       ¦   IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦       +---swiftpm
+    ¦           ¦   ¦   ¦   ¦   ¦           +---configuration
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       ¦   IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦   ¦       +---swiftpm
+    ¦           ¦   ¦   ¦   ¦           +---configuration
+    ¦           ¦   ¦   ¦   +---RunnerTests
+    ¦           ¦   ¦   ¦           RunnerTests.swift
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---test_driver
+    ¦           ¦   ¦   ¦       integration_test.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---web
+    ¦           ¦   ¦   ¦   ¦   favicon.png
+    ¦           ¦   ¦   ¦   ¦   index.html
+    ¦           ¦   ¦   ¦   ¦   manifest.json
+    ¦           ¦   ¦   ¦   ¦   wasm_index.html
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---icons
+    ¦           ¦   ¦   ¦           Icon-192.png
+    ¦           ¦   ¦   ¦           Icon-512.png
+    ¦           ¦   ¦   ¦           Icon-maskable-192.png
+    ¦           ¦   ¦   ¦           Icon-maskable-512.png
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---ios
+    ¦           ¦   ¦   ¦   cloud_firestore.podspec
+    ¦           ¦   ¦   ¦   generated_firebase_sdk_version.txt
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---cloud_firestore
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---cloud_firestore
+    ¦           ¦   ¦               ¦   FirestoreMessages.g.m
+    ¦           ¦   ¦               ¦   FirestorePigeonParser.m
+    ¦           ¦   ¦               ¦   FLTDocumentSnapshotStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreExtension.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestorePlugin.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreReader.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreUtils.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreWriter.m
+    ¦           ¦   ¦               ¦   FLTLoadBundleStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTQuerySnapshotStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTSnapshotsInSyncStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTTransactionStreamHandler.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦   +---cloud_firestore
+    ¦           ¦   ¦               ¦       +---Private
+    ¦           ¦   ¦               ¦       ¦       FirestorePigeonParser.h
+    ¦           ¦   ¦               ¦       ¦       FLTDocumentSnapshotStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreExtension.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreReader.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreUtils.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreWriter.h
+    ¦           ¦   ¦               ¦       ¦       FLTLoadBundleStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTQuerySnapshotStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTSnapshotsInSyncStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTTransactionStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       
+    ¦           ¦   ¦               ¦       +---Public
+    ¦           ¦   ¦               ¦               CustomPigeonHeaderFirestore.h
+    ¦           ¦   ¦               ¦               FirestoreMessages.g.h
+    ¦           ¦   ¦               ¦               FLTFirebaseFirestorePlugin.h
+    ¦           ¦   ¦               ¦               
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---lib
+    ¦           ¦   ¦   ¦   cloud_firestore.dart
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦       ¦   aggregate_query.dart
+    ¦           ¦   ¦       ¦   aggregate_query_snapshot.dart
+    ¦           ¦   ¦       ¦   collection_reference.dart
+    ¦           ¦   ¦       ¦   document_change.dart
+    ¦           ¦   ¦       ¦   document_reference.dart
+    ¦           ¦   ¦       ¦   document_snapshot.dart
+    ¦           ¦   ¦       ¦   field_value.dart
+    ¦           ¦   ¦       ¦   filters.dart
+    ¦           ¦   ¦       ¦   firestore.dart
+    ¦           ¦   ¦       ¦   load_bundle_task.dart
+    ¦           ¦   ¦       ¦   load_bundle_task_snapshot.dart
+    ¦           ¦   ¦       ¦   persistent_cache_index_manager.dart
+    ¦           ¦   ¦       ¦   query.dart
+    ¦           ¦   ¦       ¦   query_document_snapshot.dart
+    ¦           ¦   ¦       ¦   query_snapshot.dart
+    ¦           ¦   ¦       ¦   snapshot_metadata.dart
+    ¦           ¦   ¦       ¦   transaction.dart
+    ¦           ¦   ¦       ¦   write_batch.dart
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---utils
+    ¦           ¦   ¦               codec_utility.dart
+    ¦           ¦   ¦               
+    ¦           ¦   +---macos
+    ¦           ¦   ¦   ¦   cloud_firestore.podspec
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---cloud_firestore
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---cloud_firestore
+    ¦           ¦   ¦               ¦   FirestoreMessages.g.m
+    ¦           ¦   ¦               ¦   FirestorePigeonParser.m
+    ¦           ¦   ¦               ¦   FLTDocumentSnapshotStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreExtension.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestorePlugin.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreReader.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreUtils.m
+    ¦           ¦   ¦               ¦   FLTFirebaseFirestoreWriter.m
+    ¦           ¦   ¦               ¦   FLTLoadBundleStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTQuerySnapshotStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTSnapshotsInSyncStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTTransactionStreamHandler.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦   +---cloud_firestore
+    ¦           ¦   ¦               ¦       +---Private
+    ¦           ¦   ¦               ¦       ¦       FirestorePigeonParser.h
+    ¦           ¦   ¦               ¦       ¦       FLTDocumentSnapshotStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreExtension.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreReader.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreUtils.h
+    ¦           ¦   ¦               ¦       ¦       FLTFirebaseFirestoreWriter.h
+    ¦           ¦   ¦               ¦       ¦       FLTLoadBundleStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTQuerySnapshotStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTSnapshotsInSyncStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       FLTTransactionStreamHandler.h
+    ¦           ¦   ¦               ¦       ¦       
+    ¦           ¦   ¦               ¦       +---Public
+    ¦           ¦   ¦               ¦               CustomPigeonHeaderFirestore.h
+    ¦           ¦   ¦               ¦               FirestoreMessages.g.h
+    ¦           ¦   ¦               ¦               FLTFirebaseFirestorePlugin.h
+    ¦           ¦   ¦               ¦               
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---test
+    ¦           ¦   ¦       cloud_firestore_test.dart
+    ¦           ¦   ¦       collection_reference_test.dart
+    ¦           ¦   ¦       field_value_test.dart
+    ¦           ¦   ¦       mock.dart
+    ¦           ¦   ¦       query_test.dart
+    ¦           ¦   ¦       test_firestore_message_codec.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---windows
+    ¦           ¦       ¦   cloud_firestore_plugin.cpp
+    ¦           ¦       ¦   cloud_firestore_plugin.h
+    ¦           ¦       ¦   cloud_firestore_plugin_c_api.cpp
+    ¦           ¦       ¦   CMakeLists.txt
+    ¦           ¦       ¦   firestore_codec.cpp
+    ¦           ¦       ¦   firestore_codec.h
+    ¦           ¦       ¦   messages.g.cpp
+    ¦           ¦       ¦   messages.g.h
+    ¦           ¦       ¦   plugin_version.h.in
+    ¦           ¦       ¦   
+    ¦           ¦       +---include
+    ¦           ¦       ¦   +---cloud_firestore
+    ¦           ¦       ¦           cloud_firestore_plugin_c_api.h
+    ¦           ¦       ¦           
+    ¦           ¦       +---test
+    ¦           ¦               cloud_firestore_plugin_test.cpp
+    ¦           ¦               
+    ¦           +---file_selector_windows
+    ¦           ¦   ¦   AUTHORS
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       get_directory_page.dart
+    ¦           ¦   ¦   ¦       get_multiple_directories_page.dart
+    ¦           ¦   ¦   ¦       home_page.dart
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       open_image_page.dart
+    ¦           ¦   ¦   ¦       open_multiple_images_page.dart
+    ¦           ¦   ¦   ¦       open_text_page.dart
+    ¦           ¦   ¦   ¦       save_text_page.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       generated_plugins.cmake
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---lib
+    ¦           ¦   ¦   ¦   file_selector_windows.dart
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦           messages.g.dart
+    ¦           ¦   ¦           
+    ¦           ¦   +---pigeons
+    ¦           ¦   ¦       copyright.txt
+    ¦           ¦   ¦       messages.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---test
+    ¦           ¦   ¦       file_selector_windows_test.dart
+    ¦           ¦   ¦       file_selector_windows_test.mocks.dart
+    ¦           ¦   ¦       test_api.g.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---windows
+    ¦           ¦       ¦   CMakeLists.txt
+    ¦           ¦       ¦   file_dialog_controller.cpp
+    ¦           ¦       ¦   file_dialog_controller.h
+    ¦           ¦       ¦   file_selector_plugin.cpp
+    ¦           ¦       ¦   file_selector_plugin.h
+    ¦           ¦       ¦   file_selector_windows.cpp
+    ¦           ¦       ¦   messages.g.cpp
+    ¦           ¦       ¦   messages.g.h
+    ¦           ¦       ¦   string_utils.cpp
+    ¦           ¦       ¦   string_utils.h
+    ¦           ¦       ¦   
+    ¦           ¦       +---include
+    ¦           ¦       ¦   +---file_selector_windows
+    ¦           ¦       ¦           file_selector_windows.h
+    ¦           ¦       ¦           
+    ¦           ¦       +---test
+    ¦           ¦               file_selector_plugin_test.cpp
+    ¦           ¦               test_file_dialog_controller.cpp
+    ¦           ¦               test_file_dialog_controller.h
+    ¦           ¦               test_main.cpp
+    ¦           ¦               test_utils.cpp
+    ¦           ¦               test_utils.h
+    ¦           ¦               
+    ¦           +---firebase_auth
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---android
+    ¦           ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   user-agent.gradle
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---gradle
+    ¦           ¦   ¦   ¦   +---wrapper
+    ¦           ¦   ¦   ¦           gradle-wrapper.properties
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦       +---main
+    ¦           ¦   ¦           ¦   AndroidManifest.xml
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---java
+    ¦           ¦   ¦               +---io
+    ¦           ¦   ¦                   +---flutter
+    ¦           ¦   ¦                       +---plugins
+    ¦           ¦   ¦                           +---firebase
+    ¦           ¦   ¦                               +---auth
+    ¦           ¦   ¦                                       AuthStateChannelStreamHandler.java
+    ¦           ¦   ¦                                       Constants.java
+    ¦           ¦   ¦                                       FlutterFirebaseAuthPlugin.java
+    ¦           ¦   ¦                                       FlutterFirebaseAuthPluginException.java
+    ¦           ¦   ¦                                       FlutterFirebaseAuthRegistrar.java
+    ¦           ¦   ¦                                       FlutterFirebaseAuthUser.java
+    ¦           ¦   ¦                                       FlutterFirebaseMultiFactor.java
+    ¦           ¦   ¦                                       FlutterFirebaseTotpMultiFactor.java
+    ¦           ¦   ¦                                       FlutterFirebaseTotpSecret.java
+    ¦           ¦   ¦                                       GeneratedAndroidFirebaseAuth.java
+    ¦           ¦   ¦                                       IdTokenChannelStreamHandler.java
+    ¦           ¦   ¦                                       PhoneNumberVerificationStreamHandler.java
+    ¦           ¦   ¦                                       PigeonParser.java
+    ¦           ¦   ¦                                       
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   analysis_options.yaml
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---android
+    ¦           ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---app
+    ¦           ¦   ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   ¦   google-services.json
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---src
+    ¦           ¦   ¦   ¦   ¦       +---debug
+    ¦           ¦   ¦   ¦   ¦       ¦       AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       +---main
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦       ¦   +---java
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   +---kotlin
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦               +---firebase
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                   +---auth
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                       +---example
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                               MainActivity.kt
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                               
+    ¦           ¦   ¦   ¦   ¦       ¦   +---res
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable-v21
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-hdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-mdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values-night
+    ¦           ¦   ¦   ¦   ¦       ¦               styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦               
+    ¦           ¦   ¦   ¦   ¦       +---profile
+    ¦           ¦   ¦   ¦   ¦               AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---gradle
+    ¦           ¦   ¦   ¦       +---wrapper
+    ¦           ¦   ¦   ¦               gradle-wrapper.properties
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---ios
+    ¦           ¦   ¦   ¦   ¦   firebase_app_id_file.json
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       AppFrameworkInfo.plist
+    ¦           ¦   ¦   ¦   ¦       Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.h
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.m
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   GoogleService-Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   main.m
+    ¦           ¦   ¦   ¦   ¦   ¦   Runner-Bridging-Header.h
+    ¦           ¦   ¦   ¦   ¦   ¦   Runner.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-1024x1024@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-60x60@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-60x60@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-76x76@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-76x76@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-83.5x83.5@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   ¦   +---LaunchImage.imageset
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage.png
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           README.md
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦           LaunchScreen.storyboard
+    ¦           ¦   ¦   ¦   ¦           Main.storyboard
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦           IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦           WorkspaceSettings.xcsettings
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦               IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦               WorkspaceSettings.xcsettings
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       auth.dart
+    ¦           ¦   ¦   ¦       firebase_options.dart
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       profile.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---macos
+    ¦           ¦   ¦   ¦   ¦   firebase_app_id_file.json
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       Flutter-Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Flutter-Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   DebugProfile.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   GoogleService-Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   MainFlutterWindow.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   Release.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_1024.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_128.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_16.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_256.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_32.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_512.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_64.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦   ¦       MainMenu.xib
+    ¦           ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   +---Configs
+    ¦           ¦   ¦   ¦   ¦           AppInfo.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Warnings.xcconfig
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦           IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦               IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦               WorkspaceSettings.xcsettings
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---web
+    ¦           ¦   ¦   ¦   ¦   favicon.png
+    ¦           ¦   ¦   ¦   ¦   index.html
+    ¦           ¦   ¦   ¦   ¦   manifest.json
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---icons
+    ¦           ¦   ¦   ¦           Icon-192.png
+    ¦           ¦   ¦   ¦           Icon-512.png
+    ¦           ¦   ¦   ¦           Icon-maskable-192.png
+    ¦           ¦   ¦   ¦           Icon-maskable-512.png
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---ios
+    ¦           ¦   ¦   ¦   firebase_auth.podspec
+    ¦           ¦   ¦   ¦   generated_firebase_sdk_version.txt
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---firebase_auth
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---firebase_auth
+    ¦           ¦   ¦               ¦   firebase_auth_messages.g.m
+    ¦           ¦   ¦               ¦   FLTAuthStateChannelStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTFirebaseAuthPlugin.m
+    ¦           ¦   ¦               ¦   FLTIdTokenChannelStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTPhoneNumberVerificationStreamHandler.m
+    ¦           ¦   ¦               ¦   PigeonParser.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦   +---Private
+    ¦           ¦   ¦               ¦   ¦       FLTAuthStateChannelStreamHandler.h
+    ¦           ¦   ¦               ¦   ¦       FLTIdTokenChannelStreamHandler.h
+    ¦           ¦   ¦               ¦   ¦       FLTPhoneNumberVerificationStreamHandler.h
+    ¦           ¦   ¦               ¦   ¦       PigeonParser.h
+    ¦           ¦   ¦               ¦   ¦       
+    ¦           ¦   ¦               ¦   +---Public
+    ¦           ¦   ¦               ¦           CustomPigeonHeader.h
+    ¦           ¦   ¦               ¦           firebase_auth_messages.g.h
+    ¦           ¦   ¦               ¦           FLTFirebaseAuthPlugin.h
+    ¦           ¦   ¦               ¦           
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---lib
+    ¦           ¦   ¦   ¦   firebase_auth.dart
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦           confirmation_result.dart
+    ¦           ¦   ¦           firebase_auth.dart
+    ¦           ¦   ¦           multi_factor.dart
+    ¦           ¦   ¦           recaptcha_verifier.dart
+    ¦           ¦   ¦           user.dart
+    ¦           ¦   ¦           user_credential.dart
+    ¦           ¦   ¦           
+    ¦           ¦   +---macos
+    ¦           ¦   ¦   ¦   firebase_auth.podspec
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---firebase_auth
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---firebase_auth
+    ¦           ¦   ¦               ¦   firebase_auth_messages.g.m
+    ¦           ¦   ¦               ¦   FLTAuthStateChannelStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTFirebaseAuthPlugin.m
+    ¦           ¦   ¦               ¦   FLTIdTokenChannelStreamHandler.m
+    ¦           ¦   ¦               ¦   FLTPhoneNumberVerificationStreamHandler.m
+    ¦           ¦   ¦               ¦   PigeonParser.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦   +---Private
+    ¦           ¦   ¦               ¦   ¦       FLTAuthStateChannelStreamHandler.h
+    ¦           ¦   ¦               ¦   ¦       FLTIdTokenChannelStreamHandler.h
+    ¦           ¦   ¦               ¦   ¦       FLTPhoneNumberVerificationStreamHandler.h
+    ¦           ¦   ¦               ¦   ¦       PigeonParser.h
+    ¦           ¦   ¦               ¦   ¦       
+    ¦           ¦   ¦               ¦   +---Public
+    ¦           ¦   ¦               ¦           CustomPigeonHeader.h
+    ¦           ¦   ¦               ¦           firebase_auth_messages.g.h
+    ¦           ¦   ¦               ¦           FLTFirebaseAuthPlugin.h
+    ¦           ¦   ¦               ¦           
+    ¦           ¦   ¦               +---Resource
+    ¦           ¦   +---test
+    ¦           ¦   ¦       firebase_auth_test.dart
+    ¦           ¦   ¦       mock.dart
+    ¦           ¦   ¦       user_test.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---windows
+    ¦           ¦       ¦   CMakeLists.txt
+    ¦           ¦       ¦   firebase_auth_plugin.cpp
+    ¦           ¦       ¦   firebase_auth_plugin.h
+    ¦           ¦       ¦   firebase_auth_plugin_c_api.cpp
+    ¦           ¦       ¦   messages.g.cpp
+    ¦           ¦       ¦   messages.g.h
+    ¦           ¦       ¦   plugin_version.h.in
+    ¦           ¦       ¦   
+    ¦           ¦       +---include
+    ¦           ¦       ¦   +---firebase_auth
+    ¦           ¦       ¦           firebase_auth_plugin_c_api.h
+    ¦           ¦       ¦           
+    ¦           ¦       +---test
+    ¦           ¦               firebase_auth_plugin_test.cpp
+    ¦           ¦               
+    ¦           +---firebase_core
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---android
+    ¦           ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   local-config.gradle
+    ¦           ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   user-agent.gradle
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---gradle
+    ¦           ¦   ¦   ¦   +---wrapper
+    ¦           ¦   ¦   ¦           gradle-wrapper.properties
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦       +---main
+    ¦           ¦   ¦           ¦   AndroidManifest.xml
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---java
+    ¦           ¦   ¦               +---io
+    ¦           ¦   ¦                   +---flutter
+    ¦           ¦   ¦                       +---plugins
+    ¦           ¦   ¦                           +---firebase
+    ¦           ¦   ¦                               +---core
+    ¦           ¦   ¦                                       FlutterFirebaseCorePlugin.java
+    ¦           ¦   ¦                                       FlutterFirebaseCoreRegistrar.java
+    ¦           ¦   ¦                                       FlutterFirebasePlugin.java
+    ¦           ¦   ¦                                       FlutterFirebasePluginRegistry.java
+    ¦           ¦   ¦                                       GeneratedAndroidFirebaseCore.java
+    ¦           ¦   ¦                                       
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   analysis_options.yaml
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---android
+    ¦           ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---app
+    ¦           ¦   ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   ¦   google-services.json
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---src
+    ¦           ¦   ¦   ¦   ¦       +---debug
+    ¦           ¦   ¦   ¦   ¦       ¦       AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       +---main
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦       ¦   +---java
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   +---kotlin
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦               +---firebasecoreexample
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                       MainActivity.kt
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                       
+    ¦           ¦   ¦   ¦   ¦       ¦   +---res
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable-v21
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-hdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-mdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values-night
+    ¦           ¦   ¦   ¦   ¦       ¦               styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦               
+    ¦           ¦   ¦   ¦   ¦       +---profile
+    ¦           ¦   ¦   ¦   ¦               AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---gradle
+    ¦           ¦   ¦   ¦       +---wrapper
+    ¦           ¦   ¦   ¦               gradle-wrapper.properties
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---ios
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       AppFrameworkInfo.plist
+    ¦           ¦   ¦   ¦   ¦       Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.h
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.m
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   main.m
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-1024x1024@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-20x20@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-29x29@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-40x40@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-60x60@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-60x60@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-76x76@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-76x76@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       Icon-App-83.5x83.5@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   ¦   +---LaunchImage.imageset
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage.png
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           LaunchImage@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           README.md
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦           LaunchScreen.storyboard
+    ¦           ¦   ¦   ¦   ¦           Main.storyboard
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦           IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦               IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       firebase_options.dart
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---macos
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       Flutter-Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Flutter-Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   DebugProfile.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   MainFlutterWindow.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   Release.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_1024.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_128.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_16.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_256.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_32.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_512.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_64.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦   ¦       MainMenu.xib
+    ¦           ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   +---Configs
+    ¦           ¦   ¦   ¦   ¦           AppInfo.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Warnings.xcconfig
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦           IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦               IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦               WorkspaceSettings.xcsettings
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---web
+    ¦           ¦   ¦   ¦   ¦   favicon.png
+    ¦           ¦   ¦   ¦   ¦   index.html
+    ¦           ¦   ¦   ¦   ¦   manifest.json
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---icons
+    ¦           ¦   ¦   ¦           Icon-192.png
+    ¦           ¦   ¦   ¦           Icon-512.png
+    ¦           ¦   ¦   ¦           Icon-maskable-192.png
+    ¦           ¦   ¦   ¦           Icon-maskable-512.png
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---ios
+    ¦           ¦   ¦   ¦   firebase_core.podspec
+    ¦           ¦   ¦   ¦   firebase_sdk_version.rb
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---firebase_core
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---firebase_core
+    ¦           ¦   ¦               ¦   dummy.m
+    ¦           ¦   ¦               ¦   FLTFirebaseCorePlugin.m
+    ¦           ¦   ¦               ¦   FLTFirebasePlugin.m
+    ¦           ¦   ¦               ¦   FLTFirebasePluginRegistry.m
+    ¦           ¦   ¦               ¦   messages.g.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦   +---firebase_core
+    ¦           ¦   ¦               ¦           dummy.h
+    ¦           ¦   ¦               ¦           FLTFirebaseCorePlugin.h
+    ¦           ¦   ¦               ¦           FLTFirebasePlugin.h
+    ¦           ¦   ¦               ¦           FLTFirebasePluginRegistry.h
+    ¦           ¦   ¦               ¦           messages.g.h
+    ¦           ¦   ¦               ¦           
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---lib
+    ¦           ¦   ¦   ¦   firebase_core.dart
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦           firebase.dart
+    ¦           ¦   ¦           firebase_app.dart
+    ¦           ¦   ¦           port_mapping.dart
+    ¦           ¦   ¦           
+    ¦           ¦   +---macos
+    ¦           ¦   ¦   ¦   firebase_core.podspec
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---firebase_core
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---firebase_core
+    ¦           ¦   ¦               ¦   dummy.m
+    ¦           ¦   ¦               ¦   FLTFirebaseCorePlugin.m
+    ¦           ¦   ¦               ¦   FLTFirebasePlugin.m
+    ¦           ¦   ¦               ¦   FLTFirebasePluginRegistry.m
+    ¦           ¦   ¦               ¦   messages.g.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦   ¦   dummy.h
+    ¦           ¦   ¦               ¦   ¦   
+    ¦           ¦   ¦               ¦   +---firebase_core
+    ¦           ¦   ¦               ¦           FLTFirebaseCorePlugin.h
+    ¦           ¦   ¦               ¦           FLTFirebasePlugin.h
+    ¦           ¦   ¦               ¦           FLTFirebasePluginRegistry.h
+    ¦           ¦   ¦               ¦           messages.g.h
+    ¦           ¦   ¦               ¦           
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---test
+    ¦           ¦   ¦       firebase_core_test.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---windows
+    ¦           ¦       ¦   CMakeLists.txt
+    ¦           ¦       ¦   firebase_core_plugin.cpp
+    ¦           ¦       ¦   firebase_core_plugin.h
+    ¦           ¦       ¦   firebase_core_plugin_c_api.cpp
+    ¦           ¦       ¦   messages.g.cpp
+    ¦           ¦       ¦   messages.g.h
+    ¦           ¦       ¦   plugin_version.h.in
+    ¦           ¦       ¦   
+    ¦           ¦       +---include
+    ¦           ¦           +---firebase_core
+    ¦           ¦                   firebase_core_plugin_c_api.h
+    ¦           ¦                   
+    ¦           +---firebase_storage
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---android
+    ¦           ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   local-config.gradle
+    ¦           ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   user-agent.gradle
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦       +---main
+    ¦           ¦   ¦           ¦   AndroidManifest.xml
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---java
+    ¦           ¦   ¦               +---io
+    ¦           ¦   ¦                   +---flutter
+    ¦           ¦   ¦                       +---plugins
+    ¦           ¦   ¦                           +---firebase
+    ¦           ¦   ¦                               +---storage
+    ¦           ¦   ¦                                       FlutterFirebaseAppRegistrar.java
+    ¦           ¦   ¦                                       FlutterFirebaseStorageException.java
+    ¦           ¦   ¦                                       FlutterFirebaseStoragePlugin.java
+    ¦           ¦   ¦                                       FlutterFirebaseStorageTask.java
+    ¦           ¦   ¦                                       GeneratedAndroidFirebaseStorage.java
+    ¦           ¦   ¦                                       TaskStateChannelStreamHandler.java
+    ¦           ¦   ¦                                       
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   analysis_options.yaml
+    ¦           ¦   ¦   ¦   cors.json
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---android
+    ¦           ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   gradle.properties
+    ¦           ¦   ¦   ¦   ¦   settings.gradle
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---app
+    ¦           ¦   ¦   ¦   ¦   ¦   build.gradle
+    ¦           ¦   ¦   ¦   ¦   ¦   google-services.json
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---src
+    ¦           ¦   ¦   ¦   ¦       +---debug
+    ¦           ¦   ¦   ¦   ¦       ¦       AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       +---main
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦       ¦   +---java
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   +---kotlin
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦   +---io
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦       +---flutter
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦           +---plugins
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦               +---firebasestorageexample
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                       MainActivity.kt
+    ¦           ¦   ¦   ¦   ¦       ¦   ¦                       
+    ¦           ¦   ¦   ¦   ¦       ¦   +---res
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---drawable-v21
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       launch_background.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-hdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-mdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---mipmap-xxxhdpi
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       ic_launcher.png
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦       ¦       
+    ¦           ¦   ¦   ¦   ¦       ¦       +---values-night
+    ¦           ¦   ¦   ¦   ¦       ¦               styles.xml
+    ¦           ¦   ¦   ¦   ¦       ¦               
+    ¦           ¦   ¦   ¦   ¦       +---profile
+    ¦           ¦   ¦   ¦   ¦               AndroidManifest.xml
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---gradle
+    ¦           ¦   ¦   ¦       +---wrapper
+    ¦           ¦   ¦   ¦               gradle-wrapper.properties
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---assets
+    ¦           ¦   ¦   ¦       hello.txt
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---ios
+    ¦           ¦   ¦   ¦   ¦   firebase_app_id_file.json
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       AppFrameworkInfo.plist
+    ¦           ¦   ¦   ¦   ¦       Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.h
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.m
+    ¦           ¦   ¦   ¦   ¦   ¦   GoogleService-Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   main.m
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-20x20@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-20x20@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-20x20@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-29x29@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-29x29@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-29x29@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-40x40@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-40x40@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-40x40@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-60x60@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-60x60@3x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-76x76@1x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-76x76@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Icon-App-83.5x83.5@2x.png
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦           LaunchScreen.storyboard
+    ¦           ¦   ¦   ¦   ¦           Main.storyboard
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦       contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦               IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦   ¦   firebase_options.dart
+    ¦           ¦   ¦   ¦   ¦   main.dart
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---save_as
+    ¦           ¦   ¦   ¦           save_as.dart
+    ¦           ¦   ¦   ¦           save_as_html.dart
+    ¦           ¦   ¦   ¦           save_as_interface.dart
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---macos
+    ¦           ¦   ¦   ¦   ¦   firebase_app_id_file.json
+    ¦           ¦   ¦   ¦   ¦   Podfile
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---Flutter
+    ¦           ¦   ¦   ¦   ¦       Flutter-Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦       Flutter-Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   +---Runner
+    ¦           ¦   ¦   ¦   ¦   ¦   AppDelegate.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   DebugProfile.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   GoogleService-Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   Info.plist
+    ¦           ¦   ¦   ¦   ¦   ¦   MainFlutterWindow.swift
+    ¦           ¦   ¦   ¦   ¦   ¦   Release.entitlements
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---Assets.xcassets
+    ¦           ¦   ¦   ¦   ¦   ¦   +---AppIcon.appiconset
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_1024.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_128.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_16.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_256.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_32.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_512.png
+    ¦           ¦   ¦   ¦   ¦   ¦           app_icon_64.png
+    ¦           ¦   ¦   ¦   ¦   ¦           Contents.json
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---Base.lproj
+    ¦           ¦   ¦   ¦   ¦   ¦       MainMenu.xib
+    ¦           ¦   ¦   ¦   ¦   ¦       
+    ¦           ¦   ¦   ¦   ¦   +---Configs
+    ¦           ¦   ¦   ¦   ¦           AppInfo.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Debug.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Release.xcconfig
+    ¦           ¦   ¦   ¦   ¦           Warnings.xcconfig
+    ¦           ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   +---Runner.xcodeproj
+    ¦           ¦   ¦   ¦   ¦   ¦   project.pbxproj
+    ¦           ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   +---project.xcworkspace
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦   ¦           IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦   ¦   ¦           
+    ¦           ¦   ¦   ¦   ¦   +---xcshareddata
+    ¦           ¦   ¦   ¦   ¦       +---xcschemes
+    ¦           ¦   ¦   ¦   ¦               Runner.xcscheme
+    ¦           ¦   ¦   ¦   ¦               
+    ¦           ¦   ¦   ¦   +---Runner.xcworkspace
+    ¦           ¦   ¦   ¦       ¦   contents.xcworkspacedata
+    ¦           ¦   ¦   ¦       ¦   
+    ¦           ¦   ¦   ¦       +---xcshareddata
+    ¦           ¦   ¦   ¦               IDEWorkspaceChecks.plist
+    ¦           ¦   ¦   ¦               
+    ¦           ¦   ¦   +---web
+    ¦           ¦   ¦   ¦   ¦   favicon.png
+    ¦           ¦   ¦   ¦   ¦   index.html
+    ¦           ¦   ¦   ¦   ¦   manifest.json
+    ¦           ¦   ¦   ¦   ¦   
+    ¦           ¦   ¦   ¦   +---icons
+    ¦           ¦   ¦   ¦           Icon-192.png
+    ¦           ¦   ¦   ¦           Icon-512.png
+    ¦           ¦   ¦   ¦           Icon-maskable-192.png
+    ¦           ¦   ¦   ¦           Icon-maskable-512.png
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---ios
+    ¦           ¦   ¦   ¦   firebase_storage.podspec
+    ¦           ¦   ¦   ¦   generated_firebase_sdk_version.txt
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---firebase_storage
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---firebase_storage
+    ¦           ¦   ¦               ¦   firebase_storage_messages.g.m
+    ¦           ¦   ¦               ¦   FLTFirebaseStoragePlugin.m
+    ¦           ¦   ¦               ¦   FLTTaskStateChannelStreamHandler.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦       firebase_storage_messages.g.h
+    ¦           ¦   ¦               ¦       FLTFirebaseStoragePlugin.h
+    ¦           ¦   ¦               ¦       FLTTaskStateChannelStreamHandler.h
+    ¦           ¦   ¦               ¦       
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---lib
+    ¦           ¦   ¦   ¦   firebase_storage.dart
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦           firebase_storage.dart
+    ¦           ¦   ¦           list_result.dart
+    ¦           ¦   ¦           reference.dart
+    ¦           ¦   ¦           task.dart
+    ¦           ¦   ¦           task_snapshot.dart
+    ¦           ¦   ¦           utils.dart
+    ¦           ¦   ¦           
+    ¦           ¦   +---macos
+    ¦           ¦   ¦   ¦   firebase_storage.podspec
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---firebase_storage
+    ¦           ¦   ¦       ¦   Package.swift
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---Sources
+    ¦           ¦   ¦           +---firebase_storage
+    ¦           ¦   ¦               ¦   firebase_storage_messages.g.m
+    ¦           ¦   ¦               ¦   FLTFirebaseStoragePlugin.m
+    ¦           ¦   ¦               ¦   FLTTaskStateChannelStreamHandler.m
+    ¦           ¦   ¦               ¦   
+    ¦           ¦   ¦               +---include
+    ¦           ¦   ¦               ¦       firebase_storage_messages.g.h
+    ¦           ¦   ¦               ¦       FLTFirebaseStoragePlugin.h
+    ¦           ¦   ¦               ¦       FLTTaskStateChannelStreamHandler.h
+    ¦           ¦   ¦               ¦       
+    ¦           ¦   ¦               +---Resources
+    ¦           ¦   +---test
+    ¦           ¦   ¦       firebase_storage_test.dart
+    ¦           ¦   ¦       list_result_test.dart
+    ¦           ¦   ¦       mock.dart
+    ¦           ¦   ¦       reference_test.dart
+    ¦           ¦   ¦       task_snapshot_test.dart
+    ¦           ¦   ¦       task_test.dart
+    ¦           ¦   ¦       utils_test.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---windows
+    ¦           ¦       ¦   CMakeLists.txt
+    ¦           ¦       ¦   firebase_storage_plugin.cpp
+    ¦           ¦       ¦   firebase_storage_plugin.h
+    ¦           ¦       ¦   firebase_storage_plugin_c_api.cpp
+    ¦           ¦       ¦   messages.g.cpp
+    ¦           ¦       ¦   messages.g.h
+    ¦           ¦       ¦   plugin_version.h.in
+    ¦           ¦       ¦   
+    ¦           ¦       +---include
+    ¦           ¦           +---firebase_storage
+    ¦           ¦                   firebase_storage_plugin_c_api.h
+    ¦           ¦                   
+    ¦           +---image_picker_windows
+    ¦           ¦   ¦   AUTHORS
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       generated_plugins.cmake
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---lib
+    ¦           ¦   ¦       image_picker_windows.dart
+    ¦           ¦   ¦       
+    ¦           ¦   +---test
+    ¦           ¦           image_picker_windows_test.dart
+    ¦           ¦           image_picker_windows_test.mocks.dart
+    ¦           ¦           
+    ¦           +---path_provider_windows
+    ¦           ¦   ¦   AUTHORS
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---integration_test
+    ¦           ¦   ¦   ¦       path_provider_test.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---test_driver
+    ¦           ¦   ¦   ¦       integration_test.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       generated_plugins.cmake
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   run_loop.cpp
+    ¦           ¦   ¦           ¦   run_loop.h
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---lib
+    ¦           ¦   ¦   ¦   path_provider_windows.dart
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---src
+    ¦           ¦   ¦           folders.dart
+    ¦           ¦   ¦           folders_stub.dart
+    ¦           ¦   ¦           guid.dart
+    ¦           ¦   ¦           path_provider_windows_real.dart
+    ¦           ¦   ¦           path_provider_windows_stub.dart
+    ¦           ¦   ¦           win32_wrappers.dart
+    ¦           ¦   ¦           
+    ¦           ¦   +---test
+    ¦           ¦           guid_test.dart
+    ¦           ¦           path_provider_windows_test.dart
+    ¦           ¦           
+    ¦           +---permission_handler_windows
+    ¦           ¦   ¦   AUTHORS
+    ¦           ¦   ¦   CHANGELOG.md
+    ¦           ¦   ¦   LICENSE
+    ¦           ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   README.md
+    ¦           ¦   ¦   
+    ¦           ¦   +---example
+    ¦           ¦   ¦   ¦   pubspec.yaml
+    ¦           ¦   ¦   ¦   README.md
+    ¦           ¦   ¦   ¦   
+    ¦           ¦   ¦   +---lib
+    ¦           ¦   ¦   ¦       main.dart
+    ¦           ¦   ¦   ¦       
+    ¦           ¦   ¦   +---res
+    ¦           ¦   ¦   ¦   +---images
+    ¦           ¦   ¦   ¦           baseflow_logo_def_light-02.png
+    ¦           ¦   ¦   ¦           poweredByBaseflowLogoLight.png
+    ¦           ¦   ¦   ¦           poweredByBaseflowLogoLight@2x.png
+    ¦           ¦   ¦   ¦           poweredByBaseflowLogoLight@3x.png
+    ¦           ¦   ¦   ¦           
+    ¦           ¦   ¦   +---windows
+    ¦           ¦   ¦       ¦   CMakeLists.txt
+    ¦           ¦   ¦       ¦   
+    ¦           ¦   ¦       +---flutter
+    ¦           ¦   ¦       ¦       CMakeLists.txt
+    ¦           ¦   ¦       ¦       generated_plugins.cmake
+    ¦           ¦   ¦       ¦       generated_plugin_registrant.cc
+    ¦           ¦   ¦       ¦       generated_plugin_registrant.h
+    ¦           ¦   ¦       ¦       
+    ¦           ¦   ¦       +---runner
+    ¦           ¦   ¦           ¦   CMakeLists.txt
+    ¦           ¦   ¦           ¦   flutter_window.cpp
+    ¦           ¦   ¦           ¦   flutter_window.h
+    ¦           ¦   ¦           ¦   main.cpp
+    ¦           ¦   ¦           ¦   resource.h
+    ¦           ¦   ¦           ¦   runner.exe.manifest
+    ¦           ¦   ¦           ¦   Runner.rc
+    ¦           ¦   ¦           ¦   utils.cpp
+    ¦           ¦   ¦           ¦   utils.h
+    ¦           ¦   ¦           ¦   win32_window.cpp
+    ¦           ¦   ¦           ¦   win32_window.h
+    ¦           ¦   ¦           ¦   
+    ¦           ¦   ¦           +---resources
+    ¦           ¦   ¦                   app_icon.ico
+    ¦           ¦   ¦                   
+    ¦           ¦   +---windows
+    ¦           ¦       ¦   CMakeLists.txt
+    ¦           ¦       ¦   permission_constants.h
+    ¦           ¦       ¦   permission_handler_windows_plugin.cpp
+    ¦           ¦       ¦   
+    ¦           ¦       +---include
+    ¦           ¦           +---permission_handler_windows
+    ¦           ¦                   permission_handler_windows_plugin.h
+    ¦           ¦                   
+    ¦           +---url_launcher_windows
+    ¦               ¦   AUTHORS
+    ¦               ¦   CHANGELOG.md
+    ¦               ¦   LICENSE
+    ¦               ¦   pubspec.yaml
+    ¦               ¦   README.md
+    ¦               ¦   
+    ¦               +---example
+    ¦               ¦   ¦   pubspec.yaml
+    ¦               ¦   ¦   README.md
+    ¦               ¦   ¦   
+    ¦               ¦   +---integration_test
+    ¦               ¦   ¦       url_launcher_test.dart
+    ¦               ¦   ¦       
+    ¦               ¦   +---lib
+    ¦               ¦   ¦       main.dart
+    ¦               ¦   ¦       
+    ¦               ¦   +---test_driver
+    ¦               ¦   ¦       integration_test.dart
+    ¦               ¦   ¦       
+    ¦               ¦   +---windows
+    ¦               ¦       ¦   CMakeLists.txt
+    ¦               ¦       ¦   
+    ¦               ¦       +---flutter
+    ¦               ¦       ¦       CMakeLists.txt
+    ¦               ¦       ¦       generated_plugins.cmake
+    ¦               ¦       ¦       
+    ¦               ¦       +---runner
+    ¦               ¦           ¦   CMakeLists.txt
+    ¦               ¦           ¦   flutter_window.cpp
+    ¦               ¦           ¦   flutter_window.h
+    ¦               ¦           ¦   main.cpp
+    ¦               ¦           ¦   resource.h
+    ¦               ¦           ¦   runner.exe.manifest
+    ¦               ¦           ¦   Runner.rc
+    ¦               ¦           ¦   run_loop.cpp
+    ¦               ¦           ¦   run_loop.h
+    ¦               ¦           ¦   utils.cpp
+    ¦               ¦           ¦   utils.h
+    ¦               ¦           ¦   win32_window.cpp
+    ¦               ¦           ¦   win32_window.h
+    ¦               ¦           ¦   
+    ¦               ¦           +---resources
+    ¦               ¦                   app_icon.ico
+    ¦               ¦                   
+    ¦               +---lib
+    ¦               ¦   ¦   url_launcher_windows.dart
+    ¦               ¦   ¦   
+    ¦               ¦   +---src
+    ¦               ¦           messages.g.dart
+    ¦               ¦           
+    ¦               +---pigeons
+    ¦               ¦       copyright.txt
+    ¦               ¦       messages.dart
+    ¦               ¦       
+    ¦               +---test
+    ¦               ¦       url_launcher_windows_test.dart
+    ¦               ¦       
+    ¦               +---windows
+    ¦                   ¦   CMakeLists.txt
+    ¦                   ¦   messages.g.cpp
+    ¦                   ¦   messages.g.h
+    ¦                   ¦   system_apis.cpp
+    ¦                   ¦   system_apis.h
+    ¦                   ¦   url_launcher_plugin.cpp
+    ¦                   ¦   url_launcher_plugin.h
+    ¦                   ¦   url_launcher_windows.cpp
+    ¦                   ¦   
+    ¦                   +---include
+    ¦                   ¦   +---url_launcher_windows
+    ¦                   ¦           url_launcher_windows.h
+    ¦                   ¦           
+    ¦                   +---test
+    ¦                           url_launcher_windows_test.cpp
+    ¦                           
+    +---runner
+        ¦   CMakeLists.txt
+        ¦   flutter_window.cpp
+        ¦   flutter_window.h
+        ¦   main.cpp
+        ¦   resource.h
+        ¦   runner.exe.manifest
+        ¦   Runner.rc
+        ¦   utils.cpp
+        ¦   utils.h
+        ¦   win32_window.cpp
+        ¦   win32_window.h
+        ¦   
+        +---resources
+                app_icon.ico
+                
