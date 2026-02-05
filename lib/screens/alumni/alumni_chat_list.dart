@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../services/socket_service.dart'; // Apna sahi path check kar lena
+import '../../screens/chat/channel_page.dart'; // Apna ChannelPage ka path check kar lena
 
-// ==========================================
-// 1. ALUMNI CHAT LIST PAGE
-// ==========================================
 class AlumniChatListPage extends StatefulWidget {
   const AlumniChatListPage({super.key});
 
@@ -17,6 +14,7 @@ class AlumniChatListPage extends StatefulWidget {
 class _AlumniChatListPageState extends State<AlumniChatListPage> {
   bool _isLoading = true;
   List<dynamic> _chatUsers = [];
+  List<dynamic> _callLogs = [];
   String? myJwt;
   String? myUid;
   String? myName;
@@ -24,353 +22,181 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
   @override
   void initState() {
     super.initState();
-    _loadUserAndChats();
+    _loadUserAndData();
   }
 
-  Future<void> _loadUserAndChats() async {
+  Future<void> _loadUserAndData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       myJwt = prefs.getString('token');
-      // ⚠️ Dhyan Dena: Login ke waqt ensure karna ki tum MongoDB wali '_id' save kar rahe ho
+      // ⚠️ Make sure ye MongoDB wali ID ho
       myUid = prefs.getString('uid'); 
       myName = prefs.getString('name');
     });
 
     if (myJwt != null) {
-      _fetchChatList();
+      await _fetchChatList();
+      await _fetchCallLogs();
     } else {
       setState(() => _isLoading = false);
     }
   }
 
+  // 1. Fetch Users (Chats Tab ke liye)
   Future<void> _fetchChatList() async {
     try {
-      // ✅ FIXED: URL ab backend ke 'auth.js' route se match karega
       final res = await http.get(
         Uri.parse("https://synnex.onrender.com/api/auth/users"), 
         headers: {"Authorization": "Bearer $myJwt"},
       );
-
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        if (mounted) {
-          setState(() {
-            // Backend se { success: true, users: [...] } aa raha hai
-            _chatUsers = data['users'] ?? [];
-            _isLoading = false;
-          });
-        }
-      } else {
-        debugPrint("Failed to load users: ${res.statusCode}");
-        if (mounted) setState(() => _isLoading = false);
+        if (mounted) setState(() => _chatUsers = data['users'] ?? []);
       }
     } catch (e) {
-      debugPrint("Error fetching chat list: $e");
+      debugPrint("Error fetching chats: $e");
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) return const Center(child: CircularProgressIndicator());
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Alumni Chats"),
-        backgroundColor: Colors.indigo.shade800,
-        foregroundColor: Colors.white,
-        automaticallyImplyLeading: false,
-      ),
-      body: _chatUsers.isEmpty
-          ? const Center(child: Text("No users found."))
-          : ListView.builder(
-              itemCount: _chatUsers.length,
-              itemBuilder: (context, index) {
-                final user = _chatUsers[index];
-                final otherName = user['displayName'] ?? user['email'] ?? "Unknown"; // displayName use kiya safe side
-                
-                // ✅ FIXED: Hamesha MongoDB '_id' use karo, 'uid' nahi
-                final otherUid = user['_id'] ?? "";
-
-                // Khud ko list mein mat dikhao
-                if (otherUid == myUid) return const SizedBox.shrink();
-
-                return Card(
-                  elevation: 2,
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.indigo.shade100,
-                      child: Text(otherName.isNotEmpty ? otherName[0].toUpperCase() : "?"),
-                    ),
-                    title: Text(otherName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: const Text("Tap to chat"),
-                    trailing: const Icon(Icons.chat_bubble_outline, color: Colors.indigo),
-                    onTap: () {
-                      if (myUid == null || otherUid.isEmpty) {
-                         ScaffoldMessenger.of(context).showSnackBar(
-                           const SnackBar(content: Text("Error: User ID missing")),
-                         );
-                         return;
-                      }
-
-                      // ✅ Room ID Generation (Standard Format)
-                      List<String> ids = [myUid!, otherUid];
-                      ids.sort(); // Sort karna zaroori hai taaki dono side same ID bane
-                      String roomId = ids.join("_");
-
-                      print("🔹 JOINING ROOM: $roomId"); // Debugging ke liye
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ChannelPage(
-                            roomId: roomId,
-                            me: myUid!,
-                            other: otherUid, // Yeh MongoDB ID honi chahiye
-                            otherName: otherName,
-                            jwt: myJwt!,
-                            myUid: myUid!,
-                            myName: myName ?? "Me",
-                            otherUid: otherUid,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-    );
-  }
-}
-
-// ==========================================
-// 2. CHANNEL PAGE (Chat Screen)
-// ==========================================
-class ChannelPage extends StatefulWidget {
-  final String roomId;
-  final String me;
-  final String other;
-  final String otherName;
-  final String jwt;
-  final String myUid;
-  final String myName;
-  final String otherUid;
-
-  const ChannelPage({
-    super.key,
-    required this.roomId,
-    required this.me,
-    required this.other,
-    required this.otherName,
-    required this.jwt,
-    required this.myUid,
-    required this.myName,
-    required this.otherUid,
-  });
-
-  @override
-  State<ChannelPage> createState() => _ChannelPageState();
-}
-
-class _ChannelPageState extends State<ChannelPage> {
-  final TextEditingController _msgController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  List<dynamic> _messages = [];
-  bool _isLoading = true;
-  final SocketService _socketService = SocketService();
-
-  // ✅ Render URL
-  String get baseUrl => "https://synnex.onrender.com";
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchMessages();
-    _setupSocketListeners();
-    
-    // Join Room
-    _socketService.socket?.emit('join-room', widget.roomId);
-  }
-
-  Future<void> _fetchMessages() async {
+  // 2. Fetch Call Logs (CLS Tab ke liye)
+  Future<void> _fetchCallLogs() async {
     try {
       final res = await http.get(
-        Uri.parse("$baseUrl/api/messages/${widget.roomId}"),
-        headers: {"Authorization": "Bearer ${widget.jwt}"},
+        Uri.parse("https://synnex.onrender.com/api/calls/history"),
+        headers: {"Authorization": "Bearer $myJwt"},
       );
-
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        // Wrapper check (agar backend { success: true, messages: [] } bhej raha hai)
-        if (data is Map && data.containsKey('messages')) {
-          if (mounted) {
-            setState(() {
-              _messages = List.from(data['messages']);
-              _isLoading = false;
-            });
-            _scrollToBottom();
-          }
-        } else if (data is List) {
-          // Backup: Agar seedha array aaya
-          if (mounted) {
-            setState(() {
-              _messages = List.from(data);
-              _isLoading = false;
-            });
-            _scrollToBottom();
-          }
-        }
-      } else {
-        if (mounted) setState(() => _isLoading = false);
+        if (mounted) setState(() => _callLogs = data['calls'] ?? []);
       }
     } catch (e) {
-      debugPrint("Error fetching messages: $e");
-      if (mounted) setState(() => _isLoading = false);
+      debugPrint("Error fetching calls: $e");
     }
-  }
-
-  void _setupSocketListeners() {
-    _socketService.onReceiveMessage((data) {
-      print("📩 MSG RECEIVED: $data"); // Debug Log
-      if (mounted) {
-        setState(() {
-          _messages.add({
-            "senderId": data['senderId'],
-            "text": data['message'] ?? data['text'] ?? "",
-            "createdAt": DateTime.now().toString(),
-          });
-        });
-        _scrollToBottom();
-      }
-    });
-  }
-
-  void _sendMessage() {
-    final text = _msgController.text.trim();
-    if (text.isEmpty) return;
-
-    // Socket Emit
-    _socketService.sendMessage(
-      roomId: widget.roomId,
-      receiverId: widget.other,
-      message: text,
-      senderId: widget.me,
-    );
-
-    // Optimistic UI Update (Turant dikhane ke liye)
-    if (mounted) {
-      setState(() {
-        _messages.add({
-          "senderId": widget.me,
-          "text": text,
-          "createdAt": DateTime.now().toString(),
-        });
-        _msgController.clear();
-      });
-      _scrollToBottom();
-    }
-  }
-
-  void _scrollToBottom() {
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _msgController.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.otherName),
-        backgroundColor: Colors.indigo.shade800,
-        foregroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _messages.isEmpty
-                    ? const Center(child: Text("No messages yet. Say Hi! 👋"))
-                    : ListView.builder(
-                        controller: _scrollController,
-                        itemCount: _messages.length,
-                        padding: const EdgeInsets.all(10),
-                        itemBuilder: (context, index) {
-                          final msg = _messages[index];
-                          final isMe = msg['senderId'] == widget.me;
-                          return Align(
-                            alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(vertical: 4),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: isMe ? Colors.indigo.shade600 : Colors.grey.shade300,
-                                borderRadius: BorderRadius.only(
-                                  topLeft: const Radius.circular(12),
-                                  topRight: const Radius.circular(12),
-                                  bottomLeft: isMe ? const Radius.circular(12) : const Radius.circular(0),
-                                  bottomRight: isMe ? const Radius.circular(0) : const Radius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                msg['text'] ?? "",
-                                style: TextStyle(color: isMe ? Colors.white : Colors.black87),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+    return DefaultTabController(
+      length: 2, // Do Tabs: Chats aur Calls
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Alumni Connect"),
+          backgroundColor: Colors.indigo.shade800,
+          foregroundColor: Colors.white,
+          automaticallyImplyLeading: false,
+          bottom: const TabBar(
+            indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white60,
+            tabs: [
+              Tab(text: "CHATS"),
+              Tab(text: "CLS"), // Call Logs Tab
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            color: Colors.white,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _msgController,
-                    onSubmitted: (_) => _sendMessage(),
-                    decoration: InputDecoration(
-                      hintText: "Type a message...",
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: Colors.indigo.shade800,
-                  radius: 24,
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                    onPressed: _sendMessage,
-                  ),
-                ),
-              ],
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : TabBarView(
+                children: [
+                  _buildChatList(), // Tab 1 Content
+                  _buildCallList(), // Tab 2 Content
+                ],
+              ),
+      ),
+    );
+  }
+
+  // 🔹 Tab 1: Chat List (Name + Role Fix)
+  Widget _buildChatList() {
+    if (_chatUsers.isEmpty) return const Center(child: Text("No users found."));
+    
+    return ListView.builder(
+      itemCount: _chatUsers.length,
+      itemBuilder: (context, index) {
+        final user = _chatUsers[index];
+        
+        // Data Extraction
+        final name = user['name'] ?? user['displayName'] ?? "Unknown";
+        final role = user['role'] ?? "Student"; // Default Role
+        final email = user['email'] ?? "";
+        final otherUid = user['_id'] ?? ""; // MongoDB ID
+
+        if (otherUid == myUid) return const SizedBox.shrink();
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.indigo.shade100,
+              child: Text(name.isNotEmpty ? name[0].toUpperCase() : "?"),
+            ),
+            // 🔥 NAME + ROLE DISPLAY FIX
+            title: Text(
+              "$name ($role)", 
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(email),
+            trailing: const Icon(Icons.chat_bubble_outline, color: Colors.indigo),
+            onTap: () => _openChat(otherUid, name),
+          ),
+        );
+      },
+    );
+  }
+
+  // 🔹 Tab 2: Call Logs (CLS)
+  Widget _buildCallList() {
+    if (_callLogs.isEmpty) return const Center(child: Text("No recent calls."));
+
+    return ListView.builder(
+      itemCount: _callLogs.length,
+      itemBuilder: (context, index) {
+        final call = _callLogs[index];
+        final isVideo = call['type'] == 'video';
+        final callerName = call['callerName'] ?? "Unknown";
+        final status = call['status'] ?? "Missed";
+        
+        return ListTile(
+          leading: CircleAvatar(
+            backgroundColor: status == 'missed' ? Colors.red.shade50 : Colors.green.shade50,
+            child: Icon(
+              isVideo ? Icons.videocam : Icons.call, 
+              color: status == 'missed' ? Colors.red : Colors.green
             ),
           ),
-        ],
+          title: Text(callerName),
+          subtitle: Text(status.toUpperCase()),
+          trailing: const Icon(Icons.info_outline, size: 20, color: Colors.grey),
+        );
+      },
+    );
+  }
+
+  // 🔥 IMPORTANT: Room ID Generation Fix (___)
+  void _openChat(String otherUid, String otherName) {
+    if (myUid == null) return;
+
+    List<String> ids = [myUid!, otherUid];
+    ids.sort(); // Sort karna zaroori hai
+    
+    // ✅ Fix: Use 3 underscores '___' to match ChannelPage logic
+    String roomId = ids.join("___"); 
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChannelPage(
+          roomId: roomId,
+          me: myUid!,
+          other: otherUid,
+          otherName: otherName,
+          jwt: myJwt!,
+          myUid: myUid!,
+          myName: myName ?? "Me",
+          otherUid: otherUid,
+        ),
       ),
     );
   }
