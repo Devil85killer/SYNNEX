@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: { 
     type: String, 
-    enum: ['student', 'alumni', 'admin'], 
+    enum: ['student', 'alumni', 'admin', 'teacher'], 
     default: 'student' 
   }, // ✅ Auth logic ke liye ye zaroori hai
   fcmToken: { 

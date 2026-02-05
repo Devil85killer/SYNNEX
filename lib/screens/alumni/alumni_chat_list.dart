@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../services/socket_service.dart';
+import '../../services/socket_service.dart'; // Apna sahi path check kar lena
 
 // ==========================================
-// 1. ALUMNI CHAT LIST PAGE (Ye Dashboard ke liye zaroori hai)
+// 1. ALUMNI CHAT LIST PAGE
 // ==========================================
 class AlumniChatListPage extends StatefulWidget {
   const AlumniChatListPage({super.key});
@@ -31,7 +31,8 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       myJwt = prefs.getString('token');
-      myUid = prefs.getString('uid');
+      // ⚠️ Dhyan Dena: Login ke waqt ensure karna ki tum MongoDB wali '_id' save kar rahe ho
+      myUid = prefs.getString('uid'); 
       myName = prefs.getString('name');
     });
 
@@ -44,9 +45,9 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
 
   Future<void> _fetchChatList() async {
     try {
-      // NOTE: Is URL ko apne backend ke 'Get All Users' route se replace karna
+      // ✅ FIXED: URL ab backend ke 'auth.js' route se match karega
       final res = await http.get(
-        Uri.parse("https://synnex.onrender.com/api/user/all"), 
+        Uri.parse("https://synnex.onrender.com/api/auth/users"), 
         headers: {"Authorization": "Bearer $myJwt"},
       );
 
@@ -54,11 +55,13 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
         final data = jsonDecode(res.body);
         if (mounted) {
           setState(() {
+            // Backend se { success: true, users: [...] } aa raha hai
             _chatUsers = data['users'] ?? [];
             _isLoading = false;
           });
         }
       } else {
+        debugPrint("Failed to load users: ${res.statusCode}");
         if (mounted) setState(() => _isLoading = false);
       }
     } catch (e) {
@@ -84,9 +87,12 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
               itemCount: _chatUsers.length,
               itemBuilder: (context, index) {
                 final user = _chatUsers[index];
-                final otherName = user['name'] ?? "Unknown";
+                final otherName = user['displayName'] ?? user['email'] ?? "Unknown"; // displayName use kiya safe side
+                
+                // ✅ FIXED: Hamesha MongoDB '_id' use karo, 'uid' nahi
                 final otherUid = user['_id'] ?? "";
 
+                // Khud ko list mein mat dikhao
                 if (otherUid == myUid) return const SizedBox.shrink();
 
                 return Card(
@@ -101,10 +107,19 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
                     subtitle: const Text("Tap to chat"),
                     trailing: const Icon(Icons.chat_bubble_outline, color: Colors.indigo),
                     onTap: () {
-                      // Room ID Logic
+                      if (myUid == null || otherUid.isEmpty) {
+                         ScaffoldMessenger.of(context).showSnackBar(
+                           const SnackBar(content: Text("Error: User ID missing")),
+                         );
+                         return;
+                      }
+
+                      // ✅ Room ID Generation (Standard Format)
                       List<String> ids = [myUid!, otherUid];
-                      ids.sort();
+                      ids.sort(); // Sort karna zaroori hai taaki dono side same ID bane
                       String roomId = ids.join("_");
+
+                      print("🔹 JOINING ROOM: $roomId"); // Debugging ke liye
 
                       Navigator.push(
                         context,
@@ -112,7 +127,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
                           builder: (_) => ChannelPage(
                             roomId: roomId,
                             me: myUid!,
-                            other: otherUid,
+                            other: otherUid, // Yeh MongoDB ID honi chahiye
                             otherName: otherName,
                             jwt: myJwt!,
                             myUid: myUid!,
@@ -131,7 +146,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
 }
 
 // ==========================================
-// 2. CHANNEL PAGE (Main Chat Screen)
+// 2. CHANNEL PAGE (Chat Screen)
 // ==========================================
 class ChannelPage extends StatefulWidget {
   final String roomId;
@@ -166,6 +181,7 @@ class _ChannelPageState extends State<ChannelPage> {
   bool _isLoading = true;
   final SocketService _socketService = SocketService();
 
+  // ✅ Render URL
   String get baseUrl => "https://synnex.onrender.com";
 
   @override
@@ -174,8 +190,7 @@ class _ChannelPageState extends State<ChannelPage> {
     _fetchMessages();
     _setupSocketListeners();
     
-    // ✅ ERROR FIXED HERE: Added '?' before .emit
-    // Agar socket connect nahi bhi hua, toh app crash nahi hoga
+    // Join Room
     _socketService.socket?.emit('join-room', widget.roomId);
   }
 
@@ -188,16 +203,24 @@ class _ChannelPageState extends State<ChannelPage> {
 
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        if (data is Map && data['success'] == true) {
+        // Wrapper check (agar backend { success: true, messages: [] } bhej raha hai)
+        if (data is Map && data.containsKey('messages')) {
           if (mounted) {
             setState(() {
-              _messages = List.from(data['messages'] ?? []);
+              _messages = List.from(data['messages']);
               _isLoading = false;
             });
             _scrollToBottom();
           }
-        } else {
-          if (mounted) setState(() => _isLoading = false);
+        } else if (data is List) {
+          // Backup: Agar seedha array aaya
+          if (mounted) {
+            setState(() {
+              _messages = List.from(data);
+              _isLoading = false;
+            });
+            _scrollToBottom();
+          }
         }
       } else {
         if (mounted) setState(() => _isLoading = false);
@@ -210,6 +233,7 @@ class _ChannelPageState extends State<ChannelPage> {
 
   void _setupSocketListeners() {
     _socketService.onReceiveMessage((data) {
+      print("📩 MSG RECEIVED: $data"); // Debug Log
       if (mounted) {
         setState(() {
           _messages.add({
@@ -227,6 +251,7 @@ class _ChannelPageState extends State<ChannelPage> {
     final text = _msgController.text.trim();
     if (text.isEmpty) return;
 
+    // Socket Emit
     _socketService.sendMessage(
       roomId: widget.roomId,
       receiverId: widget.other,
@@ -234,6 +259,7 @@ class _ChannelPageState extends State<ChannelPage> {
       senderId: widget.me,
     );
 
+    // Optimistic UI Update (Turant dikhane ke liye)
     if (mounted) {
       setState(() {
         _messages.add({

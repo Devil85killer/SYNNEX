@@ -1,121 +1,111 @@
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ChatifyAuthService {
-  // ✅ URL Setup (Web & Mobile both point to Render)
-  static String get baseUrl {
-    return "https://synnex.onrender.com/api";
+class SocketService {
+  static final SocketService _instance = SocketService._internal();
+  IO.Socket? socket;
+  bool _isConnected = false;
+
+  factory SocketService() {
+    return _instance;
   }
 
-  static Future<Map<String, dynamic>> syncUser({
-    required User firebaseUser,
-    required String role, 
-    required String name,
-  }) async {
-    String? fcmToken;
-    
-    // 🔥 1. FCM Setup & Permission (Web Fix)
-    try {
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
+  SocketService._internal();
 
-      // Web/iOS ke liye permission maangna zaroori hai
-      NotificationSettings settings = await messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+  IO.Socket? get getSocket => socket;
+  bool get isConnected => _isConnected;
 
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        debugPrint('🔔 User granted notification permission');
-        
-        // 🔥 VAPID Key (Sirf Web ke liye zaroori hai)
-        const String webVapidKey = "BO7k7SfDVXPv4KjKgsO_ShKHN2CuaRZpCnAg5Tk4zBSVbnRzY21wVLHAp1sAeFshMAfE2pniSYDPtY73vmyL6_E";
-
-        // Token fetch karo
-        fcmToken = await messaging.getToken(
-          vapidKey: kIsWeb ? webVapidKey : null,
-        );
-      } else {
-        debugPrint('❌ User declined or has not accepted permission');
-      }
-    } catch (e) {
-      debugPrint("❌ Error fetching FCM token: $e");
+  // ✅ Initialize Socket
+  void initSocket(String token) {
+    if (_isConnected) {
+      debugPrint("⚠️ Socket already connected.");
+      return;
     }
 
-    debugPrint("📱 FINAL FCM TOKEN TO SEND: $fcmToken");
+    // Replace with your Render URL
+    const String serverUrl = "https://synnex.onrender.com"; 
 
-    // 🔥 2. Backend Sync API Call
-    final uri = Uri.parse("$baseUrl/auth/sync-user");
-    
-    print("🔄 Syncing User: ${firebaseUser.uid} ($role)");
+    debugPrint("🔌 Connecting to Socket...");
 
-    final res = await http.post(
-      uri,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "uid": firebaseUser.uid,          // ✅ FIX: Backend ye maang raha tha
-        "firebaseUid": firebaseUser.uid,  // Backup ke liye rakh lo
-        "email": firebaseUser.email,
-        "name": name,
-        "role": role,
-        "fcmToken": fcmToken,             // Web/Mobile token
-      }),
-    );
+    socket = IO.io(serverUrl, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+      'auth': {'token': token}, // Auth Token bhejna zaroori hai
+    });
 
-    print("📡 Response: ${res.body}");
+    socket!.connect();
 
-    if (res.statusCode != 200 && res.statusCode != 201) {
-      throw Exception("Chatify sync failed: ${res.body}");
+    socket!.onConnect((_) {
+      _isConnected = true;
+      debugPrint("✅ ✅ SOCKET CONNECTED SUCCESSFULLY!");
+      debugPrint("🔗 Connection ID: ${socket!.id}");
+    });
+
+    socket!.onDisconnect((_) {
+      _isConnected = false;
+      debugPrint("❌ Socket Disconnected");
+    });
+
+    socket!.onError((data) => debugPrint("❌ Socket Error: $data"));
+  }
+
+  // ✅ Join Room (Chat start karne ke liye)
+  void joinRoom(String roomId) {
+    if (socket != null && _isConnected) {
+      socket!.emit('join-room', roomId);
+      debugPrint("------------------------------------------------");
+      debugPrint("🏠 JOINED ROOM: $roomId");
+      debugPrint("------------------------------------------------");
     }
+  }
 
-    final data = jsonDecode(res.body);
+  // 🔥 MAIN PART: SEND MESSAGE WITH LOGS 🔥
+  void sendMessage({
+    required String roomId,
+    required String message,
+    required String senderId,
+    required String receiverId,
+  }) {
+    if (socket != null && _isConnected) {
+      
+      // 🧐 TERMINAL PROOF: "Kisne Kisko Msg Diya"
+      debugPrint("\n📨 📨 MESSAGE SENT! 📨 📨");
+      debugPrint("------------------------------------------------");
+      debugPrint("🏠 Room ID     : $roomId");
+      debugPrint("📤 From (Me)   : $senderId");
+      debugPrint("📥 To (Other)  : $receiverId");
+      debugPrint("💬 Content     : \"$message\"");
+      debugPrint("📂 Stored In   : MongoDB 'messages' collection");
+      debugPrint("------------------------------------------------\n");
 
-    // ✅ Safety Check: Kabhi kabhi response structure alag ho sakta hai
-    // Agar data['user']['_id'] hai toh wo lo, nahi toh data['user']['chatifyUserId']
-    final chatifyUserId = data['user']['_id'] ?? data['user']['chatifyUserId'];
-    final token = data['token'];
+      // Asli data bhejo
+      socket!.emit('sendMessage', {
+        'roomId': roomId,
+        'message': message,
+        'senderId': senderId,
+        'receiverId': receiverId,
+        'type': 'text', // text/image/video
+      });
 
-    if (chatifyUserId == null || token == null) {
-      throw Exception("Invalid Chatify response: Missing IDs or Token");
-    }
-
-    String collection;
-    if (role == "student") {
-      collection = "students";
-    } else if (role == "teacher") {
-      collection = "teachers";
     } else {
-      collection = "alumni_users";
+      debugPrint("❌ ERROR: Socket not connected. Message nahi gaya.");
     }
+  }
 
-    // 💾 3. Firestore Updates
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(firebaseUser.uid)
-        .set({"role": role}, SetOptions(merge: true));
+  // ✅ Listen for incoming messages
+  void onReceiveMessage(Function(dynamic) callback) {
+    socket?.on('receiveMessage', (data) {
+      debugPrint("\n📩 NEW MESSAGE RECEIVED!");
+      debugPrint("👤 Sender: ${data['senderId']}");
+      debugPrint("💬 Msg: ${data['message']}");
+      callback(data);
+    });
+  }
 
-    await FirebaseFirestore.instance
-        .collection(collection)
-        .doc(firebaseUser.uid)
-        .set(
-      {
-        "chatifyUserId": chatifyUserId,
-        "chatifyJwt": token,
-        "fcmToken": fcmToken,
-      },
-      SetOptions(merge: true),
-    );
-
-    debugPrint("✅ CHATIFY SYNC DONE → Correct ID Saved: $chatifyUserId");
-
-    // Map return karo taaki login page isme se token nikal sake
-    return {
-      "chatifyUserId": chatifyUserId,
-      "token": token,
-    };
+  // ✅ Disconnect
+  void disconnect() {
+    socket?.disconnect();
+    _isConnected = false;
   }
 }

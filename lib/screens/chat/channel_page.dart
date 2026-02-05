@@ -8,9 +8,9 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart' as emoji_picker;
 import 'package:intl/intl.dart'; 
 import 'package:flutter/foundation.dart'; // kIsWeb check ke liye
 
-// ✅ IMPORTANT IMPORTS
+// ✅ APNE PROJECT KE SAHI PATH CHECK KAR LENA
 import '../../services/socket_service.dart';
-import '../calling_screen.dart'; // 🔥 Import Call Screen
+import '../calling_screen.dart'; 
 
 class ChannelPage extends StatefulWidget {
   final String roomId;
@@ -42,7 +42,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [];
-  final SocketService socketService = SocketService();
+  final SocketService socketService = SocketService(); // Singleton Instance
   final ImagePicker _picker = ImagePicker(); 
   
   String? _derivedChatifyId; 
@@ -50,7 +50,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   bool _isLoading = true;
   String? _editingMessageId; 
   bool _showEmojiPicker = false; 
-  FocusNode _focusNode = FocusNode(); 
+  final FocusNode _focusNode = FocusNode(); 
   
   bool _isRecording = false;
   int _recordDuration = 0;
@@ -67,8 +67,8 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   final Color textMy = Colors.white;
   final Color textOther = Colors.black87;
 
-  // ⚠️ BACKEND URL CHECK
-  String get baseUrl => kIsWeb ? "https://synnex.onrender.com" : "https://synnex.onrender.com"; 
+  // ⚠️ BACKEND URL - Render wala link
+  String get baseUrl => "https://synnex.onrender.com"; 
 
   @override
   void initState() {
@@ -90,6 +90,14 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _recordTimer?.cancel();
     _typingTimer?.cancel();
+    _controller.dispose();
+    _scrollController.dispose();
+    _focusNode.dispose();
+    
+    // Optional: Leave room on exit
+    // if (_socketRoomId != null) {
+    //   socketService.socket?.emit("leaveRoom", _socketRoomId);
+    // }
     super.dispose();
   }
 
@@ -103,22 +111,31 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   void _initializeChat() async {
     _parseJwt();
     
-    final myId = getSafeId(_derivedChatifyId ?? widget.me).trim().toLowerCase();
-    final otherId = getSafeId(widget.other).trim().toLowerCase();
+    // ✅ ID CLEANING (Trimming & Lowercase)
+    final myId = getSafeId(_derivedChatifyId ?? widget.me).trim();
+    final otherId = getSafeId(widget.other).trim();
     
+    // ✅ ROOM ID GENERATION (Consistent Logic)
     final List<String> ids = [myId, otherId];
-    ids.sort(); 
+    ids.sort(); // Sort karna zaroori hai taaki 'A_B' aur 'B_A' same room bane
     
     _socketRoomId = ids.join("___"); 
-    final fallbackRoomId = ids.join("__");
+    final fallbackRoomId = ids.join("__"); // Backup for old format
+
+    debugPrint("---------------------------------------");
+    debugPrint("🔍 CHAT DEBUG:");
+    debugPrint("👤 My ID: $myId");
+    debugPrint("👤 Other ID: $otherId");
+    debugPrint("🏠 Generated Room ID: $_socketRoomId");
+    debugPrint("---------------------------------------");
 
     if (_socketRoomId != null) {
+      // ✅ Join Room
       socketService.joinRoom(_socketRoomId!);
-      socketService.openChat(_socketRoomId!);
       
+      // ✅ Listeners
       socketService.onReceiveMessage(_onMessageReceived);
       
-      // ✅ FIX: Typing Indicator Logic
       socketService.socket?.on("typing", (data) {
          if (data == _socketRoomId && mounted) setState(() => _isOtherTyping = true);
       });
@@ -126,7 +143,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
          if (data == _socketRoomId && mounted) setState(() => _isOtherTyping = false);
       });
 
-      // ✅ FIX: Status Update (Blue Ticks)
+      // ✅ FIX: Ye wala code aadha tha, maine pura kar diya
       socketService.socket?.on("messageStatusUpdate", (data) {
         if (!mounted) return;
         setState(() {
@@ -138,7 +155,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
           // Bulk Seen Update
           if (data["status"] == "seen") {
              for (var msg in _messages) {
-               if (getSafeId(msg["senderId"]).toLowerCase() == myId) {
+               if (getSafeId(msg["senderId"]) == myId) {
                  msg["status"] = "seen";
                }
              }
@@ -154,7 +171,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   }
 
   void _markAsSeen(String roomId) {
-    final myId = getSafeId(_derivedChatifyId ?? widget.me).toLowerCase();
+    final myId = getSafeId(_derivedChatifyId ?? widget.me);
     socketService.socket?.emit("markAsSeen", {
       "roomId": roomId,
       "userId": myId,
@@ -173,6 +190,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   Future<void> _smartLoadHistory(String primaryId, String backupId) async {
     bool success = await _fetchHistory(primaryId);
     if (!success && _messages.isEmpty) {
+        print("⚠️ Primary Room ID empty, trying fallback...");
         await _fetchHistory(backupId);
     }
   }
@@ -193,9 +211,9 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
                 "_id": m["_id"], 
                 "message": m["message"],
                 "type": m["type"] ?? "text", 
-                "senderId": getSafeId(m["senderId"]).toLowerCase(), 
+                "senderId": getSafeId(m["senderId"]), 
                 "time": m["createdAt"] ?? DateTime.now().toString(),
-                "status": m["status"] ?? "sent" // Server se status load karo
+                "status": m["status"] ?? "sent"
               }));
               _isLoading = false;
             });
@@ -227,8 +245,8 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   void _onMessageReceived(dynamic data) {
     if (!mounted) return;
     
-    final incomingSenderId = getSafeId(data["senderId"]).trim().toLowerCase();
-    final myId = getSafeId(_derivedChatifyId ?? widget.me).trim().toLowerCase();
+    final incomingSenderId = getSafeId(data["senderId"]);
+    final myId = getSafeId(_derivedChatifyId ?? widget.me);
 
     if (incomingSenderId == myId) return; 
 
@@ -241,7 +259,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         "time": DateTime.now().toString(),
         "status": "seen"
       });
-      _isOtherTyping = false; // Message aate hi typing band
+      _isOtherTyping = false;
     });
     _scrollToBottom();
     
@@ -280,9 +298,11 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
 
   void _sendMessage(String content, String type) {
     if (content.isEmpty || _socketRoomId == null) return;
-    final myId = getSafeId(_derivedChatifyId ?? widget.me).trim().toLowerCase();
+    final myId = getSafeId(_derivedChatifyId ?? widget.me);
 
     final tempId = DateTime.now().toString(); 
+    
+    // UI Update (Optimistic)
     setState(() {
       _messages.add({
         "_id": tempId,
@@ -290,19 +310,19 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         "type": type,
         "senderId": myId,
         "time": DateTime.now().toString(),
-        "status": "sent" // Initially sent
+        "status": "sent"
       });
     });
 
-    socketService.socket?.emit("sendMessage", {
-      "roomId": _socketRoomId,
-      "message": content,
-      "type": type, 
-      "senderId": myId,
-      "receiverId": widget.other,
-      "clientId": tempId,
-    });
+    // Socket Emit
+    socketService.sendMessage(
+        roomId: _socketRoomId!, 
+        message: content, 
+        senderId: myId, 
+        receiverId: widget.other
+    );
 
+    // API Call (Backup & Notification)
     http.post(Uri.parse("$baseUrl/api/messages"),
       headers: {"Authorization": "Bearer ${widget.jwt}", "Content-Type": "application/json"},
       body: jsonEncode({
@@ -320,13 +340,11 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     _scrollToBottom();
   }
 
-  // 🔥 UPDATED: OPEN VIDEO CALL SCREEN (PASS ACTIVE SOCKET)
   void _openVideoCall() {
     if (socketService.socket == null || !socketService.socket!.connected) {
        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Chat Disconnected. Reconnecting...")));
        return;
     }
-
     Navigator.push(
       context, 
       MaterialPageRoute(
@@ -334,19 +352,17 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
           targetId: widget.other, 
           name: widget.otherName,
           callType: 'video', 
-          socket: socketService.socket, // 🔥 PASSING ACTIVE SOCKET
+          socket: socketService.socket,
         )
       )
     );
   }
 
-  // 🔥 UPDATED: OPEN AUDIO CALL SCREEN (PASS ACTIVE SOCKET)
   void _openAudioCall() {
     if (socketService.socket == null || !socketService.socket!.connected) {
        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Chat Disconnected. Reconnecting...")));
        return;
     }
-
     Navigator.push(
       context, 
       MaterialPageRoute(
@@ -354,7 +370,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
           targetId: widget.other, 
           name: widget.otherName,
           callType: 'audio',
-          socket: socketService.socket, // 🔥 PASSING ACTIVE SOCKET
+          socket: socketService.socket,
         )
       )
     );
@@ -365,7 +381,6 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
       _isRecording = true;
       _recordDuration = 0;
     });
-
     _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _recordDuration++;
@@ -462,7 +477,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final myId = getSafeId(_derivedChatifyId ?? widget.me).toLowerCase();
+    final myId = getSafeId(_derivedChatifyId ?? widget.me);
 
     return Scaffold(
       appBar: AppBar(
@@ -471,7 +486,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
         title: Row(
           children: [
-            CircleAvatar(radius: 18, backgroundColor: Colors.white24, child: const Icon(Icons.person, size: 24, color: Colors.white)),
+            const CircleAvatar(radius: 18, backgroundColor: Colors.white24, child: Icon(Icons.person, size: 24, color: Colors.white)),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,8 +503,8 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         backgroundColor: appPrimary, 
         foregroundColor: Colors.white,
         actions: [
-          IconButton(icon: const Icon(Icons.videocam), onPressed: _openVideoCall), // 🔥 CONNECTED
-          IconButton(icon: const Icon(Icons.call), onPressed: _openAudioCall), // 🔥 CONNECTED
+          IconButton(icon: const Icon(Icons.videocam), onPressed: _openVideoCall), 
+          IconButton(icon: const Icon(Icons.call), onPressed: _openAudioCall),
           IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
         ],
       ),
@@ -510,7 +525,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
                     itemCount: _messages.length,
                     itemBuilder: (_, i) {
                       final msg = _messages[i];
-                      final isMe = getSafeId(msg["senderId"]).toLowerCase() == myId;
+                      final isMe = getSafeId(msg["senderId"]) == myId;
                       return GestureDetector(
                         onLongPress: () => _showMessageOptions(msg, isMe),
                         child: _buildBubble(msg, isMe),
@@ -541,13 +556,12 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     );
   }
 
-  // 🔥 UPDATED: STATUS ICONS (SINGLE/DOUBLE/BLUE)
+  // ✅ BUBBLE WIDGET (Fix: Status Icons)
   Widget _buildBubble(Map<String, dynamic> msg, bool isMe) {
     bool isImage = msg["type"] == "image";
     bool isAudio = msg["type"] == "audio";
     bool isCallLog = msg["type"] == "call_log";
 
-    // Call Log UI
     if (isCallLog) {
        return Center(
          child: Container(
@@ -572,15 +586,15 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
       timeStr = DateFormat('h:mm a').format(dt); 
     } catch(e) { timeStr = ""; }
 
-    IconData statusIcon = Icons.check; // Single Tick (Default)
+    IconData statusIcon = Icons.check; 
     Color statusColor = Colors.white70;
 
     if (msg["status"] == "delivered") {
-      statusIcon = Icons.done_all; // Double Tick
+      statusIcon = Icons.done_all; 
       statusColor = Colors.white70;
     } else if (msg["status"] == "seen") {
       statusIcon = Icons.done_all; 
-      statusColor = Colors.lightBlueAccent; // Blue Tick
+      statusColor = Colors.lightBlueAccent; 
     }
 
     return Align(
@@ -671,7 +685,6 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
             ),
           ),
           const SizedBox(width: 8),
-          
           if (_controller.text.isNotEmpty || _isRecording)
             GestureDetector(
               onTap: _handleSendOrUpdate,
