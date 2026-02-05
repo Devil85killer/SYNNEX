@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const Notification = require('../models/Notification'); // ✅ Ensure 'models/Notification.js' exists
+const Notification = require('../models/Notification'); // ✅ Ensure path is correct
 
-// 1. Create a Notification (Backend se ya API se)
+// ==========================================
+// 1. CREATE A NOTIFICATION
+// ==========================================
 router.post('/', async (req, res) => {
   const { recipientId, senderId, type, message, relatedId } = req.body;
 
@@ -16,14 +18,22 @@ router.post('/', async (req, res) => {
     });
 
     const savedNotif = await newNotif.save();
-    res.status(200).json(savedNotif);
+
+    // ✅ Wrapper Fix: Frontend ko consistent data milega
+    res.status(200).json({ 
+      success: true, 
+      notification: savedNotif 
+    });
+
   } catch (err) {
-    console.error("Error creating notification:", err);
-    res.status(500).json({ error: err.message });
+    console.error("❌ Error creating notification:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// 2. Get Notifications for a User
+// ==========================================
+// 2. GET NOTIFICATIONS FOR A USER
+// ==========================================
 router.get('/:userId', async (req, res) => {
   try {
     // User ki saari notifications lao (Latest pehle)
@@ -31,34 +41,62 @@ router.get('/:userId', async (req, res) => {
       recipientId: req.params.userId 
     }).sort({ createdAt: -1 });
 
-    res.status(200).json(notifications);
+    // ✅ Wrapper Fix: Array ko direct nahi bhej rahe
+    res.status(200).json({ 
+      success: true, 
+      notifications: notifications 
+    });
+
   } catch (err) {
-    console.error("Error fetching notifications:", err);
-    res.status(500).json({ error: err.message });
+    console.error("❌ Error fetching notifications:", err);
+    // Error mein bhi empty list bhejo taaki app crash na ho
+    res.status(500).json({ success: false, notifications: [], error: err.message });
   }
 });
 
-// 3. Mark Notification as Read
+// ==========================================
+// 3. MARK NOTIFICATION AS READ
+// ==========================================
 router.put('/:id/read', async (req, res) => {
   try {
     const updatedNotif = await Notification.findByIdAndUpdate(
       req.params.id,
       { isRead: true },
-      { new: true }
+      { new: true } // Returns the updated document
     );
-    res.status(200).json(updatedNotif);
+
+    if (!updatedNotif) {
+      return res.status(404).json({ success: false, message: "Notification not found" });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      notification: updatedNotif 
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// 4. Delete Notification
+// ==========================================
+// 4. DELETE NOTIFICATION
+// ==========================================
 router.delete('/:id', async (req, res) => {
   try {
-    await Notification.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Notification deleted" });
+    const deletedNotif = await Notification.findByIdAndDelete(req.params.id);
+
+    if (!deletedNotif) {
+      return res.status(404).json({ success: false, message: "Notification not found" });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Notification deleted successfully" 
+    });
+
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

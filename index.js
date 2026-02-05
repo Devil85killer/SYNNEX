@@ -8,17 +8,20 @@ const mongoose = require("mongoose");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
-const admin = require("firebase-admin"); // 🔥 Notification ke liye zaroori module
+const admin = require("firebase-admin"); 
 
 /* ================= FIREBASE ADMIN SETUP ================= */
 // ⚠️ Ensure 'firebase-service-account.json' is in your backend root folder
-const serviceAccount = require("./firebase-service-account.json"); 
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-  console.log("🔥 Firebase Admin SDK Initialized Successfully");
+try {
+  const serviceAccount = require("./firebase-service-account.json"); 
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    console.log("🔥 Firebase Admin SDK Initialized Successfully");
+  }
+} catch (e) {
+  console.log("⚠️ Firebase Warning: service-account file missing or invalid.");
 }
 
 /* ================= APP & SERVER ================= */
@@ -35,7 +38,7 @@ const io = new Server(server, {
 
 /* ================= MIDDLEWARE ================= */
 app.use(cors());
-app.use(express.json()); // JSON data handle karne ke liye
+app.use(express.json()); 
 
 /* ================= DATABASE CONNECTION ================= */
 mongoose
@@ -49,15 +52,15 @@ mongoose
 /* ================= API ROUTES ================= */
 console.log("📌 Registering API routes...");
 
-// 🔐 AUTH (Token & FCM management)
+// 🔐 AUTH
 app.use("/api/auth", require("./routes/auth"));
 console.log("➡️  /api/auth registered");
 
-// 💬 CHATS (Room management)
+// 💬 CHATS
 app.use("/api/chats", require("./routes/chats"));
 console.log("➡️  /api/chats registered");
 
-// 📨 MESSAGES (Chat history & Notification trigger)
+// 📨 MESSAGES
 app.use("/api/messages", require("./routes/messages"));
 console.log("➡️  /api/messages registered");
 
@@ -65,9 +68,13 @@ console.log("➡️  /api/messages registered");
 app.use("/api/reactions", require("./routes/reactions"));
 console.log("➡️  /api/reactions registered");
 
-// 📞 CALLS (Call logs & Call notifications)
+// 📞 CALLS
 app.use("/api/calls", require("./routes/calls")); 
 console.log("➡️  /api/calls registered");
+
+// 🔔 NOTIFICATIONS (🔥 YE MISSING THA, AB ADD KAR DIYA)
+app.use("/api/notifications", require("./routes/notifications"));
+console.log("➡️  /api/notifications registered");
 
 /* ================= SOCKET STATE ================= */
 const onlineUsers = new Map();
@@ -91,7 +98,7 @@ io.on("connection", (socket) => {
   );
 });
 
-/* ================= HEALTH CHECK & DOCS ================= */
+/* ================= HEALTH CHECK ================= */
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
@@ -102,8 +109,9 @@ app.get("/", (req, res) => {
 
 /* ================= SERVER START ================= */
 const PORT = process.env.PORT || 3000;
-// '0.0.0.0' daalne se mobile connect ho payega
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server is live on port ${PORT}`);
+  // Note: Ye IP hardcoded hai, agar tera WiFi change hua to ye IP badal sakti hai (ipconfig check karna)
   console.log(`✅ Mobile Access URL: http://10.67.251.188:${PORT}`);
 });

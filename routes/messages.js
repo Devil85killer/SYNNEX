@@ -2,22 +2,22 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
 
-// 1. Add Message (Send)
+// 1. Add Message (API se send karne ke liye - Optional fallback)
 router.post('/', async (req, res) => {
-  const { chatId, senderId, text, type, mediaUrl } = req.body;
+  // NOTE: 'roomId' use kar rahe hain taaki Socket code se match kare
+  const { roomId, senderId, text, type, mediaUrl } = req.body;
   
   const newMessage = new Message({
-    chatId,
+    roomId,       // Database field name match hona chahiye
     senderId,
     text,
-    type,       // text, image, video etc.
-    mediaUrl    // agar file hai toh url
+    type: type || 'text', // Default to text
+    mediaUrl
   });
 
   try {
     const savedMessage = await newMessage.save();
     
-    // ✅ FIX: Wrapper lagaya (Consistency ke liye)
     res.status(200).json({ 
       success: true, 
       message: savedMessage 
@@ -28,14 +28,17 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 2. Get Messages of a Chat (History)
-router.get('/:chatId', async (req, res) => {
+// 2. Get Messages of a Chat Room (History Load karna)
+router.get('/:roomId', async (req, res) => {
   try {
-    const messages = await Message.find({
-      chatId: req.params.chatId
-    });
+    const { roomId } = req.params;
 
-    // ✅ FIX: Wrapper lagaya (Taaki Frontend crash na ho)
+    // Database mein check karo
+    const messages = await Message.find({
+      roomId: roomId 
+    }).sort({ createdAt: 1 }); // Oldest message first (Chat flow ke liye sahi hai)
+
+    // Wrapper lagaya taaki frontend 'data.messages' read kar sake
     res.status(200).json({ 
       success: true, 
       messages: messages 

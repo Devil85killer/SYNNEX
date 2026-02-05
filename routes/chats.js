@@ -1,34 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const Chat = require('../models/chat'); // Model check kar lena (models/chat.js)
+// Ensure karna ki model file ka naam sahi ho (Chat.js ya chat.js)
+const Chat = require('../models/chat'); 
 const User = require('../models/User');
 
-// 1. Create or Get Chat Room
+// 1. Create or Get Existing Chat Room
 router.post('/', async (req, res) => {
-  const { senderId, receiverId } = req.body; // chatifyUserIds (MongoDB _id)
+  const { senderId, receiverId } = req.body; 
 
   try {
-    // Check agar chat pehle se hai
+    // Check agar in dono ke beech pehle se chat hai
+    // $all ka matlab: Members array mein ye dono hone chahiye
     let chat = await Chat.findOne({
       members: { $all: [senderId, receiverId] }
     });
 
     if (chat) {
-      // ✅ FIX: Wrapper lagaya (Existing Chat)
+      // Agar chat mil gayi, wahi return kar do
       return res.status(200).json({ 
         success: true, 
         chat 
       });
     }
 
-    // Naya Chat banao
+    // Agar nahi mili, toh nayi banao
     const newChat = new Chat({
       members: [senderId, receiverId]
     });
 
     const savedChat = await newChat.save();
     
-    // ✅ FIX: Wrapper lagaya (New Chat)
     res.status(200).json({ 
       success: true, 
       chat: savedChat 
@@ -39,14 +40,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 2. Get User's Chats
+// 2. Get User's All Chats (Dashboard list ke liye)
 router.get('/:userId', async (req, res) => {
   try {
+    // Wo saare chats dhundo jisme ye user shaamil hai
     const chats = await Chat.find({
       members: { $in: [req.params.userId] }
     });
     
-    // ✅ FIX: Wrapper lagaya (Ab Chat List error nahi degi)
     res.status(200).json({ 
       success: true, 
       chats 

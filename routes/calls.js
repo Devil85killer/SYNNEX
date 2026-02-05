@@ -1,19 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const Call = require('../models/Call'); // ✅ Ensure 'models/Call.js' exists
+const Call = require('../models/Call'); // Ensure filename matches exactly (Call.js)
 
-// 1. Log a New Call
+// ==========================================
+// 1. LOG A NEW CALL (Call Start/End par hit hoga)
+// ==========================================
 router.post('/', async (req, res) => {
-  console.log("📞 LOGGING CALL:", req.body); // Debug Log
+  console.log("📞 LOGGING CALL REQUEST:", req.body);
+  
   const { callerId, receiverId, type, status, duration } = req.body;
 
   try {
     const newCall = new Call({
       callerId,
       receiverId,
-      type,
-      status,
-      duration
+      type: type || 'audio', // Default to audio if missing
+      status: status || 'ended',
+      duration: duration || 0
     });
 
     const savedCall = await newCall.save();
@@ -21,7 +24,7 @@ router.post('/', async (req, res) => {
     res.status(200).json({ 
       success: true, 
       call: savedCall,
-      data: savedCall // Backup key
+      data: savedCall // Backup key for safety
     });
 
   } catch (err) {
@@ -30,9 +33,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 2. Get Call History (FIXED FOR NULL ERROR)
+// ==========================================
+// 2. GET CALL HISTORY (User specific)
+// ==========================================
 router.get('/:userId', async (req, res) => {
-  console.log("📥 FETCHING CALLS FOR:", req.params.userId); // Debug Log
+  // console.log("📥 FETCHING CALLS FOR:", req.params.userId); // Logs kam karne ke liye comment kiya
 
   try {
     const calls = await Call.find({
@@ -40,20 +45,18 @@ router.get('/:userId', async (req, res) => {
         { callerId: req.params.userId }, 
         { receiverId: req.params.userId }
       ]
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 }); // Latest call first
     
-    console.log(`✅ Found ${calls.length} calls`);
-
-    // 🔥 UNIVERSAL FIX: Bhejo 'calls' BHI aur 'data' BHI
+    // 🔥 UNIVERSAL FIX: Dono keys bhej rahe hain taaki Frontend crash na ho
     res.status(200).json({ 
       success: true, 
-      calls: calls, // Agar app 'calls' dhoond raha hai
-      data: calls   // Agar app 'data' dhoond raha hai
+      calls: calls, // Standard key
+      data: calls   // Backup key (agar purana code 'data' dhoond raha ho)
     });
 
   } catch (err) {
     console.error("❌ Error fetching calls:", err);
-    // Even on error, send empty list to prevent App Crash
+    // Error aane par bhi empty list bhejo taaki Red Screen na aaye
     res.status(500).json({ success: false, calls: [], data: [], error: err.message });
   }
 });
