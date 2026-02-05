@@ -1,21 +1,34 @@
-module.exports = (io, socket, onlineUsers) => {
-  console.log(`💬 Chat socket initialized for: ${socket.id}`);
+const Message = require('../models/Message'); // Matches Capital 'M'
+const Chat = require('../models/chat');       // Matches small 'c'
 
-  // User online hone par handle karein
+module.exports = (io, socket, onlineUsers) => {
   socket.on("register_user", (userId) => {
     onlineUsers.set(userId, socket.id);
-    console.log(`👤 User ${userId} is now online`);
+    console.log(`👤 User Online: ${userId}`);
   });
 
-  // Message bhejne ke liye
-  socket.on("send_message", (data) => {
+  socket.on("send_message", async (data) => {
+    // 1. DB Save
+    try {
+      if(data.chatId){
+          const newMessage = new Message({ 
+            chatId: data.chatId, 
+            senderId: data.senderId, 
+            text: data.message 
+          });
+          await newMessage.save();
+          
+          await Chat.findByIdAndUpdate(data.chatId, { 
+            lastMessage: data.message, 
+            lastMessageTime: new Date() 
+          });
+      }
+    } catch (e) { console.log("DB Error:", e); }
+
+    // 2. Real-time Send
     const receiverSocketId = onlineUsers.get(data.receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("receive_message", data);
     }
-  });
-
-  socket.on("disconnect", () => {
-    console.log("❌ Chat socket disconnected");
   });
 };
