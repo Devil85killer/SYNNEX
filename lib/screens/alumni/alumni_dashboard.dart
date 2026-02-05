@@ -12,7 +12,7 @@ import 'alumni_my_jobs.dart';
 import 'alumni_chat_list.dart';
 
 // ✅ COMMON JOB FEED
-import 'package:college_app/screens/jobs/common_job_feed_page.dart';
+import 'package:SYNNEX/screens/jobs/common_job_feed_page.dart';
 
 class AlumniDashboard extends StatefulWidget {
   const AlumniDashboard({super.key});

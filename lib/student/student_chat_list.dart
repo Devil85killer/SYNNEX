@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart'; // kIsWeb ke liye
 
 // ✅ IMPORT FIX: Ensure path is correct
-import 'package:college_app/screens/chat/channel_page.dart'; 
+import 'package:SYNNEX/screens/chat/channel_page.dart'; 
 
 class StudentChatListPage extends StatefulWidget {
   const StudentChatListPage({super.key});
