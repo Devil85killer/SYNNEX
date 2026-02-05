@@ -1,30 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const Chat = require('../models/chat'); // Matches small 'c' filename
+const Chat = require('../models/chat'); // Model ka naam check kar lena (file: models/chat.js)
+const User = require('../models/User');
 
-// Create Chat
-router.post('/create', async (req, res) => {
-    const { userA, userB } = req.body;
-    try {
-        let chat = await Chat.findOne({ participants: { $all: [userA, userB] } });
-        if (!chat) {
-            chat = new Chat({ participants: [userA, userB] });
-            await chat.save();
-        }
-        res.json({ success: true, chat });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+// 1. Create or Get Chat Room
+router.post('/', async (req, res) => {
+  const { senderId, receiverId } = req.body; // chatifyUserIds (MongoDB _id)
+
+  try {
+    // Check agar chat pehle se hai
+    let chat = await Chat.findOne({
+      members: { $all: [senderId, receiverId] }
+    });
+
+    if (chat) {
+      return res.status(200).json(chat);
     }
+
+    // Naya Chat banao
+    const newChat = new Chat({
+      members: [senderId, receiverId]
+    });
+
+    const savedChat = await newChat.save();
+    res.status(200).json(savedChat);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
-// Get Chats
+// 2. Get User's Chats
 router.get('/:userId', async (req, res) => {
-    try {
-        const chats = await Chat.find({ participants: req.params.userId }).sort({ updatedAt: -1 });
-        res.json({ success: true, chats });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  try {
+    const chats = await Chat.find({
+      members: { $in: [req.params.userId] }
+    });
+    res.status(200).json(chats);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;

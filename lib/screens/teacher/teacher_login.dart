@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../services/chatify_auth_service.dart';
+import '../../main.dart'; // ✅ IMPORTED for 'connectSocket'
 
 import 'teacher_dashboard.dart';
 import 'teacher_register.dart';
@@ -33,25 +34,18 @@ class _TeacherLoginState extends State<TeacherLogin> {
       final password = _passwordController.text.trim();
 
       if (email.isEmpty || password.isEmpty) {
-        setState(() {
-          _error = "Email and password are required";
-        });
-        return;
+        throw Exception("Email and password are required");
       }
 
       // 🔐 FIREBASE AUTH LOGIN
-      final credential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       final user = credential.user;
       if (user == null) {
-        setState(() {
-          _error = "Login failed";
-        });
-        return;
+        throw Exception("Login failed");
       }
 
       final uid = user.uid;
@@ -63,40 +57,36 @@ class _TeacherLoginState extends State<TeacherLogin> {
           .get();
 
       if (!teacherDoc.exists) {
-        setState(() {
-          _error = "No teacher data found";
-        });
-        return;
+        throw Exception("No teacher data found");
       }
 
       final teacherData = teacherDoc.data()!;
       final profileCompleted = teacherData['profileCompleted'] == true;
       final teacherName = teacherData['name'] ?? "Teacher";
 
-      // 🔥 CHATIFY SYNC (ALWAYS SAFE TO CALL)
+      // 🔥 CHATIFY SYNC
       final chatifyData = await ChatifyAuthService.syncUser(
         firebaseUser: user,
         role: "teacher",
         name: teacherName,
       );
 
-      // 🔥 AUTO SAVE (CORE SOLUTION)
-      // 1️⃣ users collection (ROLE ONLY)
-      await FirebaseFirestore.instance
-          .collection("users")
-          .doc(uid)
-          .set({
+      // 🔥 AUTO SAVE (Safety for Firestore)
+      await FirebaseFirestore.instance.collection("users").doc(uid).set({
         "role": "teacher",
       }, SetOptions(merge: true));
 
-      // 2️⃣ teachers collection (CHATIFY DATA)
-      await FirebaseFirestore.instance
-          .collection("teachers")
-          .doc(uid)
-          .set({
+      await FirebaseFirestore.instance.collection("teachers").doc(uid).set({
         "chatifyUserId": chatifyData["chatifyUserId"],
         "chatifyJwt": chatifyData["token"],
       }, SetOptions(merge: true));
+
+      // 🔌 CONNECT SOCKET IMMEDIATELY
+      final token = chatifyData["token"];
+      if (token != null) {
+        print("🔌 Connecting Socket for Teacher...");
+        connectSocket(token);
+      }
 
       if (!mounted) return;
 
@@ -137,7 +127,7 @@ class _TeacherLoginState extends State<TeacherLogin> {
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = e.toString().replaceAll("Exception:", "").trim();
       });
     } finally {
       if (mounted) {
@@ -180,7 +170,6 @@ class _TeacherLoginState extends State<TeacherLogin> {
                 ),
               ),
               const SizedBox(height: 20),
-
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -190,9 +179,7 @@ class _TeacherLoginState extends State<TeacherLogin> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 15),
-
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -202,18 +189,14 @@ class _TeacherLoginState extends State<TeacherLogin> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               if (_error != null)
                 Text(
                   _error!,
                   style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
-
               const SizedBox(height: 20),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -230,9 +213,7 @@ class _TeacherLoginState extends State<TeacherLogin> {
                         ),
                 ),
               ),
-
               const SizedBox(height: 15),
-
               GestureDetector(
                 onTap: () {
                   Navigator.pushReplacement(

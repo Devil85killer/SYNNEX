@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../services/chatify_auth_service.dart';
+import '../../main.dart'; // ✅ IMPORTED for 'connectSocket'
 
-// PAGES
 import 'alumni_dashboard.dart';
 import 'alumni_update_profile.dart';
 import 'alumni_register.dart';
@@ -64,17 +64,19 @@ class _AlumniLoginPageState extends State<AlumniLoginPage> {
       final profileCompleted = alumniData['profileCompleted'] == true;
       final alumniName = alumniData['name'] ?? "Alumni";
 
-      // 🔥 CHATIFY SYNC (AUTO + SAFE TO CALL EVERY LOGIN)
-      // 👉 ye function:
-      // - chatify user create/get karega
-      // - JWT generate karega
-      // - users/{uid} me role save karega
-      // - alumni_users/{uid} me chatifyUserId + chatifyJwt save karega
-      await ChatifyAuthService.syncUser(
+      // 🔥 CHATIFY SYNC (Fix: Store in Map first)
+      final chatifyData = await ChatifyAuthService.syncUser(
         firebaseUser: user,
         role: "alumni",
         name: alumniName,
       );
+
+      // 🔥 CONNECT SOCKET (Fix: Extract String token from Map)
+      final token = chatifyData["token"]; // ✅ Yeh hai asli fix
+      if (token != null) {
+        print("🔌 Connecting Socket for Alumni...");
+        connectSocket(token); // Ab ye String hai, error nahi dega
+      }
 
       if (!mounted) return;
 
@@ -135,7 +137,6 @@ class _AlumniLoginPageState extends State<AlumniLoginPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -144,9 +145,7 @@ class _AlumniLoginPageState extends State<AlumniLoginPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 12),
-
               TextField(
                 controller: _passwordController,
                 obscureText: true,
@@ -155,18 +154,14 @@ class _AlumniLoginPageState extends State<AlumniLoginPage> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 12),
-
               if (_error != null)
                 Text(
                   _error!,
                   style: const TextStyle(color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
-
               const SizedBox(height: 16),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -176,9 +171,7 @@ class _AlumniLoginPageState extends State<AlumniLoginPage> {
                       : const Text("Login"),
                 ),
               ),
-
               const SizedBox(height: 10),
-
               TextButton(
                 onPressed: () {
                   Navigator.pushReplacement(

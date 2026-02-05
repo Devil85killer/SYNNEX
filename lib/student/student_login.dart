@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../services/chatify_auth_service.dart';
+import '../../services/chatify_auth_service.dart';
+import '../../main.dart'; // ✅ IMPORTED for 'connectSocket'
+
 import 'student_redirect_handler.dart';
 import 'student_forgot_password.dart';
 import 'student_register.dart';
@@ -61,17 +63,31 @@ class _StudentLoginPageState extends State<StudentLoginPage> {
         throw Exception("Login failed");
       }
 
+      final uid = user.uid;
+
       // 🔥 CHATIFY SYNC (AUTO + SCALE SAFE)
-      // 👉 ye function:
-      // - chatify user create/get karega
-      // - JWT generate karega
-      // - users/{uid} me role save karega
-      // - students/{uid} me chatifyUserId + chatifyJwt save karega
-      await ChatifyAuthService.syncUser(
+      final chatifyData = await ChatifyAuthService.syncUser(
         firebaseUser: user,
         role: "student",
         name: name,
       );
+
+      // 🔥 AUTO SAVE (Safety)
+      await FirebaseFirestore.instance.collection("users").doc(uid).set({
+        "role": "student",
+      }, SetOptions(merge: true));
+
+      await FirebaseFirestore.instance.collection("students").doc(uid).set({
+        "chatifyUserId": chatifyData["chatifyUserId"],
+        "chatifyJwt": chatifyData["token"],
+      }, SetOptions(merge: true));
+
+      // 🔌 CONNECT SOCKET IMMEDIATELY
+      final token = chatifyData["token"];
+      if (token != null) {
+        print("🔌 Connecting Socket for Student...");
+        connectSocket(token);
+      }
 
       if (!mounted) return;
 

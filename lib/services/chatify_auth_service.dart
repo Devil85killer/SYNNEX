@@ -6,12 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class ChatifyAuthService {
+  // ✅ URL Setup (Web & Mobile both point to Render)
   static String get baseUrl {
-    if (kIsWeb) {
-      return "https://synnex.onrender.com/api";
-    } else {
-      return "https://synnex.onrender.com/api";
-    }
+    return "https://synnex.onrender.com/api";
   }
 
   static Future<Map<String, dynamic>> syncUser({
@@ -36,10 +33,9 @@ class ChatifyAuthService {
         debugPrint('🔔 User granted notification permission');
         
         // 🔥 VAPID Key (Sirf Web ke liye zaroori hai)
-        // Ye key tumhare project se mili hai
         const String webVapidKey = "BO7k7SfDVXPv4KjKgsO_ShKHN2CuaRZpCnAg5Tk4zBSVbnRzY21wVLHAp1sAeFshMAfE2pniSYDPtY73vmyL6_E";
 
-        // Token fetch karo (Web ke liye VAPID key pass hogi, Mobile ke liye null)
+        // Token fetch karo
         fcmToken = await messaging.getToken(
           vapidKey: kIsWeb ? webVapidKey : null,
         );
@@ -54,18 +50,23 @@ class ChatifyAuthService {
 
     // 🔥 2. Backend Sync API Call
     final uri = Uri.parse("$baseUrl/auth/sync-user");
+    
+    print("🔄 Syncing User: ${firebaseUser.uid} ($role)");
 
     final res = await http.post(
       uri,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "firebaseUid": firebaseUser.uid,
+        "uid": firebaseUser.uid,          // ✅ FIX: Backend ye maang raha tha
+        "firebaseUid": firebaseUser.uid,  // Backup ke liye rakh lo
         "email": firebaseUser.email,
         "name": name,
         "role": role,
-        "fcmToken": fcmToken, // ✅ Ab ye Web par bhi NULL nahi hoga
+        "fcmToken": fcmToken,             // Web/Mobile token
       }),
     );
+
+    print("📡 Response: ${res.body}");
 
     if (res.statusCode != 200 && res.statusCode != 201) {
       throw Exception("Chatify sync failed: ${res.body}");
@@ -73,8 +74,10 @@ class ChatifyAuthService {
 
     final data = jsonDecode(res.body);
 
-    final chatifyUserId = data["user"]["chatifyUserId"];
-    final token = data["token"];
+    // ✅ Safety Check: Kabhi kabhi response structure alag ho sakta hai
+    // Agar data['user']['_id'] hai toh wo lo, nahi toh data['user']['chatifyUserId']
+    final chatifyUserId = data['user']['_id'] ?? data['user']['chatifyUserId'];
+    final token = data['token'];
 
     if (chatifyUserId == null || token == null) {
       throw Exception("Invalid Chatify response: Missing IDs or Token");
@@ -102,13 +105,14 @@ class ChatifyAuthService {
       {
         "chatifyUserId": chatifyUserId,
         "chatifyJwt": token,
-        "fcmToken": fcmToken, // ✅ Firestore mein backup
+        "fcmToken": fcmToken,
       },
       SetOptions(merge: true),
     );
 
     debugPrint("✅ CHATIFY SYNC DONE → Correct ID Saved: $chatifyUserId");
 
+    // Map return karo taaki login page isme se token nikal sake
     return {
       "chatifyUserId": chatifyUserId,
       "token": token,

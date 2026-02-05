@@ -1,5 +1,5 @@
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import '../main.dart' as app_main; // ✅ ACCESS GLOBAL SOCKET
+import '../main.dart' as app_main; // ✅ Global Socket access
 
 class SocketService {
   static final SocketService _instance = SocketService._internal();
@@ -8,85 +8,83 @@ class SocketService {
 
   // 🔥 CORE FIX: Apna naya socket mat banao, Main.dart wala use karo!
   IO.Socket? get socket {
-    if (app_main.socket != null && app_main.socket!.connected) {
+    if (app_main.socket != null) {
       return app_main.socket;
     }
     return null;
   }
 
   // Helper check
-  bool get _ready => socket != null;
-
-  // ⚠️ Note: connect() function hata diya hai kyunki main.dart connect karega.
+  bool get _ready => socket != null && socket!.connected;
 
   /// 👤 JOIN USER (Online Status)
   void joinUser(String chatifyUserId) {
-    if (_ready) {
+    if (socket != null) {
+      // Backend ke hisaab se event name 'join' ya 'register_user' ho sakta hai
       socket!.emit("join", chatifyUserId);
-      print("✅ SocketService: Joined as User: $chatifyUserId");
+      print("✅ SocketService: User Joined: $chatifyUserId");
     }
   }
 
   /// 🚪 JOIN ROOM
   void joinRoom(String roomId) {
-    if (_ready) {
-      socket!.emit("joinRoom", roomId); 
+    if (socket != null) {
+      socket!.emit("joinRoom", roomId);
       print("✅ SocketService: Joined Room: $roomId");
-    } else {
-      print("⚠️ SocketService: Cannot join room, socket disconnected");
     }
   }
 
   /// 🚪 LEAVE ROOM
   void leaveRoom(String roomId) {
-    if (_ready) {
+    if (socket != null) {
       socket!.emit("leaveRoom", roomId);
     }
   }
 
   /// 👀 OPEN CHAT
   void openChat(String roomId) {
-    if (_ready) {
+    if (socket != null) {
       socket!.emit("open_chat", {"roomId": roomId});
     }
   }
 
-  /// 📤 SEND MESSAGE
+  /// 📤 SEND MESSAGE (Fixed: clientId is now Optional)
   void sendMessage({
     required String roomId,
     required String receiverId,
     required String message,
-    required String clientId,
-    required String senderId, 
+    required String senderId,
+    String? clientId, // 👈 FIX: Isko optional (?) bana diya
   }) {
-    if (!_ready) {
-      print("❌ SocketService: Cannot send message, socket disconnected");
+    if (socket == null) {
+      print("❌ SocketService: Cannot send message, socket is null");
       return;
     }
+
+    print("📤 Sending Message to $roomId");
 
     socket!.emit("sendMessage", {
       "roomId": roomId,
       "message": message,
-      "senderId": senderId, 
+      "senderId": senderId,
       "receiverId": receiverId,
-      "clientId": clientId,
+      "clientId": clientId ?? "android_client", // 👈 Default value de di
     });
   }
 
   /// 📥 RECEIVE MESSAGE
   void onReceiveMessage(Function(dynamic data) handler) {
-    // Duplicate listeners avoid karne ke liye pehle off karo
-    socket?.off("receiveMessage");
+    socket?.off("receiveMessage"); // Duplicate listeners hatana zaroori hai
     socket?.on("receiveMessage", handler);
   }
 
   /// 🟢 TYPING INDICATORS
   void sendTyping(String roomId) {
-    if (_ready) socket!.emit("typing", roomId);
+    if (socket != null) socket!.emit("typing", roomId);
   }
 
   void sendStopTyping(String roomId) {
-    if (_ready) socket!.emit("stopTyping", roomId);
+    if (socket != null) socket!.emit("stopTyping", roomId);
   }
 
   void onTyping(Function(dynamic) handler) {
@@ -99,12 +97,11 @@ class SocketService {
     socket?.on("stopTyping", handler);
   }
 
-  /// 🔴 DISCONNECT (Sirf Listeners hatao, connection mat kato)
+  /// 🔴 DISCONNECT (Listeners safai)
   void disconnect() {
-    // Hum actual socket disconnect nahi karenge kyunki wo calls ke liye bhi chahiye.
-    // Bas listeners clean kar denge.
     socket?.off("receiveMessage");
     socket?.off("typing");
     socket?.off("stopTyping");
+    print("🔌 SocketService: Disconnected listeners");
   }
 }

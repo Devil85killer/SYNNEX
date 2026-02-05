@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:college_app/screens/chat/common_chat_room.dart';
+import 'package:synnex/screens/chat/common_chat_room.dart';
 
 class JobDetailPage extends StatelessWidget {
   final String jobId;

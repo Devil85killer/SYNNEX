@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:SYNNEX/screens/admin/manage_courses/branches/branch_list.dart'; // ✅ Correct import
+import 'package:synnex/screens/admin/manage_courses/branches/branch_list.dart'; // ✅ Correct import
 
 class ManageCourses extends StatefulWidget {
   const ManageCourses({super.key});

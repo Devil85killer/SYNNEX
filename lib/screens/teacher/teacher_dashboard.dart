@@ -12,7 +12,7 @@ import 'teacher_attendance.dart';
 import 'teacher_profile.dart';
 
 // ✅ COMMON JOB FEED
-import 'package:SYNNEX/screens/jobs/common_job_feed_page.dart';
+import 'package:synnex/screens/jobs/common_job_feed_page.dart';
 
 // HOD PAGES
 import '../teacher_hod/hod_students_page.dart';
