@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Call = require('../models/Call'); // ✅ Ensure 'models/Call.js' exists
 
-// 1. Log a New Call (Save Call History)
+// 1. Log a New Call
 router.post('/', async (req, res) => {
+  console.log("📞 LOGGING CALL:", req.body); // Debug Log
   const { callerId, receiverId, type, status, duration } = req.body;
 
   try {
@@ -11,44 +12,49 @@ router.post('/', async (req, res) => {
       callerId,
       receiverId,
       type,
-      status, // 'missed', 'accepted', etc.
+      status,
       duration
     });
 
     const savedCall = await newCall.save();
     
-    // ✅ FIX: Wrapper lagaya (Backend ab Object bhejega, seedha data nahi)
     res.status(200).json({ 
       success: true, 
-      call: savedCall 
+      call: savedCall,
+      data: savedCall // Backup key
     });
 
   } catch (err) {
-    console.error("Error logging call:", err);
+    console.error("❌ Error logging call:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// 2. Get Call History for a User
+// 2. Get Call History (FIXED FOR NULL ERROR)
 router.get('/:userId', async (req, res) => {
+  console.log("📥 FETCHING CALLS FOR:", req.params.userId); // Debug Log
+
   try {
-    // Wo saare calls dhoondo jahan user ya toh Caller tha ya Receiver
     const calls = await Call.find({
       $or: [
         { callerId: req.params.userId }, 
         { receiverId: req.params.userId }
       ]
-    }).sort({ createdAt: -1 }); // Latest pehle dikhao
+    }).sort({ createdAt: -1 });
     
-    // ✅ FIX: Wrapper lagaya (Ab Frontend ko 'success' field milega)
+    console.log(`✅ Found ${calls.length} calls`);
+
+    // 🔥 UNIVERSAL FIX: Bhejo 'calls' BHI aur 'data' BHI
     res.status(200).json({ 
       success: true, 
-      calls: calls 
+      calls: calls, // Agar app 'calls' dhoond raha hai
+      data: calls   // Agar app 'data' dhoond raha hai
     });
 
   } catch (err) {
-    console.error("Error fetching calls:", err);
-    res.status(500).json({ success: false, error: err.message });
+    console.error("❌ Error fetching calls:", err);
+    // Even on error, send empty list to prevent App Crash
+    res.status(500).json({ success: false, calls: [], data: [], error: err.message });
   }
 });
 
