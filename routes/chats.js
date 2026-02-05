@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Chat = require('../models/chat'); // Model ka naam check kar lena (file: models/chat.js)
+const Chat = require('../models/chat'); // Model check kar lena (models/chat.js)
 const User = require('../models/User');
 
 // 1. Create or Get Chat Room
@@ -14,7 +14,11 @@ router.post('/', async (req, res) => {
     });
 
     if (chat) {
-      return res.status(200).json(chat);
+      // ✅ FIX: Wrapper lagaya (Existing Chat)
+      return res.status(200).json({ 
+        success: true, 
+        chat 
+      });
     }
 
     // Naya Chat banao
@@ -23,9 +27,15 @@ router.post('/', async (req, res) => {
     });
 
     const savedChat = await newChat.save();
-    res.status(200).json(savedChat);
+    
+    // ✅ FIX: Wrapper lagaya (New Chat)
+    res.status(200).json({ 
+      success: true, 
+      chat: savedChat 
+    });
+
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -35,9 +45,15 @@ router.get('/:userId', async (req, res) => {
     const chats = await Chat.find({
       members: { $in: [req.params.userId] }
     });
-    res.status(200).json(chats);
+    
+    // ✅ FIX: Wrapper lagaya (Ab Chat List error nahi degi)
+    res.status(200).json({ 
+      success: true, 
+      chats 
+    });
+
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

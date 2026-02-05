@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
 
-// 1. Add Message
+// 1. Add Message (Send)
 router.post('/', async (req, res) => {
   const { chatId, senderId, text, type, mediaUrl } = req.body;
   
@@ -16,22 +16,26 @@ router.post('/', async (req, res) => {
 
   try {
     const savedMessage = await newMessage.save();
-    res.status(200).json(savedMessage);
+    
+    // ✅ FIX: Wrapper lagaya (Consistency ke liye)
+    res.status(200).json({ 
+      success: true, 
+      message: savedMessage 
+    });
+
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// 2. Get Messages of a Chat (FIXED RESPONSE FORMAT)
+// 2. Get Messages of a Chat (History)
 router.get('/:chatId', async (req, res) => {
   try {
     const messages = await Message.find({
       chatId: req.params.chatId
     });
 
-    // ❌ Purana Code: res.status(200).json(messages);
-    
-    // ✅ Naya Code (Wrapper lagaya):
+    // ✅ FIX: Wrapper lagaya (Taaki Frontend crash na ho)
     res.status(200).json({ 
       success: true, 
       messages: messages 

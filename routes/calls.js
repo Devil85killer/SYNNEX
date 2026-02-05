@@ -16,10 +16,16 @@ router.post('/', async (req, res) => {
     });
 
     const savedCall = await newCall.save();
-    res.status(200).json(savedCall);
+    
+    // ✅ FIX: Wrapper lagaya (Backend ab Object bhejega, seedha data nahi)
+    res.status(200).json({ 
+      success: true, 
+      call: savedCall 
+    });
+
   } catch (err) {
     console.error("Error logging call:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -34,10 +40,15 @@ router.get('/:userId', async (req, res) => {
       ]
     }).sort({ createdAt: -1 }); // Latest pehle dikhao
     
-    res.status(200).json(calls);
+    // ✅ FIX: Wrapper lagaya (Ab Frontend ko 'success' field milega)
+    res.status(200).json({ 
+      success: true, 
+      calls: calls 
+    });
+
   } catch (err) {
     console.error("Error fetching calls:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
