@@ -28,21 +28,35 @@ class _CallingScreenState extends State<CallingScreen> {
   void initState() {
     super.initState();
     
+    // UI render hone ke baad WebRTC start karo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.socket != null) {
         print("✅ CallingScreen: Starting Call with Socket");
         _service.init(widget.socket); 
         _service.startCall(context, widget.targetId, widget.name, widget.callType);
       } else {
+        // Agar socket nahi hai toh wapas bhej do
         Navigator.pop(context);
       }
     });
 
+    // Jab samne wala call utha le (Connected)
     if (widget.socket != null) {
       widget.socket.on("call_accepted", (_) {
         if(mounted) setState(() => isConnected = true);
       });
+      
+      // Jab samne wala call kaat de
+      widget.socket.on("call_ended", (_) {
+         if(mounted) Navigator.pop(context);
+      });
     }
+  }
+
+  @override
+  void dispose() {
+    _service.endCall(); // Memory leak rokne ke liye
+    super.dispose();
   }
 
   @override
@@ -53,39 +67,64 @@ class _CallingScreenState extends State<CallingScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. Remote View
+          // 1. REMOTE VIDEO (Full Screen)
           if (isVideo && isConnected)
             Positioned.fill(
-              child: RTCVideoView(_service.remoteRenderer, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+              child: RTCVideoView(
+                _service.remoteRenderer, 
+                objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover
+              ),
             )
           else
+            // Placeholder jab tak connect na ho
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(radius: 80, backgroundColor: Colors.grey.shade800, child: const Icon(Icons.person, size: 80, color: Colors.white)),
+                  CircleAvatar(
+                    radius: 80, 
+                    backgroundColor: Colors.grey.shade800, 
+                    child: const Icon(Icons.person, size: 80, color: Colors.white)
+                  ),
                   const SizedBox(height: 20),
-                  Text(widget.name, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+                  Text(
+                    widget.name, 
+                    style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)
+                  ),
                   const SizedBox(height: 10),
-                  Text(isConnected ? "Connected" : "Calling...", style: const TextStyle(color: Colors.white70, fontSize: 18)),
+                  Text(
+                    isConnected ? "Connected" : "Calling...", 
+                    style: const TextStyle(color: Colors.white70, fontSize: 18)
+                  ),
                 ],
               ),
             ),
 
-          // 2. Local View
+          // 2. LOCAL VIDEO (Self View - Small)
           if (isVideo)
             Positioned(
-              right: 20, bottom: 120,
+              right: 20, 
+              bottom: 120,
               child: Container(
-                width: 100, height: 150,
-                decoration: BoxDecoration(border: Border.all(color: Colors.white), color: Colors.black),
-                child: RTCVideoView(_service.localRenderer, mirror: true, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover),
+                width: 100, 
+                height: 150,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white), 
+                  color: Colors.black
+                ),
+                child: RTCVideoView(
+                  _service.localRenderer, 
+                  mirror: true, 
+                  objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover
+                ),
               ),
             ),
 
-          // 3. Controls
+          // 3. CONTROLS (Mic, End Call, Camera)
           Positioned(
-            bottom: 40, left: 0, right: 0,
+            bottom: 40, 
+            left: 0, 
+            right: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -93,15 +132,21 @@ class _CallingScreenState extends State<CallingScreen> {
                   heroTag: "mic_off",
                   backgroundColor: Colors.white24,
                   child: const Icon(Icons.mic_off, color: Colors.white),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Mute logic here
+                  },
                 ),
                 FloatingActionButton(
                   heroTag: "end_call",
                   backgroundColor: Colors.red,
                   child: const Icon(Icons.call_end, color: Colors.white),
                   onPressed: () {
+                    // Call End Signal Bhejo
                     if (widget.socket != null) {
-                      widget.socket.emit("end_call", {"to": widget.targetId, "reason": "canceled"});
+                      widget.socket.emit("end_call", {
+                        "peerId": widget.targetId, // Server expects peerId
+                        "reason": "canceled"
+                      });
                     }
                     _service.endCall();
                     Navigator.pop(context);
@@ -112,7 +157,9 @@ class _CallingScreenState extends State<CallingScreen> {
                      heroTag: "video_off",
                      backgroundColor: Colors.white24,
                      child: const Icon(Icons.videocam_off, color: Colors.white),
-                     onPressed: () {},
+                     onPressed: () {
+                       // Camera toggle logic
+                     },
                   ),
               ],
             ),

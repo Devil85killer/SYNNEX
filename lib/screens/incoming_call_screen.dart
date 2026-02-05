@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/webrtc_service.dart';
+import '../services/call_service.dart'; // Audio stop karne ke liye
 import 'calling_screen.dart'; 
 
 class IncomingCallScreen extends StatelessWidget {
@@ -13,8 +14,8 @@ class IncomingCallScreen extends StatelessWidget {
     super.key, 
     required this.callerId, 
     required this.callerName,
-    required this.offer,
-    required this.callType,
+    this.offer, // Offer optional ho sakta hai starting mein
+    this.callType = 'video', // Default video
     required this.socket, 
   });
 
@@ -28,17 +29,32 @@ class IncomingCallScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 50),
-          Text("Incoming ${isVideo ? 'Video' : 'Audio'} Call", style: const TextStyle(color: Colors.white54, fontSize: 18)),
+          Text(
+            "Incoming ${isVideo ? 'Video' : 'Audio'} Call", 
+            style: const TextStyle(color: Colors.white54, fontSize: 18)
+          ),
           const SizedBox(height: 30),
-          const CircleAvatar(radius: 70, backgroundColor: Colors.grey, child: Icon(Icons.person, size: 70, color: Colors.white)),
+          
+          // Caller Avatar
+          const CircleAvatar(
+            radius: 70, 
+            backgroundColor: Colors.grey, 
+            child: Icon(Icons.person, size: 70, color: Colors.white)
+          ),
+          
           const SizedBox(height: 20),
-          Text(callerName, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+          Text(
+            callerName, 
+            style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)
+          ),
+          
           const Spacer(),
           
+          // Action Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // DECLINE
+              // 🔴 DECLINE BUTTON
               Column(
                 children: [
                   FloatingActionButton(
@@ -46,10 +62,15 @@ class IncomingCallScreen extends StatelessWidget {
                     backgroundColor: Colors.red,
                     child: const Icon(Icons.call_end, color: Colors.white),
                     onPressed: () {
+                      // 1. Audio band karo
+                      CallService().stopAudio();
+
+                      // 2. Server ko batao ki reject kiya
                       if (socket != null) {
-                        socket.emit("end_call", {"to": callerId, "reason": "rejected"});
+                        socket.emit("reject_call", {"to": callerId});
                       }
-                      WebRTCService().endCall();
+                      
+                      // 3. Screen band karo
                       Navigator.pop(context);
                     },
                   ),
@@ -58,7 +79,7 @@ class IncomingCallScreen extends StatelessWidget {
                 ],
               ),
 
-              // ACCEPT
+              // 🟢 ACCEPT BUTTON
               Column(
                 children: [
                   FloatingActionButton(
@@ -66,10 +87,20 @@ class IncomingCallScreen extends StatelessWidget {
                     backgroundColor: Colors.green,
                     child: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.white),
                     onPressed: () {
-                      // 1. Accept WebRTC
-                      WebRTCService().acceptCall(callerId, offer, callType);
+                      // 1. Audio band karo
+                      CallService().stopAudio();
+
+                      // 2. WebRTC Answer signal bhejo (Future Implementation)
+                      // WebRTCService().acceptCall(callerId, offer, callType);
                       
-                      // 2. Pass Socket to Calling Screen
+                      // 3. Server ko batao ki accept kiya
+                      socket.emit("answer_call", {
+                         "senderId": callerId, // Jisne call ki thi
+                         "to": callerId,      // Usko wapas batao
+                         "answer": "dummy_answer" // WebRTC baad mein
+                      });
+
+                      // 4. Calling Screen par jao
                       Navigator.pushReplacement(
                         context, 
                         MaterialPageRoute(

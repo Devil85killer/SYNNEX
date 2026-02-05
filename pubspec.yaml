@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: "^3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -55,9 +55,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
-  # ✅ ASSETS (Root folder mein hona chahiye)
+
+  # ✅ ASSETS
   assets:
     - assets/sounds/
     - assets/images/
     - assets/icons/
+    - shorebird.yaml
