@@ -27,29 +27,32 @@ module.exports = (io, socket, onlineUsers) => {
         roomId: roomId,
         senderId: senderId,
         receiverId: receiverId,
-        text: message
+        text: message // DB Schema mein 'text' hi hai, isliye yahan 'text' rahega
       });
 
       const savedMsg = await newMessage.save();
       console.log("💾 Message Saved ID:", savedMsg._id);
 
       // --- STEP B: Update Chat List (Chatrooms Collection) ---
-      // ✅ FIX: Ab ye error nahi dega kyunki Schema mein roomId hai
       await Chat.findOneAndUpdate(
         { roomId: roomId }, 
         { 
-          roomId: roomId, // Ensure roomId is set on insert
+          roomId: roomId, 
           lastMessage: message, 
           lastMessageTime: new Date(),
-          members: [senderId, receiverId] // Ensure members exist
+          members: [senderId, receiverId] 
         },
         { upsert: true, new: true, setDefaultsOnInsert: true } 
       ).catch(err => console.log("⚠️ Chat update error:", err.message));
 
-      // --- STEP C: Real-time Send ---
+      // --- STEP C: Real-time Send (MAIN FIX HERE) ---
       io.to(roomId).emit("receiveMessage", {
         senderId: senderId,
-        text: message,
+        
+        // 🔥 FIX: Pehle yahan 'text' tha, ab 'message' kar diya hai
+        // Taaki Frontend bina kisi change ke isse pakad le.
+        message: message, 
+        
         createdAt: savedMsg.createdAt,
         _id: savedMsg._id
       });
