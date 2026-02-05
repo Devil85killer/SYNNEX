@@ -25,8 +25,8 @@ class _CallHistoryPageState extends State<CallHistoryPage> {
   // ⚠️ Emulator: 10.67.251.188, Web: localhost
   // Agar phone pe chala rahe ho toh apne PC ka IP daalo (e.g. 192.168.1.5)
   String get baseUrl {
-    if (kIsWeb) return "http://localhost:3000";
-    return "http://10.67.251.188:3000"; 
+    if (kIsWeb) return "https://synnex.onrender.com";
+    return "https://synnex.onrender.com"; 
   }
 
   @override

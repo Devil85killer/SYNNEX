@@ -8,9 +8,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 class ChatifyAuthService {
   static String get baseUrl {
     if (kIsWeb) {
-      return "http://localhost:3000/api";
+      return "https://synnex.onrender.com/api";
     } else {
-      return "http://10.67.251.188:3000/api";
+      return "https://synnex.onrender.com/api";
     }
   }
 

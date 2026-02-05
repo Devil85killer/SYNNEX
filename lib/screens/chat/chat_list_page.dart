@@ -29,7 +29,7 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
   bool _isLoadingCalls = true;
 
   // ⚠️ Ensure correct URL (Apne system ke hisab se)
-  String get baseUrl => kIsWeb ? "http://localhost:3000" : "http://10.67.251.188:3000";
+  String get baseUrl => kIsWeb ? "https://synnex.onrender.com" : "https://synnex.onrender.com";
 
   @override
   void initState() {

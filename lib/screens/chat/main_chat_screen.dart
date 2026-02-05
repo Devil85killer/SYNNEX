@@ -125,7 +125,7 @@ class ChatListTab extends StatefulWidget {
 class _ChatListTabState extends State<ChatListTab> {
   List<dynamic> _chatList = [];
   bool _isLoading = true;
-  String get baseUrl => kIsWeb ? "http://localhost:3000" : "http://10.67.251.188:3000";
+  String get baseUrl => kIsWeb ? "https://synnex.onrender.com" : "https://synnex.onrender.com";
 
   @override
   void initState() {
@@ -229,7 +229,7 @@ class CallHistoryTab extends StatefulWidget {
 class _CallHistoryTabState extends State<CallHistoryTab> {
   List<dynamic> _calls = [];
   bool _isLoading = true;
-  String get baseUrl => kIsWeb ? "http://localhost:3000" : "http://10.67.251.188:3000";
+  String get baseUrl => kIsWeb ? "https://synnex.onrender.com" : "https://synnex.onrender.com";
 
   @override
   void initState() {

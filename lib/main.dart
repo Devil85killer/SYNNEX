@@ -49,9 +49,9 @@ void connectSocket(String token) {
   if (socket != null && socket!.connected) return;
 
   // ⚠️ IMPORTANT: Replace '192.168.1.5' with your PC's IP address.
-  // If using Android Emulator, use 'http://10.67.251.188:3000'
-  // If using Web, use 'http://localhost:3000'
-  String socketUrl = 'http://localhost:3000'; // Change based on platform
+  // If using Android Emulator, use 'https://synnex.onrender.com'
+  // If using Web, use 'https://synnex.onrender.com'
+  String socketUrl = 'https://synnex.onrender.com'; // Change based on platform
 
   socket = IO.io(socketUrl, IO.OptionBuilder()
       .setTransports(['websocket'])
