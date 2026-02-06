@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart'; 
 import '../main.dart' as app_main; 
 import '../screens/calling_screen.dart';
 import '../screens/incoming_call_screen.dart';
 
 class WebRTCService {
+  // Singleton Logic
   static final WebRTCService _instance = WebRTCService._internal();
   factory WebRTCService() => _instance;
   WebRTCService._internal();
@@ -21,6 +23,7 @@ class WebRTCService {
   bool isCallActive = false;
   dynamic _localSocket;
 
+  // Socket Getter: Local ya Global check karta hai
   dynamic get socket {
     if (_localSocket != null) return _localSocket;
     if (app_main.socket != null) return app_main.socket;
@@ -32,6 +35,9 @@ class WebRTCService {
     'sdpSemantics': 'unified-plan'
   };
 
+  // ==========================================
+  // 1. INIT: Listeners Set Karna
+  // ==========================================
   void init(dynamic socketInstance) {
     _localSocket = socketInstance;
     localRenderer.initialize();
@@ -39,6 +45,7 @@ class WebRTCService {
 
     if (socket == null) return;
 
+    // ✅ Signal 1: Call Accepted
     socket?.on("call_accepted", (data) async {
       _stopAudio();
       _autoCutTimer?.cancel(); 
@@ -50,9 +57,8 @@ class WebRTCService {
       }
     });
 
+    // ✅ Signal 2: ICE Candidate
     socket?.on("ice_candidate", (data) async {
-      // 🔥 FIX: 'remoteDescription' getter error resolved
-      // SignalingState check karke pata chalta hai ki description set ho chuki hai ya nahi
       if (_peerConnection != null && 
           _peerConnection!.signalingState != RTCSignalingState.RTCSignalingStateHaveLocalOffer) {
         var candidate = RTCIceCandidate(
@@ -64,21 +70,32 @@ class WebRTCService {
       }
     });
 
+    // ✅ Signal 3: Call Ended by Remote User
     socket?.on("call_ended", (data) {
+      // Sirf tab handle karo jab saamne wale ne kaata ho
       endCall(isRemote: true);
     });
 
+    // ✅ Signal 4: Error (Busy/Offline)
     socket?.on("call_error", (data) {
       print("❌ WebRTC Call Error: ${data['reason']}");
-      endCall();
+      endCall(isRemote: true); // Error hai toh band kar do
     });
   }
 
-  Future<void> startCall(BuildContext context, String targetId, String name, String callType) async {
+  // ==========================================
+  // 2. CALL START KARNA (Dialing) - 🔥 FIXED
+  // ==========================================
+  Future<void> startCall(BuildContext context, String targetId, String receiverName, String callType) async {
     if (socket == null || isCallActive) return;
 
     isCallActive = true;
     _playAudio('sounds/dialing.mp3');
+
+    // ✅ 1. Get My ID & Name from Storage (Backend needs this)
+    final prefs = await SharedPreferences.getInstance();
+    final String myMongoId = prefs.getString('uid') ?? ""; 
+    final String myName = prefs.getString('name') ?? "Unknown"; 
 
     bool mediaSuccess = await _openUserMedia(callType == 'video'); 
     if (!mediaSuccess) {
@@ -91,20 +108,34 @@ class WebRTCService {
     RTCSessionDescription offer = await _peerConnection!.createOffer();
     await _peerConnection!.setLocalDescription(offer);
 
-    socket?.emit("call_user", {
-      "to": targetId,
-      "offer": {"sdp": offer.sdp, "type": offer.type},
-      "callType": callType 
+    print("🚀 Sending Call Request: $myMongoId -> $targetId ($callType)");
+
+    // 🔥 FIX: Event Name changed from 'call_user' to 'start_call' matches Backend
+    socket?.emit("start_call", {
+      "callerId": myMongoId,       // Backend: data.callerId
+      "receiverId": targetId,      // Backend: data.receiverId
+      "callerName": myName,        // Receiver ko dikhega
+      "callType": callType,
+      "offer": {"sdp": offer.sdp, "type": offer.type}
     });
 
+    // 45 sec baad auto cut agar uthaya nahi
     _autoCutTimer = Timer(const Duration(seconds: 45), () {
       if (isCallActive) {
-        socket?.emit("end_call", {"to": targetId, "reason": "missed_call"});
-        endCall();
+        // 🔥 FIX: Backend ke 'end_call' format se match kiya
+        socket?.emit("end_call", {
+          "callerId": myMongoId, 
+          "peerId": targetId, 
+          "reason": "missed_call"
+        });
+        endCall(isRemote: true); // Timeout ko remote end ki tarah treat karo
       }
     });
   }
 
+  // ==========================================
+  // 3. INCOMING CALL HANDLE KARNA
+  // ==========================================
   Future<void> handleIncomingCall(Map data) async {
     if (isCallActive) {
       socket?.emit("call_error", {"to": data['from'], "reason": "User is Busy"});
@@ -114,21 +145,29 @@ class WebRTCService {
     isCallActive = true;
     _playAudio('sounds/ringtone.mp3');
 
+    // ✅ MongoDB ID nikalna zaroori hai Screen pass karne ke liye
+    final prefs = await SharedPreferences.getInstance();
+    final String myMongoId = prefs.getString('uid') ?? ""; 
+
     if (app_main.navigatorKey.currentState != null) {
       app_main.navigatorKey.currentState!.push(
         MaterialPageRoute(
           builder: (_) => IncomingCallScreen(
             callerId: data['from'], 
-            callerName: data['callerName'] ?? "Unknown", 
+            callerName: data['callerName'] ?? "User", 
             offer: data['offer'],
             callType: data['callType'] ?? 'video',
-            socket: socket, 
+            socket: socket,
+            myId: myMongoId, // 🔥 Passing ID Fixed
           ),
         ),
       );
     }
   }
 
+  // ==========================================
+  // 4. CALL ACCEPT KARNA
+  // ==========================================
   Future<void> acceptCall(String callerId, dynamic remoteOffer, String callType) async {
     _stopAudio();
     _autoCutTimer?.cancel();
@@ -154,6 +193,9 @@ class WebRTCService {
     });
   }
 
+  // ==========================================
+  // 5. END CALL (CRITICAL FIX APPLIED HERE) 🛠️
+  // ==========================================
   void endCall({bool isRemote = false}) {
     isCallActive = false;
     _autoCutTimer?.cancel();
@@ -163,17 +205,28 @@ class WebRTCService {
       _localStream?.getTracks().forEach((track) => track.stop());
       _localStream?.dispose();
       _localStream = null;
+      
       _peerConnection?.close();
       _peerConnection = null;
+      
       localRenderer.srcObject = null;
       remoteRenderer.srcObject = null;
-    } catch (e) { print("Cleanup error: $e"); }
+    } catch (e) { 
+      print("Cleanup error: $e"); 
+    }
 
-    if (app_main.navigatorKey.currentState?.canPop() ?? false) {
-      app_main.navigatorKey.currentState?.pop();
+    // 🔥 FIX: Sirf tab pop karo jab call Remote (Server/Other User) ne kaati ho.
+    // Agar User ne khud Red button dabaya, toh UI already pop ho chuka hai.
+    if (isRemote) {
+      if (app_main.navigatorKey.currentState?.canPop() ?? false) {
+        app_main.navigatorKey.currentState?.pop();
+      }
     }
   }
 
+  // ==========================================
+  // 6. HELPER FUNCTIONS
+  // ==========================================
   Future<bool> _openUserMedia(bool isVideo) async {
     try {
       _localStream = await navigator.mediaDevices.getUserMedia({

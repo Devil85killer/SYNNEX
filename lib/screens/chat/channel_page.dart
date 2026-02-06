@@ -7,10 +7,10 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart' as emoji_picker;
 import 'package:intl/intl.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 
-// ✅ IMPORTS
-import '../services/socket_service.dart';
-import '../services/call_service.dart';
-import 'video_call_screen.dart'; // Ya CallingScreen, jo bhi file name ho
+// ✅ IMPORTS (Relative paths are safer if package name varies)
+import '../../services/socket_service.dart';
+import '../../services/call_service.dart';
+import '../../screens/calling_screen.dart'; // ✅ Corrected path
 
 class ChannelPage extends StatefulWidget {
   final String roomId;
@@ -107,8 +107,6 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     _socketRoomId = ids.join("___"); 
 
     if (_socketRoomId != null) {
-      print("✅ Joining Room: $_socketRoomId");
-
       // 1. Join Room
       socketService.joinRoom(_socketRoomId!);
       
@@ -117,16 +115,14 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
       
       // 🔵 BLUE TICKS LISTENER
       socketService.socket?.on("messages_seen", (data) {
-        if (data['roomId'] == _socketRoomId) {
-           if(mounted) {
-             setState(() {
-               for (var msg in _messages) {
-                 if (msg['senderId'] == widget.me && msg['status'] != 'seen') {
-                   msg['status'] = 'seen';
-                 }
-               }
-             });
-           }
+        if (data['roomId'] == _socketRoomId && mounted) {
+          setState(() {
+            for (var msg in _messages) {
+              if (msg['senderId'] == widget.me && msg['status'] != 'seen') {
+                msg['status'] = 'seen';
+              }
+            }
+          });
         }
       });
 
@@ -346,14 +342,14 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
        return;
     }
 
-    // Call Service se Call Start karo
+    // Call Service se Call Start karo (Service Logic)
     CallService().startCall(context, socketService.socket, widget.other, widget.otherName, widget.me);
     
-    // Navigate to Call Screen
-    Navigator.push(context, MaterialPageRoute(builder: (_) => VideoCallScreen(
+    // ✅ FIXED: Using 'CallingScreen' (not VideoCallScreen) & passing correct params
+    Navigator.push(context, MaterialPageRoute(builder: (_) => CallingScreen(
       targetId: widget.other, 
       name: widget.otherName, 
-      isCaller: true,
+      callType: type, // ✅ 'audio' or 'video'
       socket: socketService.socket,
       myId: widget.me, // 🔥 Important for history
     )));

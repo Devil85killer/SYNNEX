@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // ✅ Added: ID fetch karne ke liye
 import '../screens/incoming_call_screen.dart';
 import '../main.dart'; // NavigatorKey yahan se aana chahiye
 
@@ -18,7 +19,7 @@ class CallService {
   void initialize(dynamic socket, BuildContext context) {
     print("👂 CallService Started: Listening for incoming calls...");
 
-    // Server 'incoming_call' bhej raha hai (Server logic line 108)
+    // Server 'incoming_call' bhej raha hai
     socket.on("incoming_call", (data) {
       print("🔔 Incoming Call Data: $data");
       handleIncomingCall(socket, data);
@@ -36,29 +37,25 @@ class CallService {
     });
   }
 
-  // 🟢 2. START CALL (Updated for Server Match)
-  // 'myUserId' pass karna zaroori hai kyunki server ko 'callerId' chahiye
+  // 🟢 2. START CALL
   void startCall(BuildContext context, dynamic socket, String targetId, String name, String myUserId) {
     isCallActive = true;
     
     print("🚀 Sending Call Request to Server...");
-    print("Event: start_call");
-    print("Data: receiverId: $targetId, callerId: $myUserId");
-
-    // 🔥 FIX: Keys ab Server.js (Line 95) se match kar rahi hain
+    
     socket.emit("start_call", {
-      "receiverId": targetId,  // Server expects 'receiverId'
-      "callerId": myUserId,    // Server expects 'callerId'
+      "receiverId": targetId,  
+      "callerId": myUserId,    
       "callerName": name,
       "callType": "video",
-      "offer": "dummy_offer_for_now" // Baad mein WebRTC offer yahan aayega
+      "offer": "dummy_offer_for_now" 
     });
 
     // Dialing Sound
     _playAudio('sounds/dialing.mp3');
 
     // 30 Second Timeout
-    _autoCutTimer = Timer(Duration(seconds: 30), () {
+    _autoCutTimer = Timer(const Duration(seconds: 30), () {
       if (isCallActive) {
         print("⏳ Call Timeout - No Answer");
         socket.emit("end_call", {"peerId": targetId, "reason": "missed_call"});
@@ -67,17 +64,21 @@ class CallService {
     });
   }
 
-  // 🔔 3. HANDLE INCOMING CALL
-  void handleIncomingCall(dynamic socket, Map data) {
+  // 🔔 3. HANDLE INCOMING CALL (FIXED HERE)
+  Future<void> handleIncomingCall(dynamic socket, Map data) async {
     if (isCallActive) {
-      // Agar user pehle se busy hai
       socket.emit("call_failed", {"reason": "User is busy"});
       return;
     }
 
     isCallActive = true;
-    String callerId = data['from']; // Server sends 'from'
+    String callerId = data['from']; 
     String callerName = data['callerName'] ?? "Unknown Caller";
+    String callType = data['callType'] ?? 'video';
+
+    // 🔥 FIX: SharedPreferences se apni ID nikalo
+    final prefs = await SharedPreferences.getInstance();
+    final String myId = prefs.getString('uid') ?? ""; 
 
     print("📲 Showing Incoming Screen for $callerName");
 
@@ -92,6 +93,8 @@ class CallService {
             socket: socket, 
             callerId: callerId, 
             callerName: callerName,
+            myId: myId, // ✅ ERROR SOLVED: Passing fetched ID
+            callType: callType, // ✅ Passing Call Type
           ),
         ),
       );
@@ -114,8 +117,7 @@ class CallService {
   void _playAudio(String path) async {
     try {
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-      await _audioPlayer.setSource(AssetSource(path));
-      await _audioPlayer.resume();
+      await _audioPlayer.play(AssetSource(path));
     } catch (e) {
       print("⚠️ Audio Error: $e");
     }

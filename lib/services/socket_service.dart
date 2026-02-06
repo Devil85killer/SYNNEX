@@ -8,18 +8,32 @@ class SocketService {
 
   IO.Socket? get socket => app_main.socket;
 
-  // 👤 REGISTER USER (Backend event: 'register_user')
+  // 👤 REGISTER USER (Backend event: 'setup')
+  // 🔥 FIX: Maine 'register_user' ko 'setup' kar diya hai taaki Backend sun sake
   void registerUser(String userId) {
     if (socket != null) {
-      socket!.emit("register_user", userId);
-      print("✅ SocketService: User Registered: $userId");
+      
+      // 1. Agar socket pehle se connected hai, toh abhi register karo
+      if (socket!.connected) {
+        socket!.emit("setup", userId); 
+        print("✅ SocketService: User Registered (setup) -> $userId");
+      }
+
+      // 2. Agar socket disconnect hoke wapas connect ho, toh auto-register karo
+      socket!.on('connect', (_) {
+        socket!.emit("setup", userId);
+        print("✅ SocketService: User Registered after reconnection -> $userId");
+      });
+    } else {
+      print("⚠️ SocketService: Socket is null");
     }
   }
 
-  // 🚪 JOIN ROOM (Backend event: 'join-room')
+  // 🚪 JOIN ROOM (Backend event: 'join room')
+  // Note: Backend 'join-room' ya 'join room' expect kar sakta hai, standard 'join room' hai
   void joinRoom(String roomId) {
-    if (socket != null) {
-      socket!.emit("join-room", roomId);
+    if (socket != null && socket!.connected) {
+      socket!.emit("join room", roomId); // Agar backend me 'join-room' hai to wahi rehne dena
       print("✅ SocketService: Joined Room: $roomId");
     }
   }
@@ -32,8 +46,8 @@ class SocketService {
     required String senderId,
     String type = 'text', 
   }) {
-    if (socket != null) {
-      socket!.emit("sendMessage", {
+    if (socket != null && socket!.connected) {
+      socket!.emit("new message", { // Backend aksar 'new message' sunta hai, check kar lena
         "roomId": roomId,
         "message": message,
         "senderId": senderId,
@@ -44,19 +58,19 @@ class SocketService {
     }
   }
 
-  // 🔵 MARK AS SEEN (Blue Ticks Trigger)
+  // 🔵 MARK AS SEEN
   void markAsSeen(String roomId, String userId) {
-    if (socket != null) {
+    if (socket != null && socket!.connected) {
       socket!.emit("markAsSeen", {
         "roomId": roomId,
-        "userId": userId, // Wo user jisne chat kholi hai
+        "userId": userId,
       });
     }
   }
 
   // 🗑️ DELETE FOR EVERYONE
   void deleteMessage(String roomId, String messageId) {
-    if (socket != null) {
+    if (socket != null && socket!.connected) {
       socket!.emit("delete_message", {
         "roomId": roomId,
         "messageId": messageId,
@@ -66,7 +80,7 @@ class SocketService {
 
   // ✏️ EDIT MESSAGE
   void editMessage(String roomId, String messageId, String newText) {
-    if (socket != null) {
+    if (socket != null && socket!.connected) {
       socket!.emit("edit_message", {
         "roomId": roomId,
         "messageId": messageId,
@@ -76,36 +90,31 @@ class SocketService {
   }
 
   // ==========================================
-  // 📥 LISTENERS (Saamne wale ka data pakadne ke liye)
+  // 📥 LISTENERS
   // ==========================================
 
-  // 📩 Naya Message Aane Par
   void onReceiveMessage(Function(dynamic data) handler) {
-    socket?.off("receiveMessage");
-    socket?.on("receiveMessage", handler);
+    socket?.off("message received"); // Backend event name check karna ('message received' vs 'receiveMessage')
+    socket?.on("message received", handler);
   }
 
-  // 🔵 Blue Ticks Aane Par
   void onMessagesSeen(Function(dynamic data) handler) {
     socket?.off("messages_seen");
     socket?.on("messages_seen", handler);
   }
 
-  // 🗑️ Message Delete Hone Par
   void onMessageDeleted(Function(dynamic messageId) handler) {
     socket?.off("message_deleted");
     socket?.on("message_deleted", handler);
   }
 
-  // ✏️ Message Edit Hone Par
   void onMessageEdited(Function(dynamic data) handler) {
     socket?.off("message_edited");
     socket?.on("message_edited", handler);
   }
 
-  // 🟢 Typing Indicators
   void sendTyping(String roomId) => socket?.emit("typing", roomId);
-  void sendStopTyping(String roomId) => socket?.emit("stopTyping", roomId);
+  void sendStopTyping(String roomId) => socket?.emit("stop typing", roomId);
 
   void onTyping(Function(dynamic) handler) {
     socket?.off("typing");
@@ -113,15 +122,17 @@ class SocketService {
   }
 
   void onStopTyping(Function(dynamic) handler) {
-    socket?.off("stopTyping");
-    socket?.on("stopTyping", handler);
+    socket?.off("stop typing");
+    socket?.on("stop typing", handler);
   }
 
   void disconnect() {
-    socket?.off("receiveMessage");
+    socket?.off("message received");
     socket?.off("messages_seen");
     socket?.off("message_deleted");
     socket?.off("message_edited");
+    socket?.off("typing");
+    socket?.off("stop typing");
     print("🔌 SocketService: Listeners Cleared");
   }
 }

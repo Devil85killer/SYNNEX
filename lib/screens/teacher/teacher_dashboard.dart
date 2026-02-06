@@ -53,18 +53,23 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
 
-      // 2. Fetch Teacher's JWT from Firestore
+      // 2. Fetch Teacher's JWT & MongoID from Firestore
       final userDoc = await FirebaseFirestore.instance
           .collection('teachers')
           .doc(uid)
           .get();
 
       if (userDoc.exists) {
-        final jwt = userDoc.data()?['chatifyJwt'];
-        if (jwt != null) {
-          // 3. Main.dart ka connect logic call karo
-          connectSocket(jwt); 
-          print("🚀 Teacher Dashboard: Reconnection attempt started");
+        final data = userDoc.data();
+        if (data != null) {
+          final jwt = data['chatifyJwt'];
+          final myMongoId = data['chatifyUserId']; // ✅ FIX: MongoID bhi nikala
+
+          // ✅ FIX: Ab Token aur ID dono bhej rahe hain
+          if (jwt != null && myMongoId != null) {
+            connectSocket(jwt, myMongoId); 
+            print("🚀 Teacher Dashboard: Reconnection attempt started for ID: $myMongoId");
+          }
         }
       }
     } catch (e) {

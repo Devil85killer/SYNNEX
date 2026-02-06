@@ -15,7 +15,7 @@ class CallingScreen extends StatefulWidget {
     required this.name,
     required this.callType,
     required this.socket,
-    required this.myId, // ✅ Constructor update
+    required this.myId,
   });
 
   @override
@@ -39,26 +39,48 @@ class _CallingScreenState extends State<CallingScreen> {
         _service.init(widget.socket); 
         _service.startCall(context, widget.targetId, widget.name, widget.callType);
       } else {
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       }
     });
 
     if (widget.socket != null) {
-      // ✅ Call Uthne par
+      // ✅ 1. Call Uthne par
       widget.socket.on("call_accepted", (_) {
-        if(mounted) setState(() => isConnected = true);
+        if (mounted) setState(() => isConnected = true);
       });
       
-      // ✅ Call Katne par
+      // ✅ 2. Call Katne par (Remote User ne kaata)
       widget.socket.on("call_ended", (_) {
-         if(mounted) Navigator.pop(context);
+         if (mounted) Navigator.pop(context);
+      });
+
+      // ✅ 3. Call Failed (Offline/Busy) - Naya Feature
+      widget.socket.on("call_failed", (data) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Call Failed: ${data['reason']}"),
+              backgroundColor: Colors.red,
+            )
+          );
+          Navigator.pop(context);
+        }
       });
     }
   }
 
   @override
   void dispose() {
-    _service.endCall();
+    // 🛡️ SECURITY FIX: Sabse pehle listeners hatao
+    if (widget.socket != null) {
+      widget.socket.off("call_accepted");
+      widget.socket.off("call_ended");
+      widget.socket.off("call_failed");
+    }
+
+    // 🔥 WebRTC Cleanup
+    _service.endCall(); 
+    
     super.dispose();
   }
 
@@ -103,7 +125,7 @@ class _CallingScreenState extends State<CallingScreen> {
               ),
             ),
 
-          // 2. LOCAL VIDEO (Self View - Pip)
+          // 2. LOCAL VIDEO (Self View - PiP)
           if (isVideo)
             Positioned(
               right: 20, 
@@ -137,27 +159,29 @@ class _CallingScreenState extends State<CallingScreen> {
                   backgroundColor: isMicOn ? Colors.white24 : Colors.white,
                   child: Icon(isMicOn ? Icons.mic : Icons.mic_off, color: isMicOn ? Colors.white : Colors.black),
                   onPressed: () {
-                    // Toggle Mic logic (Future implementation)
+                    // Note: Actual Mute logic _service.toggleMic() mein hona chahiye
                     setState(() => isMicOn = !isMicOn);
                   },
                 ),
                 
-                // End Call Button
+                // 🔴 END CALL BUTTON (FIXED)
                 FloatingActionButton(
                   heroTag: "end_call",
                   backgroundColor: Colors.red,
                   child: const Icon(Icons.call_end, color: Colors.white),
                   onPressed: () {
-                    // 🔥 IMPORTANT: Send Data to Backend to Save History
+                    // 🔥 IMPORTANT: Server ko batao
                     if (widget.socket != null) {
                       widget.socket.emit("end_call", {
-                        "callerId": widget.myId,   // ✅ Ye field history save karegi
-                        "peerId": widget.targetId, // ✅ Ye room close karegi
+                        "callerId": widget.myId,   
+                        "peerId": widget.targetId, 
                         "callType": widget.callType,
                         "duration": 0
                       });
                     }
-                    _service.endCall();
+
+                    // ❌ Yahan _service.endCall() mat likhna!
+                    // ✅ Bas pop karo, dispose() khud cleanup karega.
                     Navigator.pop(context);
                   },
                 ),
@@ -170,7 +194,7 @@ class _CallingScreenState extends State<CallingScreen> {
                       child: Icon(isCameraOn ? Icons.videocam : Icons.videocam_off, color: isCameraOn ? Colors.white : Colors.black),
                       onPressed: () {
                         setState(() => isCameraOn = !isCameraOn);
-                        // Toggle Camera Logic
+                        // Toggle Camera Logic here
                       },
                   ),
               ],

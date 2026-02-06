@@ -26,55 +26,61 @@ import 'screens/admin/admin_dashboard.dart';
 // ================= DEPARTMENT =================
 import 'screens/department/department_login.dart';
 
-// 🔥 1. GLOBAL NAVIGATOR KEY (Call Screen Popup ke liye zaroori)
+
+// 🔥 GLOBAL NAVIGATOR KEY
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-// 🔥 2. GLOBAL SOCKET VARIABLE (Puri App mein access karne ke liye)
+// 🔥 GLOBAL SOCKET VARIABLE
 IO.Socket? socket;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 🔥 FIREBASE INIT
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(const SynergyApp());
 }
 
-/// 🔥 3. SOCKET CONNECTION FUNCTION
-/// Is function ko apne Login Page par call karna jab user login ho jaye (Token milne ke baad).
-void connectSocket(String token) {
-  if (socket != null && socket!.connected) return;
+/// 🔥 SOCKET CONNECTION FUNCTION (UPDATED)
+/// Ab ye 2 cheezein leta hai: Token aur MongoDB ID
+void connectSocket(String token, String myMongoId) {
+  if (socket != null) {
+    socket!.disconnect();
+  }
 
-  // ⚠️ IMPORTANT: Replace '192.168.1.5' with your PC's IP address.
-  // If using Android Emulator, use 'https://synnex.onrender.com'
-  // If using Web, use 'https://synnex.onrender.com'
-  String socketUrl = 'https://synnex.onrender.com'; // Change based on platform
+  // ⚠️ LOCALHOST KE LIYE IP CHANGE KARO (e.g., 'http://192.168.1.5:3000')
+  String socketUrl = 'https://synnex.onrender.com'; 
 
-  socket = IO.io(socketUrl, IO.OptionBuilder()
-      .setTransports(['websocket'])
-      .disableAutoConnect()
-      .setAuth({'token': token}) // JWT Token bhejna zaroori hai
-      .build());
+  try {
+    socket = IO.io(socketUrl, IO.OptionBuilder()
+        .setTransports(['websocket'])
+        .disableAutoConnect()
+        .setAuth({'token': token}) 
+        .build());
 
-  socket!.connect();
+    socket!.connect();
 
-  socket!.onConnect((_) {
-    print("✅ Socket Connected via main.dart: ${socket!.id}");
-    
-    // ✅ 4. INIT WEBRTC SERVICE
-    WebRTCService().init(socket);
-  });
+    socket!.onConnect((_) {
+      print("✅ Socket Connected: ${socket!.id}");
+      
+      // 🔥 USER REGISTER KARNA SERVER PAR
+      socket!.emit("setup", myMongoId); 
+      
+      // WebRTC Init
+      WebRTCService().init(socket);
+    });
 
-  socket!.onDisconnect((_) => print("❌ Socket Disconnected"));
+    socket!.onDisconnect((_) => print("❌ Socket Disconnected"));
 
-  // ✅ 5. GLOBAL LISTENER FOR INCOMING CALLS
-  socket!.on("incoming_call", (data) {
-    print("🔔 Incoming Call Received globally: $data");
-    WebRTCService().handleIncomingCall(data);
-  });
+    // INCOMING CALL LISTENER
+    socket!.on("incoming_call", (data) {
+      print("🔔 Incoming Call: $data");
+      WebRTCService().handleIncomingCall(data);
+    });
+
+  } catch (e) {
+    print("⚠️ Socket Error: $e");
+  }
 }
 
 class SynergyApp extends StatelessWidget {
@@ -85,11 +91,7 @@ class SynergyApp extends StatelessWidget {
     return MaterialApp(
       title: "Synergy Institute App",
       debugShowCheckedModeBanner: false,
-
-      // 🔥 6. KEY LINK KARO
       navigatorKey: navigatorKey,
-
-      // ✅ LOCALIZATION
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -98,53 +100,27 @@ class SynergyApp extends StatelessWidget {
       supportedLocales: const [
         Locale('en'),
       ],
-
-      // ✅ WELCOME PAGE
       home: const WelcomePage(),
-
       routes: {
-        // -------- STUDENT --------
         '/student_login': (_) => const StudentLoginPage(),
-        '/student_dashboard': (_) => StudentDashboard(),
-
-        // -------- TEACHER --------
         '/teacher_login': (_) => const TeacherLogin(),
-        '/teacher_dashboard': (_) => TeacherDashboard(),
-
-        // -------- ALUMNI --------
         '/alumni_login': (_) => const AlumniLoginPage(),
-        '/alumni_dashboard': (_) => AlumniDashboard(),
-
-        // -------- ADMIN --------
         '/admin_login': (_) => const AdminLoginPage(),
-        '/admin_dashboard': (_) => AdminDashboard(),
-
-        // -------- DEPARTMENT --------
         '/department_login': (_) => const DepartmentLogin(),
       },
     );
   }
 }
 
-// =======================================
-//            WELCOME PAGE
-// =======================================
-
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
-  Widget loginButton({
-    required String title,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
+  Widget loginButton({required String title, required IconData icon, required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       child: Card(
         elevation: 6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         child: SizedBox(
           height: 110,
           width: 280,
@@ -154,13 +130,7 @@ class WelcomePage extends StatelessWidget {
               children: [
                 Icon(icon, size: 32, color: Colors.blue),
                 const SizedBox(width: 14),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -174,49 +144,25 @@ class WelcomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "WELCOME TO SYNERGY INSTITUTE OF ENGINEERING & TECHNOLOGY",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text("WELCOME TO SYNERGY INSTITUTE", textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               ),
-            ),
-            const SizedBox(height: 40),
-
-            loginButton(
-              title: "Student Login",
-              icon: Icons.school,
-              onTap: () => Navigator.pushNamed(context, '/student_login'),
-            ),
-            const SizedBox(height: 15), // Spacing
-            loginButton(
-              title: "Teacher Login",
-              icon: Icons.person,
-              onTap: () => Navigator.pushNamed(context, '/teacher_login'),
-            ),
-            const SizedBox(height: 15),
-            loginButton(
-              title: "Alumni Login",
-              icon: Icons.people_alt,
-              onTap: () => Navigator.pushNamed(context, '/alumni_login'),
-            ),
-            const SizedBox(height: 15),
-            loginButton(
-              title: "Admin Login",
-              icon: Icons.admin_panel_settings,
-              onTap: () => Navigator.pushNamed(context, '/admin_login'),
-            ),
-            const SizedBox(height: 15),
-            loginButton(
-              title: "Department Login",
-              icon: Icons.account_balance,
-              onTap: () => Navigator.pushNamed(context, '/department_login'),
-            ),
-          ],
+              const SizedBox(height: 40),
+              loginButton(title: "Student Login", icon: Icons.school, onTap: () => Navigator.pushNamed(context, '/student_login')),
+              const SizedBox(height: 15),
+              loginButton(title: "Teacher Login", icon: Icons.person, onTap: () => Navigator.pushNamed(context, '/teacher_login')),
+              const SizedBox(height: 15),
+              loginButton(title: "Alumni Login", icon: Icons.people_alt, onTap: () => Navigator.pushNamed(context, '/alumni_login')),
+              const SizedBox(height: 15),
+              loginButton(title: "Admin Login", icon: Icons.admin_panel_settings, onTap: () => Navigator.pushNamed(context, '/admin_login')),
+              const SizedBox(height: 15),
+              loginButton(title: "Department Login", icon: Icons.account_balance, onTap: () => Navigator.pushNamed(context, '/department_login')),
+            ],
+          ),
         ),
       ),
     );

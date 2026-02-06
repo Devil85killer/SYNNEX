@@ -64,18 +64,23 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
 
-      // 2. Alumni ka JWT Firestore se fetch karo
+      // 2. Alumni ka JWT aur MongoID Firestore se fetch karo
       final userDoc = await FirebaseFirestore.instance
           .collection('alumni_users')
           .doc(uid)
           .get();
 
       if (userDoc.exists) {
-        final jwt = userDoc.data()?['chatifyJwt'];
-        if (jwt != null) {
-          // 3. Main.dart wala global connect function call karo
-          connectSocket(jwt);
-          print("🚀 Alumni Dashboard: Reconnection initiated");
+        final data = userDoc.data();
+        if (data != null) {
+          final jwt = data['chatifyJwt'];
+          final myMongoId = data['chatifyUserId']; // ✅ FIX: MongoID nikala
+
+          // ✅ FIX: Ab Token aur ID dono bhej rahe hain
+          if (jwt != null && myMongoId != null) {
+            connectSocket(jwt, myMongoId); // 👈 FIXED: 2 Arguments Passed
+            print("🚀 Alumni Dashboard: Reconnection initiated for ID: $myMongoId");
+          }
         }
       }
     } catch (e) {
