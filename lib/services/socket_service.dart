@@ -1,91 +1,111 @@
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import '../main.dart' as app_main; // ✅ Global Socket access
+import '../main.dart' as app_main; 
 
 class SocketService {
   static final SocketService _instance = SocketService._internal();
   factory SocketService() => _instance;
   SocketService._internal();
 
-  // 🔥 CORE FIX: Apna naya socket mat banao, Main.dart wala use karo!
-  IO.Socket? get socket {
-    if (app_main.socket != null) {
-      return app_main.socket;
-    }
-    return null;
-  }
+  IO.Socket? get socket => app_main.socket;
 
-  // Helper check
-  bool get _ready => socket != null && socket!.connected;
-
-  /// 👤 JOIN USER (Online Status)
-  void joinUser(String chatifyUserId) {
+  // 👤 REGISTER USER (Backend event: 'register_user')
+  void registerUser(String userId) {
     if (socket != null) {
-      // Backend ke hisaab se event name 'join' ya 'register_user' ho sakta hai
-      socket!.emit("join", chatifyUserId);
-      print("✅ SocketService: User Joined: $chatifyUserId");
+      socket!.emit("register_user", userId);
+      print("✅ SocketService: User Registered: $userId");
     }
   }
 
-  /// 🚪 JOIN ROOM
+  // 🚪 JOIN ROOM (Backend event: 'join-room')
   void joinRoom(String roomId) {
     if (socket != null) {
-      socket!.emit("joinRoom", roomId);
+      socket!.emit("join-room", roomId);
       print("✅ SocketService: Joined Room: $roomId");
     }
   }
 
-  /// 🚪 LEAVE ROOM
-  void leaveRoom(String roomId) {
-    if (socket != null) {
-      socket!.emit("leaveRoom", roomId);
-    }
-  }
-
-  /// 👀 OPEN CHAT
-  void openChat(String roomId) {
-    if (socket != null) {
-      socket!.emit("open_chat", {"roomId": roomId});
-    }
-  }
-
-  /// 📤 SEND MESSAGE (Fixed: clientId is now Optional)
+  // 📤 SEND MESSAGE
   void sendMessage({
     required String roomId,
     required String receiverId,
     required String message,
     required String senderId,
-    String? clientId, // 👈 FIX: Isko optional (?) bana diya
+    String type = 'text', 
   }) {
-    if (socket == null) {
-      print("❌ SocketService: Cannot send message, socket is null");
-      return;
+    if (socket != null) {
+      socket!.emit("sendMessage", {
+        "roomId": roomId,
+        "message": message,
+        "senderId": senderId,
+        "receiverId": receiverId,
+        "type": type,
+      });
+      print("📤 Message Sent to $roomId");
     }
-
-    print("📤 Sending Message to $roomId");
-
-    socket!.emit("sendMessage", {
-      "roomId": roomId,
-      "message": message,
-      "senderId": senderId,
-      "receiverId": receiverId,
-      "clientId": clientId ?? "android_client", // 👈 Default value de di
-    });
   }
 
-  /// 📥 RECEIVE MESSAGE
+  // 🔵 MARK AS SEEN (Blue Ticks Trigger)
+  void markAsSeen(String roomId, String userId) {
+    if (socket != null) {
+      socket!.emit("markAsSeen", {
+        "roomId": roomId,
+        "userId": userId, // Wo user jisne chat kholi hai
+      });
+    }
+  }
+
+  // 🗑️ DELETE FOR EVERYONE
+  void deleteMessage(String roomId, String messageId) {
+    if (socket != null) {
+      socket!.emit("delete_message", {
+        "roomId": roomId,
+        "messageId": messageId,
+      });
+    }
+  }
+
+  // ✏️ EDIT MESSAGE
+  void editMessage(String roomId, String messageId, String newText) {
+    if (socket != null) {
+      socket!.emit("edit_message", {
+        "roomId": roomId,
+        "messageId": messageId,
+        "newText": newText,
+      });
+    }
+  }
+
+  // ==========================================
+  // 📥 LISTENERS (Saamne wale ka data pakadne ke liye)
+  // ==========================================
+
+  // 📩 Naya Message Aane Par
   void onReceiveMessage(Function(dynamic data) handler) {
-    socket?.off("receiveMessage"); // Duplicate listeners hatana zaroori hai
+    socket?.off("receiveMessage");
     socket?.on("receiveMessage", handler);
   }
 
-  /// 🟢 TYPING INDICATORS
-  void sendTyping(String roomId) {
-    if (socket != null) socket!.emit("typing", roomId);
+  // 🔵 Blue Ticks Aane Par
+  void onMessagesSeen(Function(dynamic data) handler) {
+    socket?.off("messages_seen");
+    socket?.on("messages_seen", handler);
   }
 
-  void sendStopTyping(String roomId) {
-    if (socket != null) socket!.emit("stopTyping", roomId);
+  // 🗑️ Message Delete Hone Par
+  void onMessageDeleted(Function(dynamic messageId) handler) {
+    socket?.off("message_deleted");
+    socket?.on("message_deleted", handler);
   }
+
+  // ✏️ Message Edit Hone Par
+  void onMessageEdited(Function(dynamic data) handler) {
+    socket?.off("message_edited");
+    socket?.on("message_edited", handler);
+  }
+
+  // 🟢 Typing Indicators
+  void sendTyping(String roomId) => socket?.emit("typing", roomId);
+  void sendStopTyping(String roomId) => socket?.emit("stopTyping", roomId);
 
   void onTyping(Function(dynamic) handler) {
     socket?.off("typing");
@@ -97,11 +117,11 @@ class SocketService {
     socket?.on("stopTyping", handler);
   }
 
-  /// 🔴 DISCONNECT (Listeners safai)
   void disconnect() {
     socket?.off("receiveMessage");
-    socket?.off("typing");
-    socket?.off("stopTyping");
-    print("🔌 SocketService: Disconnected listeners");
+    socket?.off("messages_seen");
+    socket?.off("message_deleted");
+    socket?.off("message_edited");
+    print("🔌 SocketService: Listeners Cleared");
   }
 }

@@ -7,20 +7,20 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart' as emoji_picker;
 import 'package:intl/intl.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart'; 
 
-// ✅ APNE PROJECT KE SAHI PATH CHECK KAR LENA
-import '../../services/socket_service.dart';
-import '../../services/call_service.dart'; // CallService import for clean audio stop
-import '../calling_screen.dart'; 
+// ✅ IMPORTS
+import '../services/socket_service.dart';
+import '../services/call_service.dart';
+import 'video_call_screen.dart'; // Ya CallingScreen, jo bhi file name ho
 
 class ChannelPage extends StatefulWidget {
   final String roomId;
-  final String me;
-  final String other;
+  final String me; // MongoDB ID of current user
+  final String other; // MongoDB ID of other user
   final String otherName;
   final String jwt;
-  final String? myUid;
+  final String? myUid; // Firebase UID
   final String? myName;
-  final String? otherUid;
+  final String? otherUid; // Firebase UID of other user
 
   const ChannelPage({
     super.key,
@@ -45,7 +45,6 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   final SocketService socketService = SocketService(); 
   final ImagePicker _picker = ImagePicker(); 
   
-  String? _derivedChatifyId; 
   String? _socketRoomId; 
   bool _isLoading = true;
   String? _editingMessageId; 
@@ -60,11 +59,11 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   Timer? _typingTimer;
 
   // WhatsApp Colors
-  final Color appPrimary = const Color(0xFF075E54); // WhatsApp Teal
-  final Color bgCanvas = const Color(0xFFE5DDD5);   // WhatsApp Chat BG
-  final Color bubbleMy = const Color(0xFFDCF8C6);   // Light Green
+  final Color appPrimary = const Color(0xFF075E54); 
+  final Color bgCanvas = const Color(0xFFE5DDD5);   
+  final Color bubbleMy = const Color(0xFFDCF8C6);   
   final Color bubbleOther = Colors.white;   
-  final Color textMy = Colors.black87;              // Black text on green bubble
+  final Color textMy = Colors.black87;              
   final Color textOther = Colors.black87;
 
   // ⚠️ BACKEND URL
@@ -102,30 +101,27 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   }
 
   void _initializeChat() async {
-    _parseJwt();
-    
-    final myId = getSafeId(_derivedChatifyId ?? widget.me).trim();
-    final otherId = getSafeId(widget.other).trim();
-    
-    final List<String> ids = [myId, otherId];
+    // Room ID Logic: Sorted IDs se room banta hai taaki unique rahe
+    final List<String> ids = [widget.me, widget.other];
     ids.sort(); 
     _socketRoomId = ids.join("___"); 
 
     if (_socketRoomId != null) {
+      print("✅ Joining Room: $_socketRoomId");
+
       // 1. Join Room
       socketService.joinRoom(_socketRoomId!);
       
-      // 2. Listeners
+      // 2. Listeners Setup
       socketService.onReceiveMessage(_onMessageReceived);
       
-      // 🔵 REAL-TIME BLUE TICKS LISTENER
+      // 🔵 BLUE TICKS LISTENER
       socketService.socket?.on("messages_seen", (data) {
         if (data['roomId'] == _socketRoomId) {
-           debugPrint("🔵 Seen Event Received: Updating Ticks");
            if(mounted) {
              setState(() {
                for (var msg in _messages) {
-                 if (getSafeId(msg['senderId']) == myId && msg['status'] != 'seen') {
+                 if (msg['senderId'] == widget.me && msg['status'] != 'seen') {
                    msg['status'] = 'seen';
                  }
                }
@@ -134,17 +130,33 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         }
       });
 
-      // 🗑️ REAL-TIME DELETE LISTENER
+      // 🗑️ DELETE LISTENER
       socketService.socket?.on("message_deleted", (msgId) {
-        debugPrint("🗑️ Realtime Delete: $msgId");
         if(mounted) {
           setState(() {
-            _messages.removeWhere((m) => m["_id"] == msgId);
+             // Message remove mat karo, text replace karo WhatsApp ki tarah
+             final index = _messages.indexWhere((m) => m["_id"] == msgId);
+             if(index != -1) {
+               _messages[index]["message"] = "🚫 This message was deleted";
+               _messages[index]["deletedForEveryone"] = true;
+             }
           });
         }
       });
 
-      // Typing Indicators
+      // ✏️ EDIT LISTENER
+      socketService.socket?.on("message_edited", (data) {
+         if(mounted) {
+           setState(() {
+             final index = _messages.indexWhere((m) => m["_id"] == data['messageId']);
+             if(index != -1) {
+               _messages[index]["message"] = data['newText'];
+             }
+           });
+         }
+      });
+
+      // ⌨️ TYPING INDICATORS
       socketService.socket?.on("typing", (data) {
          if (data == _socketRoomId && mounted) setState(() => _isOtherTyping = true);
       });
@@ -153,43 +165,46 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
       });
       
       // 3. Load History
-      await _smartLoadHistory(_socketRoomId!);
+      await _loadHistory(_socketRoomId!);
+      
+      // 4. Mark as Seen (immediately)
       _markAsSeen(_socketRoomId!);
     }
   }
 
   void _markAsSeen(String roomId) {
-    final myId = getSafeId(_derivedChatifyId ?? widget.me);
     socketService.socket?.emit("markAsSeen", {
       "roomId": roomId,
-      "userId": myId,
+      "userId": widget.me,
     });
   }
 
-  Future<void> _smartLoadHistory(String targetRoomId) async {
+  Future<void> _loadHistory(String targetRoomId) async {
     try {
       final res = await http.get(
         Uri.parse("$baseUrl/api/messages/$targetRoomId"),
-        headers: {"Authorization": "Bearer ${widget.jwt}", "Content-Type": "application/json"},
+        headers: {"Authorization": "Bearer ${widget.jwt}"},
       );
 
       if (res.statusCode == 200) {
         final decoded = jsonDecode(res.body);
         List rawList = [];
-        if (decoded is List) rawList = decoded;
-        else if (decoded['messages'] != null) rawList = decoded['messages'];
-        else if (decoded['data'] != null) rawList = decoded['data'];
+        
+        if (decoded['success'] == true) {
+           rawList = decoded['messages'] ?? [];
+        }
 
         if (mounted) {
           setState(() {
             _messages.clear();
             _messages.addAll(rawList.map((m) => {
               "_id": m["_id"], 
-              "message": m["text"] ?? m["message"] ?? "", 
+              "message": m["deletedForEveryone"] == true ? "🚫 This message was deleted" : (m["text"] ?? m["message"] ?? ""), 
               "type": m["type"] ?? "text", 
-              "senderId": getSafeId(m["senderId"]), 
+              "senderId": m["senderId"], 
               "time": m["createdAt"] ?? DateTime.now().toString(),
-              "status": m["status"] ?? "sent"
+              "status": m["status"] ?? "sent",
+              "deletedForEveryone": m["deletedForEveryone"] ?? false
             }));
             _isLoading = false;
           });
@@ -203,43 +218,26 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     }
   }
 
-  void _parseJwt() {
-    try {
-      if (widget.jwt.isEmpty) return;
-      final parts = widget.jwt.split('.');
-      if (parts.length != 3) return;
-      final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
-      _derivedChatifyId = payload['chatifyUserId']?.toString();
-    } catch (e) {}
-  }
-
-  String getSafeId(dynamic id) {
-    if (id == null) return "";
-    if (id is Map) return id['chatifyUserId']?.toString().trim() ?? id['_id']?.toString().trim() ?? "";
-    return id.toString().trim();
-  }
-
   void _onMessageReceived(dynamic data) {
     if (!mounted) return;
-    final incomingSenderId = getSafeId(data["senderId"]);
-    final myId = getSafeId(_derivedChatifyId ?? widget.me);
+    final incomingSenderId = data["senderId"];
 
-    if (incomingSenderId == myId) return; 
+    if (incomingSenderId == widget.me) return; // Skip own messages loopback
 
     setState(() {
       _messages.add({
         "_id": data["_id"] ?? DateTime.now().toString(), 
-        "message": data["text"] ?? data["message"] ?? "",
+        "message": data["message"] ?? data["text"] ?? "",
         "type": data["type"] ?? "text",
         "senderId": incomingSenderId,
         "time": DateTime.now().toString(),
-        "status": "seen" // Turant seen mark kar rahe hain kyunki screen khuli hai
+        "status": "seen", // Turant seen mark kar rahe hain
+        "deletedForEveryone": false
       });
       _isOtherTyping = false;
     });
     _scrollToBottom();
     
-    // Server ko batao ki maine dekh liya
     if (_socketRoomId != null) {
       _markAsSeen(_socketRoomId!);
     }
@@ -248,6 +246,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   void _onTextChanged(String text) {
     setState(() {}); 
     if (_socketRoomId == null) return;
+    
     if (!_isTyping) {
       _isTyping = true;
       socketService.socket?.emit("typing", _socketRoomId);
@@ -267,7 +266,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     if (_controller.text.trim().isEmpty) return;
 
     if (_editingMessageId != null) {
-      _editMessage();
+      _editMessageApi();
     } else {
       _sendMessage(_controller.text.trim(), "text");
     }
@@ -275,17 +274,18 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
 
   void _sendMessage(String content, String type) async {
     if (content.isEmpty || _socketRoomId == null) return;
-    final myId = getSafeId(_derivedChatifyId ?? widget.me);
-    final tempId = DateTime.now().millisecondsSinceEpoch.toString(); // Temp ID for UI
+    
+    final tempId = DateTime.now().millisecondsSinceEpoch.toString();
 
     setState(() {
       _messages.add({
         "_id": tempId,
         "message": content,
         "type": type,
-        "senderId": myId,
+        "senderId": widget.me,
         "time": DateTime.now().toString(),
-        "status": "sent"
+        "status": "sent",
+        "deletedForEveryone": false
       });
     });
 
@@ -293,62 +293,69 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     socketService.sendMessage(
         roomId: _socketRoomId!, 
         message: content, 
-        senderId: myId, 
-        receiverId: widget.other
+        senderId: widget.me, 
+        receiverId: widget.other,
+        type: type // Added type
     );
 
-    // 2. API Call
+    // 2. API Call (Save to DB)
     try {
       final res = await http.post(Uri.parse("$baseUrl/api/messages"),
         headers: {"Authorization": "Bearer ${widget.jwt}", "Content-Type": "application/json"},
         body: jsonEncode({
           "roomId": _socketRoomId, 
-          "message": content, 
+          "senderId": widget.me, // ✅ Added senderId
+          "text": content, // Backend expects 'text'
           "type": type,
           "senderName": widget.myName ?? "Unknown", 
           "receiverName": widget.otherName 
         })
       );
       
-      // Update ID from Server Response if needed (Optional)
       if(res.statusCode == 200) {
          final data = jsonDecode(res.body);
-         // Find temp message and update ID with server ID for deletion to work properly
+         // Update Temp ID with Real ID from DB
          final index = _messages.indexWhere((m) => m["_id"] == tempId);
-         if(index != -1 && data['data'] != null) {
+         if(index != -1 && data['message'] != null) {
            setState(() {
-             _messages[index]['_id'] = data['data']['_id'];
+             _messages[index]['_id'] = data['message']['_id'];
            });
          }
       }
     } catch (e) {
-      debugPrint("❌ DB Save Error: $e");
+      print("❌ Message Save Error: $e");
     }
     
-    _updateFirestoreList(type == 'image' ? '📷 Photo' : (type == 'audio' ? '🎤 Voice Message' : content));
     _controller.clear();
     setState(() {}); 
     _scrollToBottom();
   }
 
+  // 📞 CALL FEATURES
   void _openVideoCall() {
-    if (socketService.socket == null || !socketService.socket!.connected) {
-       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Chat Disconnected. Reconnecting...")));
-       return;
-    }
-    // CallService se start karo taaki consistency rahe
-    CallService().startCall(context, socketService.socket, widget.other, widget.otherName, getSafeId(_derivedChatifyId ?? widget.me));
-    
-    Navigator.push(context, MaterialPageRoute(builder: (_) => CallingScreen(
-      targetId: widget.other, name: widget.otherName, callType: 'video', socket: socketService.socket,
-    )));
+    _startCall('video');
   }
 
   void _openAudioCall() {
-    // Audio call logic same as video but type change
-    CallService().startCall(context, socketService.socket, widget.other, widget.otherName, getSafeId(_derivedChatifyId ?? widget.me));
-    Navigator.push(context, MaterialPageRoute(builder: (_) => CallingScreen(
-      targetId: widget.other, name: widget.otherName, callType: 'audio', socket: socketService.socket,
+    _startCall('audio');
+  }
+
+  void _startCall(String type) {
+    if (socketService.socket == null || !socketService.socket!.connected) {
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Connecting... Please wait")));
+       return;
+    }
+
+    // Call Service se Call Start karo
+    CallService().startCall(context, socketService.socket, widget.other, widget.otherName, widget.me);
+    
+    // Navigate to Call Screen
+    Navigator.push(context, MaterialPageRoute(builder: (_) => VideoCallScreen(
+      targetId: widget.other, 
+      name: widget.otherName, 
+      isCaller: true,
+      socket: socketService.socket,
+      myId: widget.me, // 🔥 Important for history
     )));
   }
 
@@ -377,20 +384,33 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
       if (photo != null) {
         List<int> imageBytes = await photo.readAsBytes();
         String base64Image = base64Encode(imageBytes);
-        _sendMessage(base64Image, "image");
+        // Real app mein Image Upload karke URL bhejna chahiye, abhi ke liye base64 demo
+        _sendMessage("Image Sent", "image"); 
       }
     } catch (e) { print("Image Pick Error: $e"); }
   }
 
-  Future<void> _editMessage() async {
+  // ✏️ EDIT MESSAGE API
+  Future<void> _editMessageApi() async {
     final text = _controller.text.trim();
     if (text.isEmpty || _editingMessageId == null) return;
+    
+    // Optimistic Update
     setState(() {
       final index = _messages.indexWhere((m) => m["_id"] == _editingMessageId);
       if (index != -1) _messages[index]["message"] = text;
       _editingMessageId = null;
       _controller.clear();
     });
+
+    // Socket Emit
+    socketService.socket?.emit("edit_message", {
+       "roomId": _socketRoomId,
+       "messageId": _editingMessageId,
+       "newText": text
+    });
+
+    // API Call
     try {
       await http.put(Uri.parse("$baseUrl/api/messages/$_editingMessageId"),
           headers: {"Authorization": "Bearer ${widget.jwt}", "Content-Type": "application/json"},
@@ -399,12 +419,22 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     } catch (e) { print("Edit failed: $e"); }
   }
 
-  // 🔥 DELETE FOR EVERYONE LOGIC
+  // 🗑️ DELETE MESSAGE API
   Future<void> _deleteMessage(String msgId, bool forEveryone) async {
-    // Local remove
-    setState(() { _messages.removeWhere((m) => m["_id"] == msgId); });
+    // Local Update
+    setState(() { 
+      if (forEveryone) {
+         final index = _messages.indexWhere((m) => m["_id"] == msgId);
+         if(index != -1) {
+           _messages[index]["message"] = "🚫 This message was deleted";
+           _messages[index]["deletedForEveryone"] = true;
+         }
+      } else {
+         _messages.removeWhere((m) => m["_id"] == msgId); 
+      }
+    });
     
-    // Socket Emit for Real-time delete (Delete for Everyone)
+    // Socket Emit (Only if for everyone)
     if (forEveryone && socketService.socket != null) {
       socketService.socket!.emit("delete_message", {
         "roomId": _socketRoomId,
@@ -412,31 +442,15 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
       });
     }
 
+    // API Call
     try {
-      // Backend Delete
-      await http.delete(Uri.parse("$baseUrl/api/messages/$msgId"),
-          headers: {"Authorization": "Bearer ${widget.jwt}", "Content-Type": "application/json"},
-      );
+      if (forEveryone) {
+         // Soft Delete API
+         await http.delete(Uri.parse("$baseUrl/api/messages/$msgId"),
+             headers: {"Authorization": "Bearer ${widget.jwt}"},
+         );
+      }
     } catch (e) { print("Delete failed: $e"); }
-  }
-
-  Future<void> _clearChat() async {
-    // UI Clear
-    setState(() { _messages.clear(); });
-    // API Call to clear chat (Assuming backend supports delete by room)
-    // Agar backend route nahi hai toh loop laga ke delete karna padega ya naya route banana padega
-    // For now, clearing locally and advising user
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Chat cleared locally")));
-  }
-
-  Future<void> _updateFirestoreList(String msg) async {
-    if (widget.myUid == null || widget.otherUid == null) return;
-    final ts = FieldValue.serverTimestamp();
-    try {
-      await FirebaseFirestore.instance.collection('users').doc(widget.myUid).collection('active_chats').doc(widget.otherUid).set({
-        'name': widget.otherName, 'lastMessage': msg, 'time': ts, 'chatifyId': widget.other, 'unread': false
-      }, SetOptions(merge: true));
-    } catch (e) { print("Error Syncing Firestore: $e"); }
   }
 
   void _scrollToBottom() {
@@ -447,7 +461,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     });
   }
 
-  // 🟢 WHATSAPP STYLE OPTIONS DIALOG
+  // 🟢 OPTIONS DIALOG
   void _showMessageOptions(Map<String, dynamic> msg, bool isMe) {
     if (!isMe) return; 
     
@@ -457,7 +471,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (msg["type"] == "text")
+            if (msg["type"] == "text" && msg["deletedForEveryone"] != true)
               ListTile(
                 leading: const Icon(Icons.edit, color: Colors.blue),
                 title: const Text("Edit"),
@@ -466,20 +480,21 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
                   setState(() { _editingMessageId = msg["_id"]; _controller.text = msg["message"]; });
                 },
               ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text("Delete for Everyone"),
-              onTap: () {
-                Navigator.pop(ctx);
-                _deleteMessage(msg["_id"], true); // True = For Everyone
-              },
-            ),
+            if (msg["deletedForEveryone"] != true)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text("Delete for Everyone"),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _deleteMessage(msg["_id"], true);
+                },
+              ),
              ListTile(
               leading: const Icon(Icons.delete_outline, color: Colors.grey),
               title: const Text("Delete for Me"),
               onTap: () {
                 Navigator.pop(ctx);
-                _deleteMessage(msg["_id"], false); // False = Just API/Local
+                _deleteMessage(msg["_id"], false);
               },
             ),
           ],
@@ -490,8 +505,6 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final myId = getSafeId(_derivedChatifyId ?? widget.me);
-
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -518,21 +531,13 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         actions: [
           IconButton(icon: const Icon(Icons.videocam), onPressed: _openVideoCall), 
           IconButton(icon: const Icon(Icons.call), onPressed: _openAudioCall),
-          // 🟢 3-DOT MENU FOR CLEAR CHAT
           PopupMenuButton<String>(
             onSelected: (value) {
-              if (value == 'clear') _clearChat();
+              if (value == 'clear') setState(() => _messages.clear());
             },
             itemBuilder: (BuildContext context) {
               return [
-                const PopupMenuItem(
-                  value: 'clear',
-                  child: Text('Clear Chat'),
-                ),
-                const PopupMenuItem(
-                  value: 'block',
-                  child: Text('Block User'),
-                ),
+                const PopupMenuItem(value: 'clear', child: Text('Clear Chat')),
               ];
             },
           ),
@@ -555,9 +560,9 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
                     itemCount: _messages.length,
                     itemBuilder: (_, i) {
                       final msg = _messages[i];
-                      final isMe = getSafeId(msg["senderId"]) == myId;
+                      final isMe = msg["senderId"] == widget.me;
                       
-                      // Date Separator Logic (Optional improvement)
+                      // Date Logic
                       bool showDate = false;
                       if (i == 0) {
                         showDate = true;
@@ -589,11 +594,12 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
                   _onTextChanged(_controller.text); 
                 },
                 config: emoji_picker.Config(
-                  columns: 7, emojiSizeMax: 32, verticalSpacing: 0, horizontalSpacing: 0, gridPadding: EdgeInsets.zero,
-                  initCategory: emoji_picker.Category.RECENT, bgColor: const Color(0xFFF2F2F2), indicatorColor: appPrimary,
-                  iconColor: Colors.grey, iconColorSelected: appPrimary, backspaceColor: appPrimary, skinToneDialogBgColor: Colors.white,
-                  skinToneIndicatorColor: Colors.grey, enableSkinTones: true, recentsLimit: 28,
-                  categoryIcons: const emoji_picker.CategoryIcons(), buttonMode: emoji_picker.ButtonMode.MATERIAL,
+                  columns: 7, emojiSizeMax: 32, 
+                  initCategory: emoji_picker.Category.RECENT, 
+                  bgColor: const Color(0xFFF2F2F2), 
+                  indicatorColor: appPrimary,
+                  iconColor: Colors.grey, 
+                  iconColorSelected: appPrimary,
                 ),
               ),
             ),
@@ -608,8 +614,7 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
     final now = DateTime.now();
     String label = DateFormat('MMM dd, yyyy').format(date);
     if (date.year == now.year && date.month == now.month && date.day == now.day) label = "Today";
-    if (date.year == now.year && date.month == now.month && date.day == now.day - 1) label = "Yesterday";
-
+    
     return Center(
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -621,44 +626,23 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
   }
 
   Widget _buildBubble(Map<String, dynamic> msg, bool isMe) {
-    bool isImage = msg["type"] == "image";
-    bool isAudio = msg["type"] == "audio";
-    bool isCallLog = msg["type"] == "call_log";
-
-    if (isCallLog) {
-       return Center(
-         child: Container(
-           margin: const EdgeInsets.symmetric(vertical: 8),
-           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-           decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(20)),
-           child: Row(
-             mainAxisSize: MainAxisSize.min,
-             children: [
-               const Icon(Icons.call_end, size: 16, color: Colors.black54),
-               const SizedBox(width: 5),
-               Text(msg["message"], style: const TextStyle(fontSize: 12, color: Colors.black87)),
-             ],
-           ),
-         ),
-       );
-    }
-
+    bool isDeleted = msg["deletedForEveryone"] == true;
+    
     String timeStr = "";
     try { 
       final dt = DateTime.parse(msg["time"]).toLocal(); 
       timeStr = DateFormat('h:mm a').format(dt); 
     } catch(e) { timeStr = ""; }
 
-    // 🟢 WHATSAPP TICK LOGIC
     IconData statusIcon = Icons.check; 
-    Color statusColor = Colors.black38; // Default Grey (Sent)
+    Color statusColor = Colors.black38; 
 
     if (msg["status"] == "delivered") {
       statusIcon = Icons.done_all; 
-      statusColor = Colors.grey; // Grey Double Ticks
+      statusColor = Colors.grey; 
     } else if (msg["status"] == "seen") {
       statusIcon = Icons.done_all; 
-      statusColor = Colors.blue; // 🔵 Blue Double Ticks (Seen)
+      statusColor = Colors.blue; 
     }
 
     return Align(
@@ -669,27 +653,23 @@ class _ChannelPageState extends State<ChannelPage> with WidgetsBindingObserver {
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: isMe ? bubbleMy : bubbleOther, 
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(10),
-            topRight: const Radius.circular(10),
-            bottomLeft: isMe ? const Radius.circular(10) : Radius.zero,
-            bottomRight: isMe ? Radius.zero : const Radius.circular(10),
-          ),
+          borderRadius: BorderRadius.circular(10),
           boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 1, offset: const Offset(0, 1))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            if (isImage) 
-              ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.memory(base64Decode(msg["message"]), errorBuilder: (c,e,s) => const Icon(Icons.broken_image)))
-            else if (isAudio)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                width: 150,
-                child: Row(children: [Icon(Icons.play_arrow, color: Colors.grey[700]), const SizedBox(width: 5), Text(msg["message"] ?? "Audio", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[800]))]),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5, top: 2, bottom: 0), 
+              child: Text(
+                 msg["message"] ?? "", 
+                 style: TextStyle(
+                   fontSize: 16, 
+                   color: isDeleted ? Colors.grey : (isMe ? textMy : textOther),
+                   fontStyle: isDeleted ? FontStyle.italic : FontStyle.normal
+                 )
               )
-            else
-              Padding(padding: const EdgeInsets.only(left: 5, right: 5, top: 2, bottom: 0), child: Text(msg["message"] ?? "", style: TextStyle(fontSize: 16, color: isMe ? textMy : textOther))),
+            ),
             
             Padding(
               padding: const EdgeInsets.only(right: 2, bottom: 0, top: 2),

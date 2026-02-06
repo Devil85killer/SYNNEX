@@ -2,16 +2,18 @@ const mongoose = require('mongoose');
 
 const ChatSchema = new mongoose.Schema(
   {
-    // ✅ FIX: 'roomId' add kiya taaki backend error na de
+    // ✅ FIX: Default function lagaya taaki agar frontend room ID na bheje toh crash na ho
     roomId: { 
       type: String, 
-      required: true, 
+      default: () => new mongoose.Types.ObjectId().toString(),
       unique: true 
     },
 
-    // Participants (User IDs)
+    // ✅ FIX: 'String' ki jagah 'ObjectId' use kiya taaki .populate() kaam kare
+    // Isse hi Chat List mein saamne wale ka Naam aur Photo dikhega
     members: [{ 
-      type: String, 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User', 
       required: true 
     }], 
     
@@ -25,7 +27,7 @@ const ChatSchema = new mongoose.Schema(
       default: Date.now 
     },
 
-    // Future Proofing
+    // Future Proofing (Groups ke liye)
     isGroup: { 
       type: Boolean, 
       default: false 

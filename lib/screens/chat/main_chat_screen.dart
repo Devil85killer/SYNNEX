@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/foundation.dart'; // kIsWeb ke liye
-import 'channel_page.dart'; // Aapka Chat Screen
+import 'package:flutter/foundation.dart';
+import 'channel_page.dart'; // Tera Chat Screen
 
 class MainChatScreen extends StatefulWidget {
   const MainChatScreen({super.key});
@@ -19,7 +19,7 @@ class _MainChatScreenState extends State<MainChatScreen> with SingleTickerProvid
   final String myUid = FirebaseAuth.instance.currentUser!.uid;
   
   // User Data
-  String? myChatId;
+  String? myMongoId; // Backend ki MongoDB ID (chatId)
   String? myJwt;
   String? myName;
   bool _isLoadingDetails = true;
@@ -27,35 +27,35 @@ class _MainChatScreenState extends State<MainChatScreen> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this); // 2 Tabs: CHATS, CALLS
+    _tabController = TabController(length: 2, vsync: this);
     _fetchMyDetails();
   }
 
-  // 1. User Details Fetch (Student/Teacher/Alumni sabke liye)
+  // 1. Fetch My Details (Firebase -> MongoDB ID sync)
   Future<void> _fetchMyDetails() async {
     try {
-      // Check Alumni
-      var doc = await FirebaseFirestore.instance.collection('alumni_users').doc(myUid).get();
+      // Pehle 'users' check karo (sabse common)
+      var doc = await FirebaseFirestore.instance.collection('users').doc(myUid).get();
       
       if (!doc.exists) {
-        // Check Teachers
-        doc = await FirebaseFirestore.instance.collection('teachers').doc(myUid).get();
+        doc = await FirebaseFirestore.instance.collection('alumni_users').doc(myUid).get();
       }
       if (!doc.exists) {
-        // Check Students
-        doc = await FirebaseFirestore.instance.collection('users').doc(myUid).get(); // Students collection name check karlena
+        doc = await FirebaseFirestore.instance.collection('teachers').doc(myUid).get();
       }
 
       if (doc.exists && mounted) {
         setState(() {
+          // Backend se jo 'sync-user' response mein ID mili thi, wo yahan honi chahiye
+          // Agar Firestore mein save nahi hai, toh API call karke lana padega
           myJwt = doc.data()?['chatifyJwt']?.toString();
-          myChatId = doc.data()?['chatifyUserId']?.toString();
+          myMongoId = doc.data()?['chatifyUserId']?.toString(); // Ye MongoDB _id honi chahiye
           myName = doc.data()?['name']?.toString() ?? "User";
           _isLoadingDetails = false;
         });
       }
     } catch (e) {
-      print("Error fetching user details: $e");
+      print("Error fetching details: $e");
       if(mounted) setState(() => _isLoadingDetails = false);
     }
   }
@@ -63,10 +63,9 @@ class _MainChatScreenState extends State<MainChatScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔥 WHATSAPP STYLE APP BAR
       appBar: AppBar(
         title: const Text("Chatify"),
-        backgroundColor: const Color(0xFF075E54), // WhatsApp Teal Color
+        backgroundColor: const Color(0xFF075E54),
         foregroundColor: Colors.white,
         elevation: 0.7,
         bottom: TabBar(
@@ -81,30 +80,33 @@ class _MainChatScreenState extends State<MainChatScreen> with SingleTickerProvid
         ),
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.more_vert), 
+            onPressed: () {
+               // Logout or Settings logic
+            }
+          ),
         ],
       ),
       
-      // 🔥 SLIDEABLE BODY
       body: _isLoadingDetails
           ? const Center(child: CircularProgressIndicator())
           : TabBarView(
               controller: _tabController,
               children: [
                 // TAB 1: Chat List
-                ChatListTab(myChatId: myChatId!, myJwt: myJwt!, myName: myName!, myUid: myUid),
+                ChatListTab(myId: myMongoId!, myJwt: myJwt!, myName: myName!, myUid: myUid),
                 
                 // TAB 2: Call History
-                CallHistoryTab(myChatId: myChatId!, myJwt: myJwt!, myUid: myUid),
+                CallHistoryTab(myId: myMongoId!, myJwt: myJwt!),
               ],
             ),
             
-      // 🔥 DYNAMIC FAB (Icon badlega)
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF25D366), // WhatsApp Light Green
+        backgroundColor: const Color(0xFF25D366),
         child: Icon(_tabController.index == 0 ? Icons.message : Icons.add_call, color: Colors.white),
         onPressed: () {
-           // Handle New Chat or Call
+            // New Chat Logic (Search Screen khol sakte ho)
         },
       ),
     );
@@ -112,11 +114,11 @@ class _MainChatScreenState extends State<MainChatScreen> with SingleTickerProvid
 }
 
 // ==========================================
-// 💬 TAB 1: CHAT LIST (API Based)
+// 💬 TAB 1: CHAT LIST (Corrected Parsing)
 // ==========================================
 class ChatListTab extends StatefulWidget {
-  final String myChatId, myJwt, myName, myUid;
-  const ChatListTab({super.key, required this.myChatId, required this.myJwt, required this.myName, required this.myUid});
+  final String myId, myJwt, myName, myUid;
+  const ChatListTab({super.key, required this.myId, required this.myJwt, required this.myName, required this.myUid});
 
   @override
   State<ChatListTab> createState() => _ChatListTabState();
@@ -130,25 +132,30 @@ class _ChatListTabState extends State<ChatListTab> {
   @override
   void initState() {
     super.initState();
-    _fetchChatsFromAPI();
+    _fetchChats();
   }
 
-  Future<void> _fetchChatsFromAPI() async {
+  Future<void> _fetchChats() async {
     try {
       final res = await http.get(
-        Uri.parse("$baseUrl/api/chats"),
-        headers: {"Authorization": "Bearer ${widget.myJwt}", "Content-Type": "application/json"},
+        Uri.parse("$baseUrl/api/chats/${widget.myId}"), // ✅ Backend route update check karlena
+        headers: {"Authorization": "Bearer ${widget.myJwt}"},
       );
+
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         if (data['success'] == true && mounted) {
           setState(() {
-            _chatList = data['data'] ?? [];
+            _chatList = data['chats'] ?? []; // ✅ Backend key 'chats' hai
             _isLoading = false;
           });
         }
+      } else {
+        setState(() => _isLoading = false);
       }
-    } catch (e) { if(mounted) setState(() => _isLoading = false); }
+    } catch (e) {
+      if(mounted) setState(() => _isLoading = false);
+    }
   }
 
   String _formatTime(String? dateStr) {
@@ -162,51 +169,64 @@ class _ChatListTabState extends State<ChatListTab> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) return const Center(child: CircularProgressIndicator());
-    if (_chatList.isEmpty) return const Center(child: Text("No conversations yet"));
+    if (_chatList.isEmpty) return const Center(child: Text("Start a new conversation!"));
 
     return RefreshIndicator(
-      onRefresh: _fetchChatsFromAPI,
+      onRefresh: _fetchChats,
       child: ListView.separated(
         itemCount: _chatList.length,
         separatorBuilder: (ctx, i) => const Divider(height: 1, indent: 70), 
         itemBuilder: (context, index) {
           final chat = _chatList[index];
-          final otherName = chat['name']?.toString() ?? "User";
-          final lastMsg = chat['lastMessage']?.toString() ?? "";
-          final otherChatId = chat['chatId']?.toString();
-          final timeStr = chat['lastMessageAt']?.toString();
           
+          // 🔥 LOGIC: Identify Other User from 'members' array
+          final members = chat['members'] as List;
+          final otherUser = members.firstWhere(
+            (m) => m['_id'] != widget.myId, 
+            orElse: () => null
+          );
+
+          if (otherUser == null) return const SizedBox(); // Safety check
+
+          final otherName = otherUser['displayName'] ?? otherUser['email'] ?? "Unknown";
+          final otherPhoto = otherUser['photoURL']; // Backend se aa raha hai
+          final lastMsg = chat['lastMessage'] ?? "";
+          final timeStr = chat['updatedAt']; // Backend 'updatedAt' bhejta hai default
+
           return ListTile(
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey.shade300,
-              child: const Icon(Icons.person, color: Colors.white, size: 30),
+              backgroundImage: (otherPhoto != null && otherPhoto != "") 
+                  ? NetworkImage(otherPhoto) 
+                  : null,
+              child: (otherPhoto == null || otherPhoto == "") 
+                  ? const Icon(Icons.person, color: Colors.white) 
+                  : null,
             ),
             title: Text(otherName, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text(lastMsg, maxLines: 1, overflow: TextOverflow.ellipsis),
             trailing: Text(_formatTime(timeStr), style: const TextStyle(fontSize: 12, color: Colors.grey)),
             onTap: () async {
-              if (otherChatId != null) {
-                final List<String> ids = [widget.myChatId.toLowerCase(), otherChatId.trim().toLowerCase()];
-                ids.sort();
-                final roomId = ids.join("___");
-
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ChannelPage(
-                      roomId: roomId,
-                      me: widget.myChatId,
-                      other: otherChatId,
-                      otherName: otherName,
-                      jwt: widget.myJwt,
-                      myUid: widget.myUid,
-                      myName: widget.myName,
-                    ),
+              // Open Chat Screen
+              // ✅ Room ID Backend se direct aa rahi hai
+              final roomId = chat['roomId'] ?? chat['_id']; 
+              
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChannelPage(
+                    roomId: roomId,
+                    me: widget.myId,
+                    other: otherUser['_id'],
+                    otherName: otherName,
+                    jwt: widget.myJwt,
+                    myUid: widget.myUid,
+                    myName: widget.myName,
                   ),
-                );
-                _fetchChatsFromAPI();
-              }
+                ),
+              );
+              _fetchChats(); // Wapas aane par refresh
             },
           );
         },
@@ -216,11 +236,11 @@ class _ChatListTabState extends State<ChatListTab> {
 }
 
 // ==========================================
-// 📞 TAB 2: CALL HISTORY (API Based)
+// 📞 TAB 2: CALL HISTORY (Corrected Logic)
 // ==========================================
 class CallHistoryTab extends StatefulWidget {
-  final String myChatId, myJwt, myUid;
-  const CallHistoryTab({super.key, required this.myChatId, required this.myJwt, required this.myUid});
+  final String myId, myJwt;
+  const CallHistoryTab({super.key, required this.myId, required this.myJwt});
 
   @override
   State<CallHistoryTab> createState() => _CallHistoryTabState();
@@ -240,17 +260,19 @@ class _CallHistoryTabState extends State<CallHistoryTab> {
   Future<void> _fetchCalls() async {
     try {
       final res = await http.get(
-        Uri.parse("$baseUrl/api/calls/${widget.myChatId}"), 
+        Uri.parse("$baseUrl/api/calls/${widget.myId}"), 
         headers: {"Authorization": "Bearer ${widget.myJwt}"}
       );
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         if (data['success'] == true && mounted) {
           setState(() {
-            _calls = data['data'];
+            _calls = data['calls'] ?? []; // ✅ Backend key 'calls' hai
             _isLoading = false;
           });
         }
+      } else {
+         if(mounted) setState(() => _isLoading = false);
       }
     } catch (e) { if(mounted) setState(() => _isLoading = false); }
   }
@@ -276,29 +298,45 @@ class _CallHistoryTabState extends State<CallHistoryTab> {
         itemCount: _calls.length,
         itemBuilder: (ctx, i) {
           final call = _calls[i];
-          final isOutgoing = call['callerId'] == widget.myChatId;
-          final name = isOutgoing ? call['receiverName'] : call['callerName'];
-          final status = call['status'];
           
+          // 🔥 Logic: Check karo main Caller hoon ya Receiver
+          final isOutgoing = call['callerId']['_id'] == widget.myId;
+          
+          // Populated Data Use karo
+          final otherUser = isOutgoing ? call['receiverId'] : call['callerId'];
+          final name = otherUser['displayName'] ?? otherUser['email'] ?? "Unknown";
+          final photo = otherUser['photoURL'];
+          
+          final status = call['status']; // 'missed', 'ended', 'rejected'
+          final type = call['type']; // 'audio', 'video'
+          
+          // Icon Color Logic
+          Color iconColor = Colors.green;
+          if (status == 'missed' || status == 'rejected') iconColor = Colors.red;
+
           return ListTile(
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey.shade300,
-              child: const Icon(Icons.person, color: Colors.white, size: 30),
+              backgroundImage: (photo != null && photo != "") ? NetworkImage(photo) : null,
+              child: (photo == null || photo == "") ? const Icon(Icons.person, color: Colors.white) : null,
             ),
-            title: Text(name ?? "Unknown", style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Row(children: [
               Icon(
                 isOutgoing ? Icons.call_made : Icons.call_received, 
                 size: 16, 
-                color: status == 'missed' ? Colors.red : Colors.green
+                color: iconColor
               ),
               const SizedBox(width: 5),
-              Text(_formatDateTime(call['timestamp']))
+              Text(_formatDateTime(call['startedAt'])) // ✅ Backend key 'startedAt'
             ]),
-            trailing: Icon(call['type'] == 'video' ? Icons.videocam : Icons.call, color: const Color(0xFF075E54)),
+            trailing: Icon(
+               type == 'video' ? Icons.videocam : Icons.call, 
+               color: const Color(0xFF075E54)
+            ),
           );
-        }
+        },
       ),
     );
   }

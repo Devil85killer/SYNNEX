@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:flutter/foundation.dart'; // kIsWeb ke liye
+import 'package:flutter/foundation.dart'; 
 import 'channel_page.dart';
 
 class ChatListPage extends StatefulWidget {
@@ -19,29 +19,31 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
   late TabController _tabController;
 
   // User Data
-  String? myChatId;
+  String? myMongoId; // MongoDB _id (Chatify ID)
   String? myJwt;
   String? myName;
-  bool loading = true;
+  bool _loading = true;
 
-  // Call History Data
+  // Data Lists
+  List<dynamic> _chats = [];
   List<dynamic> _calls = [];
+  bool _isLoadingChats = true;
   bool _isLoadingCalls = true;
 
-  // ⚠️ Ensure correct URL (Apne system ke hisab se)
-  String get baseUrl => kIsWeb ? "https://synnex.onrender.com" : "https://synnex.onrender.com";
+  // ⚠️ URL Check
+  String get baseUrl => "https://synnex.onrender.com";
 
   @override
   void initState() {
     super.initState();
-    // ✅ 2 Tabs: Chats aur Calls
     _tabController = TabController(length: 2, vsync: this); 
     _fetchMyDetails();
   }
 
-  // 1. FETCH DETAILS (Student/Teacher/Alumni)
+  // 1. FETCH USER DETAILS & SYNC
   Future<void> _fetchMyDetails() async {
     try {
+      // Check Collections
       var doc = await FirebaseFirestore.instance.collection('students').doc(myUid).get();
       if (!doc.exists) doc = await FirebaseFirestore.instance.collection('teachers').doc(myUid).get();
       if (!doc.exists) doc = await FirebaseFirestore.instance.collection('alumni_users').doc(myUid).get();
@@ -49,29 +51,30 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
       if (doc.exists && mounted) {
         setState(() {
           myJwt = doc.data()?['chatifyJwt']?.toString();
-          myChatId = doc.data()?['chatifyUserId']?.toString();
+          myMongoId = doc.data()?['chatifyUserId']?.toString(); // MongoDB ID zaroori hai
           myName = doc.data()?['name']?.toString();
-          loading = false;
+          _loading = false;
         });
         
-        // Details milne ke baad Call History mangwao
-        if (myChatId != null) {
+        // IDs milne ke baad hi APIs call karo
+        if (myMongoId != null) {
+          _fetchChats();
           _fetchCallLogs();
         }
       } else {
-        if(mounted) setState(() => loading = false);
+        if(mounted) setState(() => _loading = false);
       }
     } catch (e) {
       print("Error details: $e");
-      if(mounted) setState(() => loading = false);
+      if(mounted) setState(() => _loading = false);
     }
   }
 
-  // 2. FETCH CALL HISTORY API
-  Future<void> _fetchCallLogs() async {
+  // 2. FETCH CHATS (MongoDB API)
+  Future<void> _fetchChats() async {
     try {
       final res = await http.get(
-        Uri.parse("$baseUrl/api/calls/$myChatId"),
+        Uri.parse("$baseUrl/api/chats/$myMongoId"), // ✅ User specific chats
         headers: {"Authorization": "Bearer $myJwt"},
       );
 
@@ -79,7 +82,30 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
         final data = jsonDecode(res.body);
         if (data['success'] == true && mounted) {
           setState(() {
-            _calls = data['data'];
+            _chats = data['chats'] ?? [];
+            _isLoadingChats = false;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error chats: $e");
+      if(mounted) setState(() => _isLoadingChats = false);
+    }
+  }
+
+  // 3. FETCH CALLS (MongoDB API)
+  Future<void> _fetchCallLogs() async {
+    try {
+      final res = await http.get(
+        Uri.parse("$baseUrl/api/calls/$myMongoId"),
+        headers: {"Authorization": "Bearer $myJwt"},
+      );
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        if (data['success'] == true && mounted) {
+          setState(() {
+            _calls = data['calls'] ?? [];
             _isLoadingCalls = false;
           });
         }
@@ -90,28 +116,23 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
     }
   }
 
-  // Time Formatters
-  String _formatChatTime(Timestamp? timestamp) {
-    if (timestamp == null) return "";
-    final date = timestamp.toDate();
-    return DateFormat('hh:mm a').format(date);
-  }
-
-  String _formatCallTime(String? dateStr) {
+  // Formatter
+  String _formatTime(String? dateStr) {
     if (dateStr == null) return "";
     try {
       final date = DateTime.parse(dateStr).toLocal();
-      return DateFormat('MMM d, h:mm a').format(date);
+      final now = DateTime.now();
+      if (date.day == now.day) return DateFormat('hh:mm a').format(date);
+      return DateFormat('MMM d').format(date);
     } catch (e) { return ""; }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 🔥 APP BAR WITH TABS (Ye zaroori hai WhatsApp look ke liye)
       appBar: AppBar(
         title: const Text("Chatify"),
-        backgroundColor: const Color(0xFF075E54), // WhatsApp Theme Color
+        backgroundColor: const Color(0xFF075E54),
         foregroundColor: Colors.white,
         elevation: 0.7,
         bottom: TabBar(
@@ -127,106 +148,99 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
       ),
       backgroundColor: Colors.white,
 
-      // 🔥 BODY WITH SWIPE VIEW
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildChatListTab(),   // Tab 1: Chats
-          _buildCallHistoryTab(), // Tab 2: Calls
-        ],
-      ),
+      body: _loading 
+          ? const Center(child: CircularProgressIndicator())
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildChatListTab(), 
+                _buildCallHistoryTab(),
+              ],
+            ),
       
-      // Dynamic FAB
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF25D366),
         child: Icon(_tabController.index == 0 ? Icons.message : Icons.add_call, color: Colors.white),
-        onPressed: () {},
+        onPressed: () {
+           // New Chat Logic Here
+        },
       ),
     );
   }
 
   // ---------------------------------------------------
-  // 💬 TAB 1: CHAT LIST (Firestore Stream - Jo aapka pehle tha)
+  // 💬 TAB 1: CHAT LIST (Updated for MongoDB)
   // ---------------------------------------------------
   Widget _buildChatListTab() {
-    if (loading) return const Center(child: CircularProgressIndicator());
+    if (_isLoadingChats) return const Center(child: CircularProgressIndicator());
+    if (_chats.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey.shade300),
+            const SizedBox(height: 10),
+            const Text("No active chats", style: TextStyle(color: Colors.grey)),
+          ],
+        ),
+      );
+    }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(myUid)
-          .collection('active_chats')
-          .orderBy('time', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey.shade300),
-                const SizedBox(height: 10),
-                const Text("No active chats", style: TextStyle(color: Colors.grey)),
-              ],
-            ),
+    return RefreshIndicator(
+      onRefresh: _fetchChats,
+      child: ListView.separated(
+        itemCount: _chats.length,
+        separatorBuilder: (ctx, i) => const Divider(height: 1, indent: 70),
+        itemBuilder: (context, index) {
+          final chat = _chats[index];
+          
+          // 🔥 Logic: Find Other User from Populated Members
+          final members = chat['members'] as List;
+          var otherUser = members.firstWhere(
+            (m) => m['_id'] != myMongoId, 
+            orElse: () => null
           );
-        }
 
-        final chats = snapshot.data!.docs;
+          // Safety: Agar khud se chat hai ya data missing hai
+          if (otherUser == null) return const SizedBox();
 
-        return ListView.separated(
-          itemCount: chats.length,
-          separatorBuilder: (ctx, i) => const Divider(height: 1, indent: 70),
-          itemBuilder: (context, index) {
-            final chat = chats[index].data() as Map<String, dynamic>;
-            final otherUid = chats[index].id;
-            final otherName = chat['name']?.toString() ?? "User";
-            final lastMsg = chat['lastMessage']?.toString() ?? "";
-            final otherChatId = chat['chatifyId']?.toString();
-            final timestamp = chat['time'] as Timestamp?;
-            final isUnread = chat['unread'] == true;
+          final otherName = otherUser['displayName'] ?? otherUser['email'] ?? "User";
+          final photo = otherUser['photoURL'];
+          final lastMsg = chat['lastMessage'] ?? "";
+          final timeStr = chat['updatedAt']; // Backend 'updatedAt' bhejta hai
 
-            return ListTile(
-              leading: CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.blue.shade100,
-                child: Text(otherName.isNotEmpty ? otherName[0].toUpperCase() : "?", 
-                  style: TextStyle(color: Colors.blue.shade900, fontWeight: FontWeight.bold, fontSize: 18)),
-              ),
-              title: Text(otherName, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(lastMsg, maxLines: 1, overflow: TextOverflow.ellipsis, 
-                style: TextStyle(color: isUnread ? Colors.black87 : Colors.grey, fontWeight: isUnread ? FontWeight.bold : FontWeight.normal)),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(_formatChatTime(timestamp), style: TextStyle(fontSize: 11, color: isUnread ? const Color(0xFF25D366) : Colors.grey)),
-                  if (isUnread) ...[const SizedBox(height: 5), const CircleAvatar(radius: 5, backgroundColor: Color(0xFF25D366))]
-                ],
-              ),
-              onTap: () {
-                if (myChatId != null && myJwt != null && otherChatId != null) {
-                  final List<String> ids = [myChatId!, otherChatId];
-                  ids.sort();
-                  final roomId = ids.join("__");
-
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => ChannelPage(
-                    roomId: roomId, me: myChatId!, other: otherChatId, otherName: otherName, jwt: myJwt!,
-                    myUid: myUid, myName: myName ?? "User", otherUid: otherUid,
-                  )));
-                }
-              },
-            );
-          },
-        );
-      },
+          return ListTile(
+            leading: CircleAvatar(
+              radius: 24,
+              backgroundColor: Colors.blue.shade100,
+              backgroundImage: (photo != null && photo != "") ? NetworkImage(photo) : null,
+              child: (photo == null || photo == "") 
+                  ? Text(otherName[0].toUpperCase(), style: TextStyle(color: Colors.blue.shade900)) 
+                  : null,
+            ),
+            title: Text(otherName, style: const TextStyle(fontWeight: FontWeight.bold)),
+            subtitle: Text(lastMsg, maxLines: 1, overflow: TextOverflow.ellipsis),
+            trailing: Text(_formatTime(timeStr), style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            onTap: () {
+               // Open Chat
+               Navigator.push(context, MaterialPageRoute(builder: (_) => ChannelPage(
+                  roomId: chat['roomId'] ?? chat['_id'], 
+                  me: myMongoId!, 
+                  other: otherUser['_id'], // MongoDB ID bhejo
+                  otherName: otherName, 
+                  jwt: myJwt!,
+                  myUid: myUid, 
+                  myName: myName ?? "User",
+               ))).then((_) => _fetchChats()); // Wapas aane par refresh
+            },
+          );
+        },
+      ),
     );
   }
 
   // ---------------------------------------------------
-  // 📞 TAB 2: CALL HISTORY (API Logic)
+  // 📞 TAB 2: CALL HISTORY (Updated Keys)
   // ---------------------------------------------------
   Widget _buildCallHistoryTab() {
     if (_isLoadingCalls) return const Center(child: CircularProgressIndicator());
@@ -249,12 +263,22 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
         itemCount: _calls.length,
         itemBuilder: (context, index) {
           final call = _calls[index];
-          final isOutgoing = call['callerId'] == myChatId;
-          final name = isOutgoing ? call['receiverName'] : call['callerName'];
+          
+          // 🔥 Caller/Receiver Logic with Objects
+          // Note: Backend populated objects bhej raha hai (callerId: { _id: "..." })
+          final callerObj = call['callerId'];
+          final receiverObj = call['receiverId'];
+          
+          // Check karo main Caller hu ya Receiver
+          final isOutgoing = callerObj['_id'] == myMongoId;
+          
+          final otherUser = isOutgoing ? receiverObj : callerObj;
+          final name = otherUser?['displayName'] ?? "Unknown";
+          final photo = otherUser?['photoURL'];
+          
           final status = call['status'];
           final type = call['type'];
 
-          // Icon Logic
           IconData arrowIcon = status == 'missed' ? Icons.call_missed : (isOutgoing ? Icons.call_made : Icons.call_received);
           Color arrowColor = status == 'missed' ? Colors.red : Colors.green;
 
@@ -262,14 +286,15 @@ class _ChatListPageState extends State<ChatListPage> with SingleTickerProviderSt
             leading: CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey.shade200,
-              child: const Icon(Icons.person, color: Colors.grey, size: 30),
+              backgroundImage: (photo != null && photo != "") ? NetworkImage(photo) : null,
+              child: (photo == null || photo == "") ? const Icon(Icons.person, color: Colors.grey) : null,
             ),
-            title: Text(name ?? "Unknown", style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Row(
               children: [
                 Icon(arrowIcon, size: 16, color: arrowColor),
                 const SizedBox(width: 5),
-                Text(_formatCallTime(call['timestamp'])),
+                Text(_formatTime(call['startedAt'])), // ✅ 'startedAt' use karo
               ],
             ),
             trailing: Icon(type == 'video' ? Icons.videocam : Icons.call, color: const Color(0xFF075E54)),

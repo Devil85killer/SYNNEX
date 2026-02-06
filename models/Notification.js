@@ -9,29 +9,29 @@ const NotificationSchema = new mongoose.Schema(
 
     senderId: { 
       type: String 
-    }, // Jisne bheji (Optional - System notifications ke liye null ho sakta hai)
+    }, // Jisne bheji (System notifications ke liye null ho sakta hai)
 
     type: { 
       type: String, 
-      enum: ['message', 'call', 'system', 'job', 'alert'], // 'alert' bhi add kar diya safety ke liye
+      enum: ['message', 'call', 'missed_call', 'system', 'job', 'alert', 'reaction'], // ✅ Saare types covered hain
       default: 'system' 
     }, 
 
     message: { 
       type: String, 
       required: true 
-    }, // Notification ka main text
+    }, // Notification ka main text (e.g., "You have a missed call")
 
     isRead: { 
       type: Boolean, 
       default: false 
-    }, // Padh liya ya nahi
+    }, // Padh liya ya nahi (Red dot/Blue dot logic ke liye)
 
     relatedId: { 
       type: String 
-    }, // Chat ID ya Job ID (click karne par wahan le jayega)
+    }, // Chat Room ID, Job ID, ya Call ID (Click karne par wahan le jayega)
   },
-  { timestamps: true } // CreatedAt automatic aayega
+  { timestamps: true } // CreatedAt aur UpdatedAt automatic aayega
 );
 
 module.exports = mongoose.model('Notification', NotificationSchema);

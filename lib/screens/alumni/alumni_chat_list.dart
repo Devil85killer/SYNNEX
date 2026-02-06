@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../screens/chat/channel_page.dart'; // Apna ChannelPage ka path check kar lena
+import '../../screens/chat/channel_page.dart'; // Path check kar lena
 
 class AlumniChatListPage extends StatefulWidget {
   const AlumniChatListPage({super.key});
@@ -29,7 +29,6 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       myJwt = prefs.getString('token');
-      // ⚠️ Make sure ye MongoDB wali ID ho
       myUid = prefs.getString('uid'); 
       myName = prefs.getString('name');
     });
@@ -42,7 +41,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
     }
   }
 
-  // 1. Fetch Users (Chats Tab ke liye)
+  // 1. Fetch Users
   Future<void> _fetchChatList() async {
     try {
       final res = await http.get(
@@ -60,7 +59,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
     }
   }
 
-  // 2. Fetch Call Logs (CLS Tab ke liye)
+  // 2. Fetch Call Logs
   Future<void> _fetchCallLogs() async {
     try {
       final res = await http.get(
@@ -79,7 +78,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // Do Tabs: Chats aur Calls
+      length: 2, 
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Alumni Connect"),
@@ -92,7 +91,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
             unselectedLabelColor: Colors.white60,
             tabs: [
               Tab(text: "CHATS"),
-              Tab(text: "CLS"), // Call Logs Tab
+              Tab(text: "CLS"), 
             ],
           ),
         ),
@@ -100,15 +99,15 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
             ? const Center(child: CircularProgressIndicator())
             : TabBarView(
                 children: [
-                  _buildChatList(), // Tab 1 Content
-                  _buildCallList(), // Tab 2 Content
+                  _buildChatList(), // Tab 1
+                  _buildCallList(), // Tab 2
                 ],
               ),
       ),
     );
   }
 
-  // 🔹 Tab 1: Chat List (Name + Role Fix)
+  // 🔹 Tab 1: Chat List (Sirf Name + Role)
   Widget _buildChatList() {
     if (_chatUsers.isEmpty) return const Center(child: Text("No users found."));
     
@@ -117,27 +116,40 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
       itemBuilder: (context, index) {
         final user = _chatUsers[index];
         
-        // Data Extraction
-        final name = user['name'] ?? user['displayName'] ?? "Unknown";
-        final role = user['role'] ?? "Student"; // Default Role
-        final email = user['email'] ?? "";
-        final otherUid = user['_id'] ?? ""; // MongoDB ID
+        // ✅ DATA EXTRACTION (Clean)
+        final name = user['name'] ?? user['displayName'] ?? "User"; // "Unknown" hata diya
+        final role = user['role'] ?? "Student"; 
+        final otherUid = user['_id'] ?? ""; 
 
         if (otherUid == myUid) return const SizedBox.shrink();
 
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          elevation: 1, // Thoda clean look ke liye
           child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
             leading: CircleAvatar(
               backgroundColor: Colors.indigo.shade100,
-              child: Text(name.isNotEmpty ? name[0].toUpperCase() : "?"),
+              radius: 24,
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : "U",
+                style: TextStyle(color: Colors.indigo.shade900, fontWeight: FontWeight.bold),
+              ),
             ),
-            // 🔥 NAME + ROLE DISPLAY FIX
+            
+            // 🔥 SIRF NAME AUR ROLE (No Email, No Unknown)
             title: Text(
               "$name ($role)", 
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold, 
+                fontSize: 16,
+                color: Colors.black87
+              ),
             ),
-            subtitle: Text(email),
+            
+            // ✅ Subtitle hata diya taaki email na dikhe
+            subtitle: null, 
+
             trailing: const Icon(Icons.chat_bubble_outline, color: Colors.indigo),
             onTap: () => _openChat(otherUid, name),
           ),
@@ -146,7 +158,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
     );
   }
 
-  // 🔹 Tab 2: Call Logs (CLS)
+  // 🔹 Tab 2: Call Logs
   Widget _buildCallList() {
     if (_callLogs.isEmpty) return const Center(child: Text("No recent calls."));
 
@@ -155,7 +167,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
       itemBuilder: (context, index) {
         final call = _callLogs[index];
         final isVideo = call['type'] == 'video';
-        final callerName = call['callerName'] ?? "Unknown";
+        final callerName = call['callerName'] ?? "User";
         final status = call['status'] ?? "Missed";
         
         return ListTile(
@@ -166,22 +178,20 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> {
               color: status == 'missed' ? Colors.red : Colors.green
             ),
           ),
-          title: Text(callerName),
-          subtitle: Text(status.toUpperCase()),
-          trailing: const Icon(Icons.info_outline, size: 20, color: Colors.grey),
+          title: Text(callerName, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(status.toUpperCase(), style: const TextStyle(fontSize: 12)),
+          trailing: const Icon(Icons.history, size: 20, color: Colors.grey),
         );
       },
     );
   }
 
-  // 🔥 IMPORTANT: Room ID Generation Fix (___)
   void _openChat(String otherUid, String otherName) {
     if (myUid == null) return;
 
     List<String> ids = [myUid!, otherUid];
-    ids.sort(); // Sort karna zaroori hai
+    ids.sort(); 
     
-    // ✅ Fix: Use 3 underscores '___' to match ChannelPage logic
     String roomId = ids.join("___"); 
 
     Navigator.push(

@@ -3,7 +3,7 @@ const router = express.Router();
 const Notification = require('../models/Notification'); // ✅ Ensure path is correct
 
 // ==========================================
-// 1. CREATE A NOTIFICATION
+// 1. CREATE A NOTIFICATION (Server-side Trigger or API)
 // ==========================================
 router.post('/', async (req, res) => {
   const { recipientId, senderId, type, message, relatedId } = req.body;
@@ -12,14 +12,14 @@ router.post('/', async (req, res) => {
     const newNotif = new Notification({
       recipientId,
       senderId,
-      type,
+      type, // e.g., 'missed_call', 'new_message', 'reaction'
       message,
-      relatedId
+      relatedId,
+      isRead: false
     });
 
     const savedNotif = await newNotif.save();
 
-    // ✅ Wrapper Fix: Frontend ko consistent data milega
     res.status(200).json({ 
       success: true, 
       notification: savedNotif 
@@ -41,7 +41,6 @@ router.get('/:userId', async (req, res) => {
       recipientId: req.params.userId 
     }).sort({ createdAt: -1 });
 
-    // ✅ Wrapper Fix: Array ko direct nahi bhej rahe
     res.status(200).json({ 
       success: true, 
       notifications: notifications 

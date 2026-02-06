@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User'); // Model path check kar lena
+const User = require('../models/User'); // ✅ Model path check kar lena
 const jwt = require('jsonwebtoken'); 
 
 // ==========================================
 // 1. SYNC USER (Login/Register & Token Gen)
 // ==========================================
 router.post('/sync-user', async (req, res) => {
-  // console.log("👤 SYNC USER REQ:", req.body.email); // Debug log
+  // console.log("👤 SYNC USER REQ:", req.body.email); 
 
   const { uid, email, displayName, photoURL, fcmToken, rollNo, role } = req.body;
 
@@ -19,7 +19,8 @@ router.post('/sync-user', async (req, res) => {
       // ✅ Update existing user
       user.fcmToken = fcmToken; // Token refresh zaroori hai notifications ke liye
       user.isOnline = true;
-      // Agar naya data aaya hai to update karo, nahi to purana rakho
+      
+      // Update details if provided
       if (displayName) user.displayName = displayName;
       if (photoURL) user.photoURL = photoURL;
       if (rollNo) user.rollNo = rollNo;
@@ -36,7 +37,8 @@ router.post('/sync-user', async (req, res) => {
         fcmToken, 
         rollNo, 
         role: role || 'student', // Default role
-        isOnline: true 
+        isOnline: true,
+        about: "Hey there! I am using Synnex." // Default Status
       });
       await user.save();
     }
@@ -49,7 +51,7 @@ router.post('/sync-user', async (req, res) => {
         uid: user.uid,  // Firebase UID
         role: user.role 
       }, 
-      process.env.JWT_SECRET || "SynnexSecretKey2026", // .env nahi hua to fallback key
+      process.env.JWT_SECRET || "SynnexSecretKey2026", 
       { expiresIn: "30d" }
     );
 
@@ -57,7 +59,7 @@ router.post('/sync-user', async (req, res) => {
     res.status(200).json({ 
       success: true, 
       user, 
-      token // 🔥 Token bhejna mat bhoolna
+      token // 🔥 Token bhej rahe hain
     });
 
   } catch (err) {
@@ -67,13 +69,47 @@ router.post('/sync-user', async (req, res) => {
 });
 
 // ==========================================
-// 2. GET ALL USERS (Chat List ke liye - Optional)
+// 2. GET ALL USERS (Search Feature Added)
 // ==========================================
-// Agar tumhara 'alumni_chat_list.dart' yahan se users fetch kar raha hai:
 router.get('/users', async (req, res) => {
   try {
-    const users = await User.find({});
+    const { search, except } = req.query;
+    
+    let query = {};
+
+    // 🔍 Search Logic (Name or Email)
+    if (search) {
+      query = {
+        $or: [
+          { displayName: { $regex: search, $options: 'i' } }, // Case-insensitive match
+          { email: { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+
+    // 🚫 Exclude Current User (Khud ko list mein na dikhaye)
+    if (except) {
+      query._id = { $ne: except };
+    }
+
+    const users = await User.find(query).select('-password'); // Password hata kar bhejo
+    
     res.status(200).json({ success: true, users });
+
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// 3. GET SINGLE USER BY ID (Profile View)
+// ==========================================
+router.get('/user/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    
+    res.status(200).json({ success: true, user });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

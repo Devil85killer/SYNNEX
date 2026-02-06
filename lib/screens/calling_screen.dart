@@ -3,17 +3,19 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../services/webrtc_service.dart';
 
 class CallingScreen extends StatefulWidget {
-  final String targetId;
-  final String name;
+  final String targetId; // Jisko call kar rahe hain
+  final String name;     // Uska naam
   final String callType; // 'audio' or 'video'
-  final dynamic socket;  // 🔥 Socket is Required
+  final dynamic socket;  // Socket Object
+  final String myId;     // 🔥 REQUIRED: History save karne ke liye
 
   const CallingScreen({
     super.key, 
     required this.targetId, 
     required this.name,
     required this.callType,
-    required this.socket, 
+    required this.socket,
+    required this.myId, // ✅ Constructor update
   });
 
   @override
@@ -23,30 +25,31 @@ class CallingScreen extends StatefulWidget {
 class _CallingScreenState extends State<CallingScreen> {
   final WebRTCService _service = WebRTCService();
   bool isConnected = false;
+  bool isMicOn = true;
+  bool isCameraOn = true;
 
   @override
   void initState() {
     super.initState();
     
-    // UI render hone ke baad WebRTC start karo
+    // UI build hone ke baad Call start karo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.socket != null) {
-        print("✅ CallingScreen: Starting Call with Socket");
+        print("✅ CallingScreen: Starting Call...");
         _service.init(widget.socket); 
         _service.startCall(context, widget.targetId, widget.name, widget.callType);
       } else {
-        // Agar socket nahi hai toh wapas bhej do
         Navigator.pop(context);
       }
     });
 
-    // Jab samne wala call utha le (Connected)
     if (widget.socket != null) {
+      // ✅ Call Uthne par
       widget.socket.on("call_accepted", (_) {
         if(mounted) setState(() => isConnected = true);
       });
       
-      // Jab samne wala call kaat de
+      // ✅ Call Katne par
       widget.socket.on("call_ended", (_) {
          if(mounted) Navigator.pop(context);
       });
@@ -55,7 +58,7 @@ class _CallingScreenState extends State<CallingScreen> {
 
   @override
   void dispose() {
-    _service.endCall(); // Memory leak rokne ke liye
+    _service.endCall();
     super.dispose();
   }
 
@@ -76,7 +79,7 @@ class _CallingScreenState extends State<CallingScreen> {
               ),
             )
           else
-            // Placeholder jab tak connect na ho
+            // Placeholder (Jab tak connect na ho ya Audio call ho)
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +103,7 @@ class _CallingScreenState extends State<CallingScreen> {
               ),
             ),
 
-          // 2. LOCAL VIDEO (Self View - Small)
+          // 2. LOCAL VIDEO (Self View - Pip)
           if (isVideo)
             Positioned(
               right: 20, 
@@ -120,7 +123,7 @@ class _CallingScreenState extends State<CallingScreen> {
               ),
             ),
 
-          // 3. CONTROLS (Mic, End Call, Camera)
+          // 3. CONTROLS
           Positioned(
             bottom: 40, 
             left: 0, 
@@ -128,38 +131,47 @@ class _CallingScreenState extends State<CallingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                // Mute Button
                 FloatingActionButton(
-                  heroTag: "mic_off",
-                  backgroundColor: Colors.white24,
-                  child: const Icon(Icons.mic_off, color: Colors.white),
+                  heroTag: "mic_btn",
+                  backgroundColor: isMicOn ? Colors.white24 : Colors.white,
+                  child: Icon(isMicOn ? Icons.mic : Icons.mic_off, color: isMicOn ? Colors.white : Colors.black),
                   onPressed: () {
-                    // Mute logic here
+                    // Toggle Mic logic (Future implementation)
+                    setState(() => isMicOn = !isMicOn);
                   },
                 ),
+                
+                // End Call Button
                 FloatingActionButton(
                   heroTag: "end_call",
                   backgroundColor: Colors.red,
                   child: const Icon(Icons.call_end, color: Colors.white),
                   onPressed: () {
-                    // Call End Signal Bhejo
+                    // 🔥 IMPORTANT: Send Data to Backend to Save History
                     if (widget.socket != null) {
                       widget.socket.emit("end_call", {
-                        "peerId": widget.targetId, // Server expects peerId
-                        "reason": "canceled"
+                        "callerId": widget.myId,   // ✅ Ye field history save karegi
+                        "peerId": widget.targetId, // ✅ Ye room close karegi
+                        "callType": widget.callType,
+                        "duration": 0
                       });
                     }
                     _service.endCall();
                     Navigator.pop(context);
                   },
                 ),
+                
+                // Camera Toggle
                 if (isVideo)
                   FloatingActionButton(
-                     heroTag: "video_off",
-                     backgroundColor: Colors.white24,
-                     child: const Icon(Icons.videocam_off, color: Colors.white),
-                     onPressed: () {
-                       // Camera toggle logic
-                     },
+                      heroTag: "cam_btn",
+                      backgroundColor: isCameraOn ? Colors.white24 : Colors.white,
+                      child: Icon(isCameraOn ? Icons.videocam : Icons.videocam_off, color: isCameraOn ? Colors.white : Colors.black),
+                      onPressed: () {
+                        setState(() => isCameraOn = !isCameraOn);
+                        // Toggle Camera Logic
+                      },
                   ),
               ],
             ),

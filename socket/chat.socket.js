@@ -1,5 +1,5 @@
 const Message = require('../models/Message'); 
-const Chat = require('../models/chat'); // Ensure casing matches your file name
+const Chat = require('../models/chat'); 
 
 module.exports = (io, socket, onlineUsers) => {
 
@@ -13,52 +13,106 @@ module.exports = (io, socket, onlineUsers) => {
   socket.on("register_user", (userId) => {
     onlineUsers.set(userId, socket.id);
     console.log(`👤 User Online: ${userId}`);
+    
+    // Optional: Check for undelivered messages and mark them delivered here
   });
 
-  // 3. Send Message
+  // 3. Send Message (Status: Sent)
   socket.on("sendMessage", async (data) => {
     console.log("📩 Message Received:", data);
 
     try {
-      const { roomId, senderId, receiverId, message } = data;
+      const { roomId, senderId, receiverId, message, type } = data;
 
-      // --- STEP A: Save Message to DB (Messages Collection) ---
+      // --- STEP A: Save Message to DB ---
       const newMessage = new Message({
         roomId: roomId,
         senderId: senderId,
         receiverId: receiverId,
-        text: message // DB Schema mein 'text' hi hai, isliye yahan 'text' rahega
+        text: message,
+        type: type || 'text',
+        status: 'sent', // Initially Sent (Single Grey Tick)
+        deletedForEveryone: false,
+        isEdited: false
       });
 
       const savedMsg = await newMessage.save();
-      console.log("💾 Message Saved ID:", savedMsg._id);
 
-      // --- STEP B: Update Chat List (Chatrooms Collection) ---
+      // --- STEP B: Update Chat List ---
       await Chat.findOneAndUpdate(
         { roomId: roomId }, 
         { 
           roomId: roomId, 
-          lastMessage: message, 
+          lastMessage: type === 'image' ? '📷 Photo' : (type === 'audio' ? '🎤 Audio' : message), 
           lastMessageTime: new Date(),
           members: [senderId, receiverId] 
         },
         { upsert: true, new: true, setDefaultsOnInsert: true } 
-      ).catch(err => console.log("⚠️ Chat update error:", err.message));
+      );
 
-      // --- STEP C: Real-time Send (MAIN FIX HERE) ---
+      // --- STEP C: Send to Room ---
       io.to(roomId).emit("receiveMessage", {
+        _id: savedMsg._id,
         senderId: senderId,
-        
-        // 🔥 FIX: Pehle yahan 'text' tha, ab 'message' kar diya hai
-        // Taaki Frontend bina kisi change ke isse pakad le.
-        message: message, 
-        
-        createdAt: savedMsg.createdAt,
-        _id: savedMsg._id
+        message: message,
+        type: type || 'text',
+        time: savedMsg.createdAt,
+        status: 'sent',
+        deletedForEveryone: false
       });
 
     } catch (e) {
       console.log("❌ Socket Error:", e);
     }
+  });
+
+  // 4. MARK AS DELIVERED (Double Grey Tick)
+  // (Frontend tab emit karega jab message receive hoga)
+  socket.on("markAsDelivered", async (data) => {
+    const { roomId, messageId } = data;
+    try {
+       await Message.findByIdAndUpdate(messageId, { status: 'delivered' });
+       // Sender ko batao ki deliver ho gaya
+       socket.to(roomId).emit("message_status_update", { messageId, status: 'delivered' });
+    } catch(e) { console.log(e); }
+  });
+
+  // 5. MARK AS SEEN (Blue Tick)
+  // (Frontend tab emit karega jab chat screen open hogi)
+  socket.on("markAsSeen", async (data) => {
+    const { roomId, userId } = data; // userId wo hai jisne message dekha (Receiver)
+    try {
+        // Update all messages in this room sent by the OTHER person to 'seen'
+        await Message.updateMany(
+            { roomId: roomId, senderId: { $ne: userId }, status: { $ne: 'seen' } },
+            { status: 'seen' }
+        );
+
+        // Poore room mein update bhejo (Sender ka tick blue ho jayega)
+        io.to(roomId).emit("messages_seen", { roomId, userId });
+        console.log(`🔵 All messages in ${roomId} marked as seen by ${userId}`);
+    } catch(e) { console.log(e); }
+  });
+
+  // 6. DELETE FOR EVERYONE (Soft Delete)
+  socket.on("delete_message", async (data) => {
+    const { roomId, messageId } = data;
+    try {
+      // DB se delete nahi karenge, bas flag true karenge
+      await Message.findByIdAndUpdate(messageId, { deletedForEveryone: true });
+
+      // Real-time update bhejo
+      io.to(roomId).emit("message_deleted", messageId);
+      console.log(`🗑️ Message ${messageId} deleted for everyone`);
+    } catch(e) { console.log(e); }
+  });
+
+  // 7. EDIT MESSAGE
+  socket.on("edit_message", async (data) => {
+    const { roomId, messageId, newText } = data;
+    try {
+      await Message.findByIdAndUpdate(messageId, { text: newText, isEdited: true });
+      io.to(roomId).emit("message_edited", { messageId, newText });
+    } catch(e) { console.log(e); }
   });
 };

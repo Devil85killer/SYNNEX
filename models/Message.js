@@ -5,7 +5,7 @@ const MessageSchema = new mongoose.Schema(
     roomId: { 
       type: String, 
       required: true 
-    }, // ✅ FIXED: Socket code is field ko 'roomId' ke naam se dhundta hai
+    }, // Socket room ID
     
     senderId: { 
       type: String, 
@@ -14,7 +14,7 @@ const MessageSchema = new mongoose.Schema(
     
     receiverId: {
       type: String
-    }, // Optional: Future use ke liye
+    }, // Receiver UID (Optional but good for queries)
     
     text: { 
       type: String 
@@ -22,17 +22,30 @@ const MessageSchema = new mongoose.Schema(
     
     type: { 
       type: String, 
-      enum: ['text', 'image', 'video', 'file', 'call'], 
+      enum: ['text', 'image', 'audio', 'video', 'file', 'call'], // ✅ 'audio' add kiya hai voice notes ke liye
       default: 'text' 
     },
     
     mediaUrl: { 
       type: String 
-    }, // Agar photo/video bheji toh yahan URL aayega
+    }, // Photo/Audio/Video ka URL
     
-    readBy: [{ 
-      type: String 
-    }], // Kaun kaun padh chuka hai
+    // 🔥 WHATSAPP 2.0 FEATURES
+    status: {
+      type: String,
+      enum: ['sent', 'delivered', 'seen'],
+      default: 'sent'
+    }, // Blue Ticks logic yahan se chalega
+
+    deletedForEveryone: {
+      type: Boolean,
+      default: false
+    }, // Soft Delete ke liye
+
+    isEdited: {
+      type: Boolean,
+      default: false
+    }, // Edit label ke liye
 
     // 🔥 REACTION SUPPORT
     reactions: [
