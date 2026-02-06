@@ -26,8 +26,7 @@ import 'screens/admin/admin_dashboard.dart';
 // ================= DEPARTMENT =================
 import 'screens/department/department_login.dart';
 
-
-// 🔥 GLOBAL NAVIGATOR KEY
+// 🔥 GLOBAL NAVIGATOR KEY (Iska use karke hum notification dikhayenge)
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 // 🔥 GLOBAL SOCKET VARIABLE
@@ -41,20 +40,31 @@ void main() async {
   runApp(const SynergyApp());
 }
 
-/// 🔥 SOCKET CONNECTION FUNCTION (UPDATED)
-/// Ab ye 2 cheezein leta hai: Token aur MongoDB ID
+/// 🔥 SOCKET CONNECTION FUNCTION (FINAL FIX)
 void connectSocket(String token, String myMongoId) {
-  if (socket != null) {
-    socket!.disconnect();
-  }
-
-  // ⚠️ LOCALHOST KE LIYE IP CHANGE KARO (e.g., 'http://192.168.1.5:3000')
+  // ⚠️ SERVER URL
   String socketUrl = 'https://synnex.onrender.com'; 
 
+  // 1. ✅ SMART CHECK: Agar pehle se connected hai, toh dobara connect mat karo,
+  // bas server ko bata do ki "Main hoon" (Setup Event).
+  if (socket != null && socket!.connected) {
+    print("⚠️ Socket already active. Forcing 'setup' for ID: $myMongoId");
+    socket!.emit("setup", myMongoId); 
+    return;
+  }
+
+  // 2. Agar connected nahi hai par object hai, toh saaf karo
+  if (socket != null) {
+    socket!.disconnect();
+    socket = null;
+  }
+
   try {
+    print("🔌 Connecting to Socket: $socketUrl with ID: $myMongoId");
+
     socket = IO.io(socketUrl, IO.OptionBuilder()
         .setTransports(['websocket'])
-        .disableAutoConnect()
+        .enableForceNew() // 🔥 Force New Connection (Zaroori hai)
         .setAuth({'token': token}) 
         .build());
 
@@ -63,23 +73,48 @@ void connectSocket(String token, String myMongoId) {
     socket!.onConnect((_) {
       print("✅ Socket Connected: ${socket!.id}");
       
-      // 🔥 USER REGISTER KARNA SERVER PAR
+      // 🔥 USER REGISTER KARNA (Sabse Important Line)
+      print("📢 Sending 'setup' event for User: $myMongoId");
       socket!.emit("setup", myMongoId); 
       
       // WebRTC Init
       WebRTCService().init(socket);
     });
 
+    socket!.onConnectError((data) => print("❌ Socket Connection Error: $data"));
     socket!.onDisconnect((_) => print("❌ Socket Disconnected"));
 
-    // INCOMING CALL LISTENER
+    // 📞 INCOMING CALL LISTENER
     socket!.on("incoming_call", (data) {
-      print("🔔 Incoming Call: $data");
+      print("🔔 Incoming Call Received: $data");
+
+      // 🔥 UI NOTIFICATION (Web par pata chalega call aayi hai)
+      if (navigatorKey.currentContext != null) {
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text("📞 Incoming Call from ${data['callerId']}..."),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 10), // 10 seconds tak dikhega
+            action: SnackBarAction(
+              label: "ANSWER",
+              textColor: Colors.white,
+              onPressed: () {
+                // Future: Yahan se direct answer handle kar sakte ho
+              },
+            ),
+          ),
+        );
+      }
+
       WebRTCService().handleIncomingCall(data);
     });
 
+    socket!.on("call_error", (data) {
+      print("❌ Call Error: $data");
+    });
+
   } catch (e) {
-    print("⚠️ Socket Error: $e");
+    print("⚠️ Socket Logic Error: $e");
   }
 }
 
@@ -91,7 +126,7 @@ class SynergyApp extends StatelessWidget {
     return MaterialApp(
       title: "Synergy Institute App",
       debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
+      navigatorKey: navigatorKey, // 🔥 Ye zaroori hai SnackBar ke liye
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -147,6 +182,7 @@ class WelcomePage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              const SizedBox(height: 50),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text("WELCOME TO SYNERGY INSTITUTE", textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -161,6 +197,7 @@ class WelcomePage extends StatelessWidget {
               loginButton(title: "Admin Login", icon: Icons.admin_panel_settings, onTap: () => Navigator.pushNamed(context, '/admin_login')),
               const SizedBox(height: 15),
               loginButton(title: "Department Login", icon: Icons.account_balance, onTap: () => Navigator.pushNamed(context, '/department_login')),
+              const SizedBox(height: 50),
             ],
           ),
         ),

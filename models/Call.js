@@ -24,7 +24,7 @@ const CallSchema = new mongoose.Schema(
     
     status: { 
       type: String, 
-      enum: ['missed', 'accepted', 'rejected', 'ended', 'busy'], // 'busy' bhi add kar diya safety ke liye
+      enum: ['missed', 'accepted', 'rejected', 'ended', 'busy'], 
       default: 'missed' 
     },
     

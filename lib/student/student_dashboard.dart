@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ Firestore zaroori hai reconnect ke liye
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/socket_service.dart'; 
-import '../../main.dart'; // ✅ Global socket aur connectSocket ke liye
+import '../../main.dart'; // Global socket access
 
 // STUDENT PAGES
 import 'student_routine.dart';
@@ -14,7 +14,7 @@ import 'student_exam_reports.dart';
 import 'student_complaints.dart';
 import 'student_chat_list.dart';
 
-// ✅ COMMON JOB FEED
+// COMMON JOB FEED
 import '../screens/jobs/common_job_feed_page.dart';
 
 class StudentDashboard extends StatefulWidget {
@@ -54,25 +54,18 @@ class _StudentDashboardState extends State<StudentDashboard> {
   @override
   void initState() {
     super.initState();
-    // 🔥 SMART CHECK: Refresh ke baad socket null toh nahi?
+    // Dashboard load hote hi socket connect aur user ko online dikhao
     _checkSocket();
   }
 
-  /// 🔌 SMART RECONNECT FOR STUDENT
+  /// 🔌 SMART RECONNECT & ONLINE STATUS (FCM + SETUP)
   Future<void> _checkSocket() async {
-    // 1. Agar socket pehle se connected hai toh kuch mat karo
-    if (socket != null && socket!.connected) {
-      print("✅ Student Dashboard: Socket already active");
-      return;
-    }
-
-    print("🔄 Student Dashboard: Refresh detected. Reconnecting Socket...");
+    print("🔄 Student Dashboard: Initializing Online Status...");
     
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
 
-      // 2. Student ka JWT aur MongoID Firestore se nikalo
       final userDoc = await FirebaseFirestore.instance
           .collection('students')
           .doc(uid)
@@ -82,12 +75,25 @@ class _StudentDashboardState extends State<StudentDashboard> {
         final data = userDoc.data();
         if (data != null) {
           final jwt = data['chatifyJwt'];
-          final myMongoId = data['chatifyUserId']; // ✅ FIX: MongoID bhi nikala
+          final myMongoId = data['chatifyUserId'];
 
-          // ✅ FIX: Ab Token aur ID dono bhej rahe hain
           if (jwt != null && myMongoId != null) {
+            // 1. Connection logic initiate karo
             connectSocket(jwt, myMongoId); 
-            print("🚀 Student Dashboard: Reconnection initiated for ID: $myMongoId");
+            
+            // 2. 🔥 FORCE SETUP (Wait until socket connects then emit)
+            // Isse server ko pata chal jayega ki aap kis socket ID pe online ho
+            if (socket != null) {
+               if (socket!.connected) {
+                  socket!.emit("setup", myMongoId);
+                  print("🚀 Setup Sent: User $myMongoId is now LIVE");
+               } else {
+                  socket!.on('connect', (_) {
+                    socket!.emit("setup", myMongoId);
+                    print("🚀 Connected & Setup Sent: User $myMongoId is now LIVE");
+                  });
+               }
+            }
           }
         }
       }
@@ -98,9 +104,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   /// 🚪 LOGOUT
   Future<void> _logout() async {
-    // Socket listeners clean karo
     SocketService().disconnect(); 
-    
     await FirebaseAuth.instance.signOut();
 
     if (mounted) {
@@ -127,7 +131,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
       ),
       body: Row(
         children: [
-          /// LEFT MENU
+          /// 1. LEFT MENU (NavigationRail)
           NavigationRail(
             selectedIndex: _selectedIndex,
             onDestinationSelected: (i) {
@@ -174,6 +178,10 @@ class _StudentDashboardState extends State<StudentDashboard> {
             ],
           ),
 
+          /// 2. DIVIDER
+          const VerticalDivider(thickness: 1, width: 1),
+
+          /// 3. MAIN CONTENT
           Expanded(
             child: Container(
               color: Colors.grey.shade100,
@@ -187,7 +195,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
 }
 
 ////////////////////////////////////////////////////////////
-/// HOME PAGE
+/// HOME PAGE (DASHBOARD TAB)
 ////////////////////////////////////////////////////////////
 
 class StudentHomePage extends StatelessWidget {

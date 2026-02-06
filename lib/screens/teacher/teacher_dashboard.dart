@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../services/socket_service.dart';
-import '../../main.dart'; // ✅ IMPORTED for 'socket' and 'connectSocket'
+import '../../main.dart'; // ✅ Global 'socket' and 'connectSocket' access
 
 // TEACHER PAGES
 import 'teacher_books.dart';
@@ -35,25 +35,19 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
   @override
   void initState() {
     super.initState();
-    // 🔥 SMART CHECK: Check if socket needs reconnection (especially after refresh)
+    // 🔥 Dashboard load hote hi socket check aur setup karo
     _checkSocket(); 
   }
 
-  /// 🔌 SMART RECONNECT FUNCTION
+  /// 🔌 SMART RECONNECT & ONLINE STATUS SETUP
   Future<void> _checkSocket() async {
-    // 1. Agar socket already connected hai toh kuch mat karo
-    if (socket != null && socket!.connected) {
-      print("✅ Teacher Dashboard: Socket already active");
-      return;
-    }
-
-    print("🔄 Teacher Dashboard: Socket disconnected/Refresh detected. Reconnecting...");
+    print("🔄 Teacher Dashboard: Syncing Socket Status...");
     
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
 
-      // 2. Fetch Teacher's JWT & MongoID from Firestore
+      // 1. Fetch Teacher's JWT & MongoID from Firestore
       final userDoc = await FirebaseFirestore.instance
           .collection('teachers')
           .doc(uid)
@@ -63,12 +57,26 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
         final data = userDoc.data();
         if (data != null) {
           final jwt = data['chatifyJwt'];
-          final myMongoId = data['chatifyUserId']; // ✅ FIX: MongoID bhi nikala
+          final myMongoId = data['chatifyUserId'];
 
-          // ✅ FIX: Ab Token aur ID dono bhej rahe hain
           if (jwt != null && myMongoId != null) {
+            // 2. Connection initiate karo
             connectSocket(jwt, myMongoId); 
-            print("🚀 Teacher Dashboard: Reconnection attempt started for ID: $myMongoId");
+            
+            // 3. 🔥 FORCE SETUP: Ensure server knows we are online
+            if (socket != null) {
+               if (socket!.connected) {
+                  // Agar socket pehle se connected hai toh turant setup bhej do
+                  socket!.emit("setup", myMongoId);
+                  print("🚀 Teacher Online Setup Sent: $myMongoId");
+               } else {
+                  // Agar abhi connect ho raha hai, toh connection bante hi setup bhej do
+                  socket!.on('connect', (_) {
+                    socket!.emit("setup", myMongoId);
+                    print("🚀 Teacher Handshake Complete: $myMongoId");
+                  });
+               }
+            }
           }
         }
       }
@@ -77,11 +85,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
     }
   }
 
-  /// 🚪 LOGOUT (DISCONNECT SOCKET LISTENERS)
+  /// 🚪 LOGOUT
   Future<void> _logout() async {
-    // Sirf listeners clean karo, actual socket connection main handle karta hai
     SocketService().disconnect(); 
-    
     await FirebaseAuth.instance.signOut();
 
     if (mounted) {
@@ -115,8 +121,9 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
               const SizedBox(height: 10),
               Text(
                 label,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -155,8 +162,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             );
           }
 
-          final data =
-              snapshot.data!.data() as Map<String, dynamic>? ?? {};
+          final data = snapshot.data!.data() as Map<String, dynamic>? ?? {};
           final bool isHOD = data['isBranchHOD'] == true;
           final String course = data['course'] ?? "";
           final String branch = data['branch'] ?? "";
@@ -165,17 +171,15 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
             padding: const EdgeInsets.all(16),
             child: GridView.count(
               crossAxisCount: 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
               children: [
                 buildCard(
                   icon: Icons.menu_book,
                   label: "Books",
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const TeacherBooksPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const TeacherBooksPage()),
                   ),
                 ),
                 buildCard(
@@ -183,9 +187,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   label: "Routine",
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const TeacherRoutinePage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const TeacherRoutinePage()),
                   ),
                 ),
                 buildCard(
@@ -196,10 +198,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     MaterialPageRoute(
                       builder: (_) => TeacherAttendancePage(),
                       settings: RouteSettings(
-                        arguments: {
-                          "course": course,
-                          "branch": branch,
-                        },
+                        arguments: {"course": course, "branch": branch},
                       ),
                     ),
                   ),
@@ -209,9 +208,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   label: "Profile",
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const TeacherProfilePage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const TeacherProfilePage()),
                   ),
                 ),
                 buildCard(
@@ -219,9 +216,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   label: "Chats",
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const TeacherChatListPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const TeacherChatListPage()),
                   ),
                 ),
                 buildCard(
@@ -229,9 +224,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                   label: "Job Feed",
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const CommonJobFeedPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const CommonJobFeedPage()),
                   ),
                 ),
                 if (isHOD) ...[
@@ -241,8 +234,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            HODStudentsPage(course: course, branch: branch),
+                        builder: (_) => HODStudentsPage(course: course, branch: branch),
                       ),
                     ),
                   ),
@@ -252,8 +244,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            HODNoticePage(course: course, branch: branch),
+                        builder: (_) => HODNoticePage(course: course, branch: branch),
                       ),
                     ),
                   ),
@@ -263,10 +254,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => HODRoutineManager(
-                          course: course,
-                          branch: branch,
-                        ),
+                        builder: (_) => HODRoutineManager(course: course, branch: branch),
                       ),
                     ),
                   ),
@@ -276,10 +264,7 @@ class _TeacherDashboardState extends State<TeacherDashboard> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => HODAttendancePage(
-                          course: course,
-                          branch: branch,
-                        ),
+                        builder: (_) => HODAttendancePage(course: course, branch: branch),
                       ),
                     ),
                   ),

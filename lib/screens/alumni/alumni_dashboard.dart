@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../services/socket_service.dart';
-import '../../main.dart'; // ✅ IMPORTED for 'socket' and 'connectSocket'
+import '../../main.dart'; // ✅ Global 'socket' and 'connectSocket' access
 
 // ALUMNI PAGES
 import 'alumni_profile.dart';
@@ -46,25 +46,19 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
   @override
   void initState() {
     super.initState();
-    // 🔥 SMART CHECK: Check if socket needs reconnection after a refresh
+    // 🔥 Dashboard load hote hi socket sync karo
     _checkSocket();
   }
 
-  /// 🔌 SMART RECONNECT FOR ALUMNI
+  /// 🔌 SMART RECONNECT & FORCE SETUP FOR ALUMNI
   Future<void> _checkSocket() async {
-    // 1. Agar socket already connected hai toh return
-    if (socket != null && socket!.connected) {
-      print("✅ Alumni Dashboard: Socket already active");
-      return;
-    }
-
-    print("🔄 Alumni Dashboard: Refresh detected. Reconnecting Socket...");
+    print("🔄 Alumni Dashboard: Syncing Online Status...");
     
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid;
       if (uid == null) return;
 
-      // 2. Alumni ka JWT aur MongoID Firestore se fetch karo
+      // 1. Fetch Alumni Data from Firestore
       final userDoc = await FirebaseFirestore.instance
           .collection('alumni_users')
           .doc(uid)
@@ -74,12 +68,26 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
         final data = userDoc.data();
         if (data != null) {
           final jwt = data['chatifyJwt'];
-          final myMongoId = data['chatifyUserId']; // ✅ FIX: MongoID nikala
+          final myMongoId = data['chatifyUserId'];
 
-          // ✅ FIX: Ab Token aur ID dono bhej rahe hain
           if (jwt != null && myMongoId != null) {
-            connectSocket(jwt, myMongoId); // 👈 FIXED: 2 Arguments Passed
-            print("🚀 Alumni Dashboard: Reconnection initiated for ID: $myMongoId");
+            // 2. Connection start karo
+            connectSocket(jwt, myMongoId); 
+            
+            // 3. 🔥 FORCE ONLINE SIGNAL (Setup Event)
+            // Humein server ko batana padega ki Alumni online aa gaya hai
+            if (socket != null) {
+               if (socket!.connected) {
+                  socket!.emit("setup", myMongoId);
+                  print("🚀 Alumni Setup Sent: $myMongoId");
+               } else {
+                  // Connection bante hi setup bhej do
+                  socket!.on('connect', (_) {
+                    socket!.emit("setup", myMongoId);
+                    print("🚀 Alumni Handshake Complete: $myMongoId");
+                  });
+               }
+            }
           }
         }
       }
@@ -88,11 +96,9 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
     }
   }
 
-  /// 🚪 LOGOUT (SOCKET + FIREBASE)
+  /// 🚪 LOGOUT
   Future<void> _logout() async {
-    // Sirf listeners clean karo
     SocketService().disconnect(); 
-    
     await FirebaseAuth.instance.signOut();
 
     if (mounted) {
@@ -120,6 +126,7 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
       ),
       body: Row(
         children: [
+          /// 1. NavigationRail
           NavigationRail(
             selectedIndex: _index,
             onDestinationSelected: (i) {
@@ -154,6 +161,8 @@ class _AlumniDashboardState extends State<AlumniDashboard> {
             ],
           ),
           const VerticalDivider(width: 1),
+          
+          /// 2. Main Content Area
           Expanded(
             child: Container(
               color: Colors.grey.shade100,
@@ -192,7 +201,7 @@ class AlumniHomePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Icon(Icons.work_outline, size: 120),
+          const Icon(Icons.work_outline, size: 120, color: Colors.blue),
         ],
       ),
     );
