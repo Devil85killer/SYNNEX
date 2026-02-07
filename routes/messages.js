@@ -1,39 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const Message = require('../models/Message'); // ✅ Message Model
-const Chat = require('../models/chat');       // ✅ Chat Model (List update karne ke liye)
+const Message = require('../models/Message');
+const Chat = require('../models/chat');
 
 // ==========================================
-// 1. SEND MESSAGE (API Fallback)
+// 1. SEND MESSAGE (Fixed)
 // ==========================================
 router.post('/', async (req, res) => {
-  const { roomId, senderId, text, type, mediaUrl, senderName, receiverName } = req.body;
+  // 🔥 CHANGE 1: 'receiverId' ko bhi destructure kar
+  const { roomId, senderId, receiverId, text, type, mediaUrl } = req.body;
   
   try {
     // A. Create New Message
     const newMessage = new Message({
       roomId,
       senderId,
-      text, // Frontend se 'text' ya 'message' jo bhi aaye
+      receiverId, // Database mein save ho raha hai
+      text,
       type: type || 'text',
       mediaUrl,
-      status: 'sent', // Default Status
+      status: 'sent',
       deletedForEveryone: false,
       isEdited: false
     });
 
     const savedMessage = await newMessage.save();
 
-    // B. Update Chat List (Last Message show karne ke liye)
-    // Ye zaroori hai taaki home screen par "Last Message" update ho jaye
+    // B. Update Chat List (CRITICAL FIX HERE)
     await Chat.findOneAndUpdate(
       { roomId: roomId }, 
       { 
         roomId: roomId, 
         lastMessage: type === 'image' ? '📷 Photo' : (type === 'audio' ? '🎤 Audio' : text), 
         lastMessageTime: new Date(),
-        // Members array update logic (Optional: add if not exists)
-        $addToSet: { members: senderId } 
+        
+        // 🔥 CHANGE 2: Dono (Sender + Receiver) ko members mein daal
+        // $addToSet duplicate nahi hone dega, par ensure karega dono ID wahan ho
+        $addToSet: { members: { $each: [senderId, receiverId] } } 
       },
       { upsert: true, new: true, setDefaultsOnInsert: true } 
     );
@@ -56,7 +59,6 @@ router.get('/:roomId', async (req, res) => {
   try {
     const { roomId } = req.params;
 
-    // Database se messages nikalo (Oldest First)
     const messages = await Message.find({ roomId: roomId })
       .sort({ createdAt: 1 }); 
 
@@ -72,16 +74,16 @@ router.get('/:roomId', async (req, res) => {
 });
 
 // ==========================================
-// 3. EDIT MESSAGE (Naya Feature)
+// 3. EDIT MESSAGE
 // ==========================================
 router.put('/:id', async (req, res) => {
   try {
-    const { message } = req.body; // Naya text
+    const { message } = req.body; 
     
     const updatedMsg = await Message.findByIdAndUpdate(
       req.params.id,
       { text: message, isEdited: true },
-      { new: true } // Return updated doc
+      { new: true } 
     );
 
     if (!updatedMsg) {
@@ -99,12 +101,10 @@ router.put('/:id', async (req, res) => {
 });
 
 // ==========================================
-// 4. DELETE FOR EVERYONE (Soft Delete)
+// 4. DELETE FOR EVERYONE
 // ==========================================
 router.delete('/:id', async (req, res) => {
   try {
-    // Database se permanent delete NAHI karenge
-    // Bas 'deletedForEveryone' ko true kar denge
     const updatedMsg = await Message.findByIdAndUpdate(
       req.params.id,
       { deletedForEveryone: true },

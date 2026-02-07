@@ -42,10 +42,10 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     _listenToActiveChats();
   }
 
-  // 🔥 Real-time Chat Name Listener (Same as Student)
+  // 🔥 Real-time Chat Name Listener (Fixed for Alumni)
   void _listenToActiveChats() {
     _chatSubscription = FirebaseFirestore.instance
-        .collection('users')
+        .collection('alumni_users') // ✅ FIXED: Changed from 'users' to 'alumni_users'
         .doc(myUid)
         .collection('active_chats')
         .snapshots()
@@ -76,7 +76,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     super.dispose();
   }
 
-  // 1. FETCH ALUMNI DETAILS (Corrected Collection)
+  // 1. FETCH ALUMNI DETAILS
   Future<void> _fetchMyDetails() async {
     try {
       final doc = await FirebaseFirestore.instance.collection('alumni_users').doc(myUid).get();
@@ -116,7 +116,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     }
   }
 
-  // 🔥 Ultra Safe Name Resolver (Same as Student)
+  // 🔥 Ultra Safe Name Resolver
   String _getDisplayName(Map<String, dynamic> call) {
     final isOutgoing = call['callerId']?.toString() == myChatId;
     final targetId = (isOutgoing ? call['receiverId'] : call['callerId'])?.toString() ?? "";
@@ -126,7 +126,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     // 1. Check background cache
     if (_nameCache.containsKey(targetId)) return _nameCache[targetId]!;
 
-    // 2. Fallback to API data (Matches Student API format)
+    // 2. Fallback to API data
     var rawName = isOutgoing ? call['receiverName'] : call['callerName'];
     if (rawName != null) {
       if (rawName is String) return rawName;
@@ -166,11 +166,11 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     );
   }
 
-  // 💬 CHAT TAB (Same as Student)
+  // 💬 CHAT TAB (Fixed Collection Path)
   Widget _buildChatListTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('users')
+          .collection('alumni_users') // ✅ FIXED: Changed from 'users' to 'alumni_users'
           .doc(myUid)
           .collection('active_chats')
           .orderBy('time', descending: true)
@@ -202,7 +202,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
                   List<String> ids = [myChatId!, otherChatId];
                   ids.sort();
                   Navigator.push(context, MaterialPageRoute(builder: (_) => ChannelPage(
-                    roomId: ids.join("___"),
+                    roomId: ids.join("___"), // ✅ Correct Clean ID (No more 'chatify' string)
                     me: myChatId!,
                     other: otherChatId,
                     otherName: name,
