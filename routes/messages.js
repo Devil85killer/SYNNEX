@@ -1,21 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
-const Chat = require('../models/chat');
+const Chat = require('../models/chat'); // Make sure tumhare models folder mein file ka naam 'chat.js' hi ho
 
 // ==========================================
-// 1. SEND MESSAGE (Fixed)
+// 1. SEND MESSAGE (Auto-Update Chat List)
 // ==========================================
 router.post('/', async (req, res) => {
-  // 🔥 CHANGE 1: 'receiverId' ko bhi destructure kar
+  // 🔥 IMPORTANT: receiverId yahan zaroori hai
   const { roomId, senderId, receiverId, text, type, mediaUrl } = req.body;
   
   try {
-    // A. Create New Message
+    // A. Create New Message in 'messages' collection
     const newMessage = new Message({
       roomId,
       senderId,
-      receiverId, // Database mein save ho raha hai
+      receiverId, 
       text,
       type: type || 'text',
       mediaUrl,
@@ -26,7 +26,8 @@ router.post('/', async (req, res) => {
 
     const savedMessage = await newMessage.save();
 
-    // B. Update Chat List (CRITICAL FIX HERE)
+    // B. Update 'chats' collection (CRITICAL FIX)
+    // Ye code ensure karega ki Sender aur Receiver dono 'members' list mein hon
     await Chat.findOneAndUpdate(
       { roomId: roomId }, 
       { 
@@ -34,8 +35,7 @@ router.post('/', async (req, res) => {
         lastMessage: type === 'image' ? '📷 Photo' : (type === 'audio' ? '🎤 Audio' : text), 
         lastMessageTime: new Date(),
         
-        // 🔥 CHANGE 2: Dono (Sender + Receiver) ko members mein daal
-        // $addToSet duplicate nahi hone dega, par ensure karega dono ID wahan ho
+        // $addToSet: Ye duplicate ID add nahi hone dega, par missing ID add kar dega
         $addToSet: { members: { $each: [senderId, receiverId] } } 
       },
       { upsert: true, new: true, setDefaultsOnInsert: true } 
@@ -59,6 +59,7 @@ router.get('/:roomId', async (req, res) => {
   try {
     const { roomId } = req.params;
 
+    // Messages ko time ke hisaab se sort karke bhejo
     const messages = await Message.find({ roomId: roomId })
       .sort({ createdAt: 1 }); 
 
