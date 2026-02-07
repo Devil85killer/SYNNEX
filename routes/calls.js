@@ -3,13 +3,52 @@ const router = express.Router();
 const Call = require('../models/Call');
 const User = require('../models/User'); 
 
+// 🔥 AUTO-HEAL FUNCTION: Ye user ko check karega aur agar nahi mila toh bana dega
+const ensureUserExists = async (id, name, email, pic) => {
+    if (!id) return;
+    try {
+        // MongoDB mein dhoondo, na mile toh naya banao (Upsert: true)
+        // Hum purana data overwrite nahi karenge, bas missing fields bharenge
+        await User.findByIdAndUpdate(
+            id,
+            { 
+                $set: { 
+                    name: name || "Alumni User",
+                    displayName: name || "Alumni User",
+                    username: name ? name.toLowerCase().replace(/\s/g, '') + "_" + id.substr(-4) : `user_${id.substr(-4)}`,
+                    email: email || "",
+                    profilePic: pic || ""
+                } 
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        console.log(`✅ [Auto-Fix] User Synced in MongoDB: ${name || id}`);
+    } catch (err) {
+        console.error(`⚠️ [Auto-Fix Failed] Could not sync user ${id}:`, err.message);
+    }
+};
+
 // ==========================================
-// 1. LOG A NEW CALL (Save to DB)
+// 1. LOG A NEW CALL (With Auto-Heal Logic)
 // ==========================================
 router.post('/', async (req, res) => {
   try {
-    const { callerId, receiverId, type, status, duration } = req.body;
+    const { 
+        callerId, callerName, callerEmail, callerPic, // Frontend se ye extra bhejna padega
+        receiverId, receiverName, receiverEmail, receiverPic,
+        type, status, duration 
+    } = req.body;
 
+    console.log("📞 Logging Call with Auto-Heal...");
+
+    // 🔥 STEP 1: Pehle Users ko Fix karo (Background mein)
+    // Ye wait karega taaki call save hone se pehle user DB mein aa jaye
+    await Promise.all([
+        ensureUserExists(callerId, callerName, callerEmail, callerPic),
+        ensureUserExists(receiverId, receiverName, receiverEmail, receiverPic)
+    ]);
+
+    // 🔥 STEP 2: Ab Call Save karo
     const newCall = new Call({
       callerId,
       receiverId,
@@ -20,7 +59,7 @@ router.post('/', async (req, res) => {
 
     const savedCall = await newCall.save();
     
-    // Save karte hi populate karke return karo taaki turant naam dikhe
+    // 🔥 STEP 3: Populate karke return karo
     await savedCall.populate('callerId', 'name username displayName profilePic');
     await savedCall.populate('receiverId', 'name username displayName profilePic');
 
@@ -33,55 +72,40 @@ router.post('/', async (req, res) => {
 });
 
 // ==========================================
-// 2. GET CALL HISTORY (With Smart Names & DEBUG LOGS)
+// 2. GET CALL HISTORY (With Smart Names & Debugging)
 // ==========================================
 router.get('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
 
-    console.log(`\n🔍 [API] Fetching calls for UserID: ${userId}`);
-
     const calls = await Call.find({
       $or: [{ callerId: userId }, { receiverId: userId }]
     })
-    .sort({ createdAt: -1 }) // Get latest first
+    .sort({ createdAt: -1 })
     .populate('callerId', 'name username displayName email profilePic') 
     .populate('receiverId', 'name username displayName email profilePic');
-
-    // 🔥 DEBUGGING BLOCK STARTS HERE 🔥
-    if (calls.length > 0) {
-        const latestCall = calls[0]; // Check only the latest call
-        
-        console.log("------------------------------------------------");
-        console.log(`🔎 Checking Latest Call ID: ${latestCall._id}`);
-        
-        // Check Caller
-        if (!latestCall.callerId) {
-            console.error(`❌ [PROBLEM] Caller User Not Found in MongoDB! (ID was: ${latestCall.get('callerId')})`);
-        } else {
-            console.log(`✅ [OK] Caller Found: ${latestCall.callerId.name || latestCall.callerId.username}`);
-        }
-
-        // Check Receiver
-        if (!latestCall.receiverId) {
-            console.error(`❌ [PROBLEM] Receiver User Not Found in MongoDB! (ID was: ${latestCall.get('receiverId')})`);
-        } else {
-            console.log(`✅ [OK] Receiver Found: ${latestCall.receiverId.name || latestCall.receiverId.username}`);
-        }
-        console.log("------------------------------------------------");
-    } else {
-        console.log("⚠️ No calls found for this user yet.");
-    }
-    // 🔥 DEBUGGING BLOCK ENDS 🔥
 
     const formattedCalls = calls.map(call => {
       // Safe handling if user is deleted or missing
       const caller = call.callerId || { _id: call.callerId };
       const receiver = call.receiverId || { _id: call.receiverId };
 
-      // SMART NAME RESOLVER: Checking multiple fields
-      const callerName = caller.name || caller.displayName || caller.username || "Unknown User";
-      const receiverName = receiver.name || receiver.displayName || receiver.username || "Unknown User";
+      // SMART NAME RESOLVER: Har kone mein naam dhoondo
+      let callerName = "Unknown User";
+      if (caller) {
+          if (caller.name) callerName = caller.name;
+          else if (caller.displayName) callerName = caller.displayName;
+          else if (caller.username) callerName = caller.username;
+          else if (caller.email) callerName = caller.email.split('@')[0];
+      }
+
+      let receiverName = "Unknown User";
+      if (receiver) {
+          if (receiver.name) receiverName = receiver.name;
+          else if (receiver.displayName) receiverName = receiver.displayName;
+          else if (receiver.username) receiverName = receiver.username;
+          else if (receiver.email) receiverName = receiver.email.split('@')[0];
+      }
 
       return {
         _id: call._id,
