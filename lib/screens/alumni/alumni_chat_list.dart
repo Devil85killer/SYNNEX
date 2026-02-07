@@ -23,7 +23,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
   List<dynamic> _calls = [];
   bool _isLoadingCalls = true;
 
-  // 🔥 POWERFUL CACHE: Background listener se data yahan store hoga
+  // 🔥 POWERFUL CACHE: Same as Student Logic
   final Map<String, String> _nameCache = {};
   StreamSubscription? _chatSubscription;
 
@@ -32,7 +32,6 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     
-    // Tab switch hone par calls refresh karna
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging && _tabController.index == 1) {
         _fetchCallLogs();
@@ -43,7 +42,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     _listenToActiveChats();
   }
 
-  // 🔥 Real-time Chat Name Listener
+  // 🔥 Real-time Chat Name Listener (Same as Student)
   void _listenToActiveChats() {
     _chatSubscription = FirebaseFirestore.instance
         .collection('users')
@@ -54,10 +53,9 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
       if (mounted) {
         bool updated = false;
         for (var doc in snapshot.docs) {
-          final data = doc.data(); // Access as Map
+          final data = doc.data() as Map<String, dynamic>;
           final String? chatifyId = data['chatifyId']?.toString();
-          // Use 'name' or fallback to 'username' if available
-          final String? name = data['name']?.toString() ?? data['username']?.toString();
+          final String? name = data['name']?.toString();
           
           if (chatifyId != null && name != null) {
             if (_nameCache[chatifyId] != name) {
@@ -66,7 +64,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
             }
           }
         }
-        if (updated) setState(() {}); // Sirf tabhi update karo jab naya naam mile
+        if (updated) setState(() {}); 
       }
     });
   }
@@ -78,10 +76,9 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     super.dispose();
   }
 
-  // 1. FETCH ALUMNI DETAILS
+  // 1. FETCH ALUMNI DETAILS (Corrected Collection)
   Future<void> _fetchMyDetails() async {
     try {
-      // ✅ CHANGE: 'students' -> 'alumni_users'
       final doc = await FirebaseFirestore.instance.collection('alumni_users').doc(myUid).get();
       if (doc.exists && mounted) {
         setState(() {
@@ -97,7 +94,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     }
   }
 
-  // 2. FETCH CALL LOGS
+  // 2. FETCH CALL LOGS (Same as Student)
   Future<void> _fetchCallLogs() async {
     if (myChatId == null || myJwt == null) return;
     try {
@@ -115,47 +112,21 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
         }
       }
     } catch (e) {
-      debugPrint("Error fetching calls: $e");
       if (mounted) setState(() => _isLoadingCalls = false);
     }
   }
 
-  // 🔥 Ultra Safe Name Resolver
+  // 🔥 Ultra Safe Name Resolver (Same as Student)
   String _getDisplayName(Map<String, dynamic> call) {
-    // A. Identify Caller ID
-    String callerIdStr = "";
-    if (call['callerId'] is Map) {
-      callerIdStr = call['callerId']['_id']?.toString() ?? "";
-    } else {
-      callerIdStr = call['callerId']?.toString() ?? "";
-    }
+    final isOutgoing = call['callerId']?.toString() == myChatId;
+    final targetId = (isOutgoing ? call['receiverId'] : call['callerId'])?.toString() ?? "";
 
-    final isOutgoing = callerIdStr.trim() == myChatId?.trim();
-    
-    // B. Extract Target Object
-    var targetObj = isOutgoing ? call['receiverId'] : call['callerId'];
+    if (targetId.isEmpty) return "Unknown";
 
-    // C. Try getting Name from Object
-    if (targetObj is Map) {
-      if (targetObj['displayName'] != null) return targetObj['displayName'];
-      if (targetObj['name'] != null) return targetObj['name'];
-      if (targetObj['username'] != null) return targetObj['username'];
-    }
+    // 1. Check background cache
+    if (_nameCache.containsKey(targetId)) return _nameCache[targetId]!;
 
-    // D. Try getting ID for Cache Lookup
-    String targetIdStr = "";
-    if (targetObj is Map) {
-      targetIdStr = targetObj['_id']?.toString() ?? "";
-    } else {
-      targetIdStr = targetObj?.toString() ?? "";
-    }
-
-    if (targetIdStr.isEmpty) return "Unknown";
-
-    // E. Check Background Cache
-    if (_nameCache.containsKey(targetIdStr)) return _nameCache[targetIdStr]!;
-
-    // F. Fallback to API data fields
+    // 2. Fallback to API data (Matches Student API format)
     var rawName = isOutgoing ? call['receiverName'] : call['callerName'];
     if (rawName != null) {
       if (rawName is String) return rawName;
@@ -169,9 +140,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     if (dateStr == null) return "";
     try {
       return DateFormat('MMM d, h:mm a').format(DateTime.parse(dateStr).toLocal());
-    } catch (e) {
-      return "";
-    }
+    } catch (e) { return ""; }
   }
 
   @override
@@ -179,7 +148,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     return Scaffold(
       appBar: AppBar(
         title: const Text("Alumni Chats"),
-        backgroundColor: Colors.indigo.shade700, // Alumni Color
+        backgroundColor: Colors.blue.shade800, // Student-like UI
         foregroundColor: Colors.white,
         elevation: 0,
         bottom: TabBar(
@@ -197,7 +166,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     );
   }
 
-  // 💬 TAB 1: CHATS
+  // 💬 CHAT TAB (Same as Student)
   Widget _buildChatListTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -215,9 +184,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
           itemCount: chats.length,
           separatorBuilder: (_, __) => const Divider(height: 1),
           itemBuilder: (context, index) {
-            final docData = chats[index].data();
-            final Map<String, dynamic> chat = (docData is Map<String, dynamic>) ? docData : {};
-
+            final chat = chats[index].data() as Map<String, dynamic>;
             final name = chat['name']?.toString() ?? "User";
             final otherChatId = chat['chatifyId']?.toString();
             final lastMsg = chat['lastMessage']?.toString() ?? "";
@@ -225,13 +192,13 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
             return ListTile(
               tileColor: Colors.white,
               leading: CircleAvatar(
-                backgroundColor: Colors.indigo.shade100,
-                child: Text(name.isNotEmpty ? name[0].toUpperCase() : "?", style: TextStyle(color: Colors.indigo.shade900)),
+                backgroundColor: Colors.blue.shade100,
+                child: Text(name.isNotEmpty ? name[0].toUpperCase() : "?", style: TextStyle(color: Colors.blue.shade900)),
               ),
               title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(lastMsg, maxLines: 1, overflow: TextOverflow.ellipsis),
               onTap: () {
-                if (myChatId != null && otherChatId != null && myJwt != null) {
+                if (myChatId != null && otherChatId != null) {
                   List<String> ids = [myChatId!, otherChatId];
                   ids.sort();
                   Navigator.push(context, MaterialPageRoute(builder: (_) => ChannelPage(
@@ -244,9 +211,6 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
                     myName: myName ?? "Alumni",
                     otherUid: chats[index].id,
                   ))).then((_) => _fetchCallLogs());
-                } else {
-                   // Optional: Add Snackbar logic here if needed
-                   print("Error: Missing ID. MyID: $myChatId, OtherID: $otherChatId");
                 }
               },
             );
@@ -256,7 +220,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     );
   }
 
-  // 📞 TAB 2: CALL HISTORY
+  // 📞 CALL HISTORY TAB (Same as Student)
   Widget _buildCallHistoryTab() {
     if (_isLoadingCalls) return const Center(child: CircularProgressIndicator());
     if (_calls.isEmpty) return _buildEmptyState(Icons.call_end_outlined, "No recent calls");
@@ -267,15 +231,7 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
         itemCount: _calls.length,
         itemBuilder: (context, index) {
           final call = _calls[index];
-          
-          String callerIdStr = "";
-          if (call['callerId'] is Map) {
-             callerIdStr = call['callerId']['_id']?.toString() ?? "";
-          } else {
-             callerIdStr = call['callerId']?.toString() ?? "";
-          }
-
-          final isOutgoing = callerIdStr.trim() == myChatId?.trim();
+          final isOutgoing = call['callerId']?.toString() == myChatId;
           final status = call['status']?.toString().toLowerCase();
           final isVideo = call['type'] == 'video';
           
@@ -286,23 +242,17 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
             tileColor: Colors.white,
             leading: CircleAvatar(
               backgroundColor: Colors.grey.shade100,
-              child: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.indigo.shade800),
+              child: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.blue.shade800),
             ),
             title: Text(_getDisplayName(call), style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Row(
               children: [
                 Icon(statusIcon, size: 14, color: statusColor),
                 const SizedBox(width: 4),
-                // Backend 'createdAt' bhej raha hai
                 Text(_formatTime(call['timestamp']?.toString() ?? call['createdAt']?.toString())),
               ],
             ),
-            trailing: IconButton(
-              icon: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.indigo.shade800),
-              onPressed: () {
-                 // Future Logic
-              },
-            ),
+            trailing: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.blue.shade800),
           );
         },
       ),
