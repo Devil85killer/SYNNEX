@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 });
 
 // ==========================================
-// 2. GET CALL HISTORY (With Names & Photos)
+// 2. GET CALL HISTORY (With SMART Name Resolution)
 // ==========================================
 router.get('/:userId', async (req, res) => {
   try {
@@ -48,16 +48,21 @@ router.get('/:userId', async (req, res) => {
         { receiverId: userId }
       ]
     })
-    .sort({ timestamp: -1 }) // Latest call pehle
-    // 🔥 MAGIC STEP: IDs ko asli User Data se badal do
-    .populate('callerId', 'name email profilePic') // 'username' nahi 'name' use karo
-    .populate('receiverId', 'name email profilePic');
+    .sort({ createdAt: -1 }) // Latest call pehle
+    // 🔥 MAGIC STEP: Saare possible name fields maang lo
+    .populate('callerId', 'name username displayName email profilePic') 
+    .populate('receiverId', 'name username displayName email profilePic');
 
-    // 2. Data ko clean format mein convert karo (Frontend Crash rokne ke liye)
+    // 2. Data ko clean format mein convert karo
     const formattedCalls = calls.map(call => {
-      // Agar user delete ho gaya ho toh crash na ho
-      const caller = call.callerId || { _id: call.callerId, name: "Unknown User", profilePic: "" };
-      const receiver = call.receiverId || { _id: call.receiverId, name: "Unknown User", profilePic: "" };
+      // Agar user delete ho gaya ho toh safe object banao
+      const caller = call.callerId || { _id: call.callerId };
+      const receiver = call.receiverId || { _id: call.receiverId };
+
+      // 🔥 UNIVERSAL NAME RESOLVER
+      // Ye check karega: name hai? nahi toh displayName? nahi toh username? nahi toh Unknown.
+      const callerName = caller.name || caller.displayName || caller.username || "Unknown User";
+      const receiverName = receiver.name || receiver.displayName || receiver.username || "Unknown User";
 
       return {
         _id: call._id,
@@ -65,24 +70,29 @@ router.get('/:userId', async (req, res) => {
         callerId: caller._id,
         receiverId: receiver._id,
         
-        // Names (Direct access for Frontend)
-        callerName: caller.name, 
-        receiverName: receiver.name,
+        // Resolved Names (Ab Frontend ko dimag nahi lagana padega)
+        callerName: callerName, 
+        receiverName: receiverName,
         
         // Pics
-        callerPic: caller.profilePic,
-        receiverPic: receiver.profilePic,
+        callerPic: caller.profilePic || "",
+        receiverPic: receiver.profilePic || "",
+
+        // Extra details for safety
+        callerDetails: caller,
+        receiverDetails: receiver,
 
         type: call.type,
         status: call.status,
-        timestamp: call.timestamp || call.createdAt
+        timestamp: call.createdAt || call.timestamp || new Date()
       };
     });
 
     // 3. Response bhejo
     res.status(200).json({
       success: true,
-      data: formattedCalls // Frontend yahi 'data' key dhoond raha hai
+      count: formattedCalls.length,
+      data: formattedCalls 
     });
 
   } catch (err) {

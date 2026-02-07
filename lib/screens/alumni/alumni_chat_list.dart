@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../screens/chat/channel_page.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:synnex/screens/chat/channel_page.dart'; 
 
 class AlumniChatListPage extends StatefulWidget {
   const AlumniChatListPage({super.key});
@@ -15,16 +15,15 @@ class AlumniChatListPage extends StatefulWidget {
 }
 
 class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTickerProviderStateMixin {
-  bool _isLoading = true;
-  List<dynamic> _chatUsers = [];
-  List<dynamic> _callLogs = [];
-  String? myJwt;
-  String? myUid;
-  String? myName;
-
+  final String myUid = FirebaseAuth.instance.currentUser!.uid;
   late TabController _tabController;
 
-  // 🔥 POWERFUL CACHE: Background sync ke liye
+  String? myChatId, myJwt, myName;
+  bool _isLoadingDetails = true;
+  List<dynamic> _calls = [];
+  bool _isLoadingCalls = true;
+
+  // 🔥 POWERFUL CACHE: Background listener se data yahan store hoga
   final Map<String, String> _nameCache = {};
   StreamSubscription? _chatSubscription;
 
@@ -33,36 +32,41 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     
+    // Tab switch hone par calls refresh karna
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging && _tabController.index == 1) {
         _fetchCallLogs();
       }
     });
 
-    _loadUserAndData();
+    _fetchMyDetails();
     _listenToActiveChats();
   }
 
-  // 🔥 Background Listener: Firestore se names sync karne ke liye
-  void _listenToActiveChats() async {
-    final prefs = await SharedPreferences.getInstance();
-    final uid = prefs.getString('uid');
-    if (uid == null) return;
-
+  // 🔥 Real-time Chat Name Listener
+  void _listenToActiveChats() {
     _chatSubscription = FirebaseFirestore.instance
         .collection('users')
-        .doc(uid)
+        .doc(myUid)
         .collection('active_chats')
         .snapshots()
         .listen((snapshot) {
       if (mounted) {
+        bool updated = false;
         for (var doc in snapshot.docs) {
-          final data = doc.data();
-          final String? cid = data['chatifyId']?.toString();
-          final String? name = data['name']?.toString();
-          if (cid != null && name != null) _nameCache[cid] = name;
+          final data = doc.data(); // Access as Map
+          final String? chatifyId = data['chatifyId']?.toString();
+          // Use 'name' or fallback to 'username' if available
+          final String? name = data['name']?.toString() ?? data['username']?.toString();
+          
+          if (chatifyId != null && name != null) {
+            if (_nameCache[chatifyId] != name) {
+              _nameCache[chatifyId] = name;
+              updated = true;
+            }
+          }
         }
-        setState(() {}); // UI Update
+        if (updated) setState(() {}); // Sirf tabhi update karo jab naya naam mile
       }
     });
   }
@@ -74,185 +78,247 @@ class _AlumniChatListPageState extends State<AlumniChatListPage> with SingleTick
     super.dispose();
   }
 
-  Future<void> _loadUserAndData() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      myJwt = prefs.getString('token');
-      myUid = prefs.getString('uid'); 
-      myName = prefs.getString('name');
-    });
-
-    if (myJwt != null) {
-      await _fetchChatList();
-      await _fetchCallLogs();
+  // 1. FETCH ALUMNI DETAILS
+  Future<void> _fetchMyDetails() async {
+    try {
+      // ✅ CHANGE: 'students' -> 'alumni_users'
+      final doc = await FirebaseFirestore.instance.collection('alumni_users').doc(myUid).get();
+      if (doc.exists && mounted) {
+        setState(() {
+          myJwt = doc.data()?['chatifyJwt']?.toString();
+          myChatId = doc.data()?['chatifyUserId']?.toString();
+          myName = doc.data()?['name']?.toString();
+          _isLoadingDetails = false;
+        });
+        if (myChatId != null) _fetchCallLogs();
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingDetails = false);
     }
-    if (mounted) setState(() => _isLoading = false);
   }
 
-  Future<void> _fetchChatList() async {
+  // 2. FETCH CALL LOGS
+  Future<void> _fetchCallLogs() async {
+    if (myChatId == null || myJwt == null) return;
     try {
       final res = await http.get(
-        Uri.parse("https://synnex.onrender.com/api/auth/users"), 
+        Uri.parse("https://synnex.onrender.com/api/calls/$myChatId"),
         headers: {"Authorization": "Bearer $myJwt"},
       );
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
-        if (mounted) {
-          final users = data['users'] ?? [];
-          // Pre-populate cache from API
-          for(var u in users) {
-            if(u['_id'] != null && u['name'] != null) {
-              _nameCache[u['_id']] = u['name'];
-            }
-          }
-          setState(() => _chatUsers = users);
+        if (data['success'] == true && mounted) {
+          setState(() {
+            _calls = data['data'];
+            _isLoadingCalls = false;
+          });
         }
       }
     } catch (e) {
-      debugPrint("Error fetching chats: $e");
-    }
-  }
-
-  Future<void> _fetchCallLogs() async {
-    try {
-      final res = await http.get(
-        Uri.parse("https://synnex.onrender.com/api/calls/$myUid"), // ✅ Endpoint check kar lena
-        headers: {"Authorization": "Bearer $myJwt"},
-      );
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        if (mounted) setState(() => _callLogs = data['data'] ?? []);
-      }
-    } catch (e) {
       debugPrint("Error fetching calls: $e");
+      if (mounted) setState(() => _isLoadingCalls = false);
     }
   }
 
-  // 🔥 SAFE NAME RESOLVER
+  // 🔥 Ultra Safe Name Resolver
   String _getDisplayName(Map<String, dynamic> call) {
-    final isOutgoing = call['callerId']?.toString() == myUid;
-    final targetId = isOutgoing ? call['receiverId']?.toString() : call['callerId']?.toString();
+    // A. Identify Caller ID
+    String callerIdStr = "";
+    if (call['callerId'] is Map) {
+      callerIdStr = call['callerId']['_id']?.toString() ?? "";
+    } else {
+      callerIdStr = call['callerId']?.toString() ?? "";
+    }
 
-    if (targetId == null) return "Unknown User";
-    if (_nameCache.containsKey(targetId)) return _nameCache[targetId]!;
+    final isOutgoing = callerIdStr.trim() == myChatId?.trim();
+    
+    // B. Extract Target Object
+    var targetObj = isOutgoing ? call['receiverId'] : call['callerId'];
 
-    // Fallback to API populated names
-    return isOutgoing ? (call['receiverName'] ?? "User") : (call['callerName'] ?? "User");
+    // C. Try getting Name from Object
+    if (targetObj is Map) {
+      if (targetObj['displayName'] != null) return targetObj['displayName'];
+      if (targetObj['name'] != null) return targetObj['name'];
+      if (targetObj['username'] != null) return targetObj['username'];
+    }
+
+    // D. Try getting ID for Cache Lookup
+    String targetIdStr = "";
+    if (targetObj is Map) {
+      targetIdStr = targetObj['_id']?.toString() ?? "";
+    } else {
+      targetIdStr = targetObj?.toString() ?? "";
+    }
+
+    if (targetIdStr.isEmpty) return "Unknown";
+
+    // E. Check Background Cache
+    if (_nameCache.containsKey(targetIdStr)) return _nameCache[targetIdStr]!;
+
+    // F. Fallback to API data fields
+    var rawName = isOutgoing ? call['receiverName'] : call['callerName'];
+    if (rawName != null) {
+      if (rawName is String) return rawName;
+      if (rawName is Map) return rawName['name']?.toString() ?? "Unknown";
+    }
+
+    return "Unknown User";
   }
 
   String _formatTime(String? dateStr) {
     if (dateStr == null) return "";
     try {
       return DateFormat('MMM d, h:mm a').format(DateTime.parse(dateStr).toLocal());
-    } catch (e) { return ""; }
+    } catch (e) {
+      return "";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Alumni Connect"),
-        backgroundColor: Colors.indigo.shade800,
+        title: const Text("Alumni Chats"),
+        backgroundColor: Colors.indigo.shade700, // Alumni Color
         foregroundColor: Colors.white,
+        elevation: 0,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
           tabs: const [Tab(text: "CHATS"), Tab(text: "CALLS")],
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+      body: _isLoadingDetails 
+          ? const Center(child: CircularProgressIndicator()) 
           : TabBarView(
               controller: _tabController,
-              children: [_buildChatList(), _buildCallList()],
+              children: [_buildChatListTab(), _buildCallHistoryTab()],
             ),
     );
   }
 
-  Widget _buildChatList() {
-    if (_chatUsers.isEmpty) return const Center(child: Text("No users found."));
-    
-    return ListView.builder(
-      itemCount: _chatUsers.length,
-      itemBuilder: (context, index) {
-        final user = _chatUsers[index];
-        final name = user['name'] ?? user['displayName'] ?? "User";
-        final role = user['role'] ?? "Student"; 
-        final otherUid = user['_id'] ?? "";
+  // 💬 TAB 1: CHATS
+  Widget _buildChatListTab() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(myUid)
+          .collection('active_chats')
+          .orderBy('time', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) return const Center(child: Text("No chats yet"));
+        
+        final chats = snapshot.data!.docs;
+        return ListView.separated(
+          itemCount: chats.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final docData = chats[index].data();
+            final Map<String, dynamic> chat = (docData is Map<String, dynamic>) ? docData : {};
 
-        if (otherUid == myUid) return const SizedBox.shrink();
+            final name = chat['name']?.toString() ?? "User";
+            final otherChatId = chat['chatifyId']?.toString();
+            final lastMsg = chat['lastMessage']?.toString() ?? "";
 
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.indigo.shade100,
-            child: Text(name.isNotEmpty ? name[0].toUpperCase() : "U", 
-                 style: TextStyle(color: Colors.indigo.shade900, fontWeight: FontWeight.bold)),
-          ),
-          title: Text("$name ($role)", style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(user['email'] ?? ""),
-          trailing: const Icon(Icons.chat_bubble_outline, color: Colors.indigo),
-          onTap: () => _openChat(otherUid, name),
+            return ListTile(
+              tileColor: Colors.white,
+              leading: CircleAvatar(
+                backgroundColor: Colors.indigo.shade100,
+                child: Text(name.isNotEmpty ? name[0].toUpperCase() : "?", style: TextStyle(color: Colors.indigo.shade900)),
+              ),
+              title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(lastMsg, maxLines: 1, overflow: TextOverflow.ellipsis),
+              onTap: () {
+                if (myChatId != null && otherChatId != null && myJwt != null) {
+                  List<String> ids = [myChatId!, otherChatId];
+                  ids.sort();
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => ChannelPage(
+                    roomId: ids.join("___"),
+                    me: myChatId!,
+                    other: otherChatId,
+                    otherName: name,
+                    jwt: myJwt!,
+                    myUid: myUid,
+                    myName: myName ?? "Alumni",
+                    otherUid: chats[index].id,
+                  ))).then((_) => _fetchCallLogs());
+                } else {
+                   // Optional: Add Snackbar logic here if needed
+                   print("Error: Missing ID. MyID: $myChatId, OtherID: $otherChatId");
+                }
+              },
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildCallList() {
-    if (_callLogs.isEmpty) return const Center(child: Text("No recent calls."));
+  // 📞 TAB 2: CALL HISTORY
+  Widget _buildCallHistoryTab() {
+    if (_isLoadingCalls) return const Center(child: CircularProgressIndicator());
+    if (_calls.isEmpty) return _buildEmptyState(Icons.call_end_outlined, "No recent calls");
 
     return RefreshIndicator(
       onRefresh: _fetchCallLogs,
       child: ListView.builder(
-        itemCount: _callLogs.length,
+        itemCount: _calls.length,
         itemBuilder: (context, index) {
-          final call = _callLogs[index];
-          final isVideo = call['type'] == 'video';
-          final status = call['status']?.toString().toLowerCase();
-          final isOutgoing = call['callerId']?.toString() == myUid;
+          final call = _calls[index];
+          
+          String callerIdStr = "";
+          if (call['callerId'] is Map) {
+             callerIdStr = call['callerId']['_id']?.toString() ?? "";
+          } else {
+             callerIdStr = call['callerId']?.toString() ?? "";
+          }
 
+          final isOutgoing = callerIdStr.trim() == myChatId?.trim();
+          final status = call['status']?.toString().toLowerCase();
+          final isVideo = call['type'] == 'video';
+          
           IconData statusIcon = status == 'missed' ? Icons.call_missed : (isOutgoing ? Icons.call_made : Icons.call_received);
           Color statusColor = status == 'missed' ? Colors.red : (isOutgoing ? Colors.grey : Colors.green);
 
           return ListTile(
+            tileColor: Colors.white,
             leading: CircleAvatar(
               backgroundColor: Colors.grey.shade100,
-              child: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.indigo),
+              child: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.indigo.shade800),
             ),
             title: Text(_getDisplayName(call), style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Row(
               children: [
                 Icon(statusIcon, size: 14, color: statusColor),
-                const SizedBox(width: 5),
-                Text(_formatTime(call['timestamp'] ?? call['createdAt'])),
+                const SizedBox(width: 4),
+                // Backend 'createdAt' bhej raha hai
+                Text(_formatTime(call['timestamp']?.toString() ?? call['createdAt']?.toString())),
               ],
             ),
-            trailing: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.indigo.shade300),
+            trailing: IconButton(
+              icon: Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.indigo.shade800),
+              onPressed: () {
+                 // Future Logic
+              },
+            ),
           );
         },
       ),
     );
   }
 
-  void _openChat(String otherUid, String otherName) {
-    if (myUid == null) return;
-    List<String> ids = [myUid!, otherUid];
-    ids.sort(); 
-    String roomId = ids.join("___"); 
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ChannelPage(
-          roomId: roomId,
-          me: myUid!,
-          other: otherUid,
-          otherName: otherName,
-          jwt: myJwt!,
-          myUid: myUid!,
-          myName: myName ?? "Me",
-          otherUid: otherUid,
-        ),
+  Widget _buildEmptyState(IconData icon, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 64, color: Colors.grey.shade300),
+          const SizedBox(height: 16),
+          Text(message, style: TextStyle(color: Colors.grey.shade500)),
+        ],
       ),
-    ).then((_) => _fetchCallLogs());
+    );
   }
 }
