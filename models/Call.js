@@ -5,7 +5,7 @@ const CallSchema = new mongoose.Schema(
     // ✅ Caller ID (Link to User Collection)
     callerId: { 
       type: mongoose.Schema.Types.ObjectId, 
-      ref: 'User', // Ensure 'User' model exists and name matches exactly
+      ref: 'User', 
       required: true 
     },
     
@@ -36,17 +36,18 @@ const CallSchema = new mongoose.Schema(
       default: 0 
     }, 
     
-    // 🕒 Timestamps for specific logic
+    // 🕒 Started At
     startedAt: { 
       type: Date, 
       default: Date.now 
     },
     
+    // 🕒 Ended At
     endedAt: { 
       type: Date 
     },
   },
-  { timestamps: true } // Mongoose automatic createdAt & updatedAt
+  { timestamps: true } // Creates 'createdAt' and 'updatedAt'
 );
 
 module.exports = mongoose.model('Call', CallSchema);

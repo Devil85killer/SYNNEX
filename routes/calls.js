@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const Call = require('../models/Call');
-const User = require('../models/User'); // ✅ Ensure User model is imported
+const User = require('../models/User'); 
 
 // ==========================================
-// 1. LOG A NEW CALL (Save Call to DB)
+// 1. LOG A NEW CALL (Save to DB)
 // ==========================================
 router.post('/', async (req, res) => {
-  console.log("📞 LOGGING CALL:", req.body);
-
   try {
     const { callerId, receiverId, type, status, duration } = req.body;
 
@@ -17,16 +15,11 @@ router.post('/', async (req, res) => {
       receiverId,
       type: type || 'audio',
       status: status || 'ended',
-      duration: duration || 0,
-      timestamp: new Date()
+      duration: duration || 0
     });
 
     const savedCall = await newCall.save();
-
-    res.status(200).json({
-      success: true,
-      data: savedCall
-    });
+    res.status(200).json({ success: true, data: savedCall });
 
   } catch (err) {
     console.error("❌ Error logging call:", err);
@@ -35,60 +28,42 @@ router.post('/', async (req, res) => {
 });
 
 // ==========================================
-// 2. GET CALL HISTORY (With SMART Name Resolution)
+// 2. GET CALL HISTORY (With Smart Names)
 // ==========================================
 router.get('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // 1. Database se Calls nikalo
     const calls = await Call.find({
-      $or: [
-        { callerId: userId },
-        { receiverId: userId }
-      ]
+      $or: [{ callerId: userId }, { receiverId: userId }]
     })
-    .sort({ createdAt: -1 }) // Latest call pehle
-    // 🔥 MAGIC STEP: Saare possible name fields maang lo
+    .sort({ createdAt: -1 }) // Get latest first
     .populate('callerId', 'name username displayName email profilePic') 
     .populate('receiverId', 'name username displayName email profilePic');
 
-    // 2. Data ko clean format mein convert karo
     const formattedCalls = calls.map(call => {
-      // Agar user delete ho gaya ho toh safe object banao
+      // Safe handling if user is deleted
       const caller = call.callerId || { _id: call.callerId };
       const receiver = call.receiverId || { _id: call.receiverId };
 
-      // 🔥 UNIVERSAL NAME RESOLVER
-      // Ye check karega: name hai? nahi toh displayName? nahi toh username? nahi toh Unknown.
+      // SMART NAME RESOLVER: Checking multiple fields
       const callerName = caller.name || caller.displayName || caller.username || "Unknown User";
       const receiverName = receiver.name || receiver.displayName || receiver.username || "Unknown User";
 
       return {
         _id: call._id,
-        // IDs
         callerId: caller._id,
         receiverId: receiver._id,
-        
-        // Resolved Names (Ab Frontend ko dimag nahi lagana padega)
         callerName: callerName, 
         receiverName: receiverName,
-        
-        // Pics
         callerPic: caller.profilePic || "",
         receiverPic: receiver.profilePic || "",
-
-        // Extra details for safety
-        callerDetails: caller,
-        receiverDetails: receiver,
-
         type: call.type,
         status: call.status,
-        timestamp: call.createdAt || call.timestamp || new Date()
+        timestamp: call.createdAt || new Date()
       };
     });
 
-    // 3. Response bhejo
     res.status(200).json({
       success: true,
       count: formattedCalls.length,
